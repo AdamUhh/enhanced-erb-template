@@ -1,0 +1,5 @@
+
+Todo:
+  ☐ use 'useWriteIpc' and 'useReadIpc' in order to have the success/fail callbacks.
+    ☐ Add JSDoc to explain what it is 'literally read only ipc, write only ipc'
+  ☐ Perhaps add setLocalAndStateReducer, it seems useful?

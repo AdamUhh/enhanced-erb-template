@@ -1,0 +1,11 @@
+{
+  "rules": {
+    "no-console": "off",
+    "global-require": "off",
+    "import/no-dynamic-require": "off"
+  }
+  // "extends": [
+  //   "next/core-web-vitals",
+  //   "prettier"
+  // ]
+}
