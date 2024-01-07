@@ -11,9 +11,9 @@
     "typescriptreact"
   ],
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": false,
-    "source.fixAll": false,
-    "source.organizeImports": false
+    "source.fixAll.eslint": "never",
+    "source.fixAll": "never",
+    "source.organizeImports": "never"
   },
   "javascript.validate.enable": false,
   "javascript.format.enable": false,
@@ -29,4 +29,5 @@
     "package-lock.json": true,
     "*.{css,sass,scss}.d.ts": true
   },
+  "typescript.tsdk": "node_modules\\typescript\\lib",
 }

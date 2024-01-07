@@ -17,6 +17,14 @@ module.exports = {
     'no-nested-ternary': 'off',
     'no-plusplus': 'off',
     'import/prefer-default-export': 'off',
+    'react/require-default-props': 'off',
+    'react/jsx-props-no-spreading': 'off',
+    'prettier/prettier': [
+      'error',
+      {
+        endOfLine: 'auto',
+      },
+    ],
   },
   parserOptions: {
     ecmaVersion: 2022,

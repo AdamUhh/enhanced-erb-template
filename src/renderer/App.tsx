@@ -10,7 +10,7 @@ function Hello() {
   const exampleVisibility = useAppSelector(selectExampleVisibility);
   return (
     <div className="w-screen h-screen flex justify-center items-center flex-col">
-      <div className="">{exampleVisibility ? 'Hi' : 'Bye'}</div>
+      <div className="">{exampleVisibility ? 'Bye' : 'Hi'}</div>
       <ExampleToggleButtons />
     </div>
   );

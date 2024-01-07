@@ -1,5 +1,5 @@
 /* eslint-disable import/no-cycle */
-import { createSlice, current, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IpcChannels } from 'shared/types';
 
 const initialState: { exampleVisibility: boolean } = {
@@ -7,7 +7,7 @@ const initialState: { exampleVisibility: boolean } = {
 };
 
 export const exampleSlice = createSlice({
-  name: 'fileExplorer',
+  name: 'example',
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
@@ -26,9 +26,9 @@ export const exampleSlice = createSlice({
     toggleExampleVisibility: (state) => {
       window.electron.ipc.send(IpcChannels.setStoreValue, {
         key: 'exampleVisibility',
-        state: !current(state.exampleVisibility),
+        state: !state.exampleVisibility,
       });
-      state.exampleVisibility = current(state.exampleVisibility);
+      state.exampleVisibility = !state.exampleVisibility;
     },
   },
 });
