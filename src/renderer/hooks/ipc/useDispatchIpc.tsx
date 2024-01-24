@@ -1,27 +1,33 @@
-// // ? This Ipc will
+import { useCallback } from 'react';
+import { GenericVoidFunction, IpcChannels } from 'shared/types';
+import { getReplyChannel } from 'shared/utils/ipc';
+import { useIpcEffect } from './utils';
 
-// import { useCallback } from 'react';
+/**
+ * Used to send an IPC request and handle its success/failure reply.
+ * @param {IpcChannels} options.channel - The IPC channel to read.
+ * @param {GenericVoidFunction} [options.failCallback] - Callback to be invoked on failure.
+ * @param {GenericVoidFunction} [options.successCallback] - Callback to be invoked on success.
+ * @returns {Function} A callback function to send a message through IPC.
+ */
+function useDispatchIpc({
+  channel,
+  failCallback = () => {},
+  successCallback = () => {},
+}: {
+  channel: IpcChannels;
+  failCallback?: GenericVoidFunction;
+  successCallback?: GenericVoidFunction;
+}): Function {
+  // ? Attach an IPC effect for handling failure events.
+  useIpcEffect({
+    channel: getReplyChannel(channel),
+    successCallback,
+    failCallback,
+  });
 
-// import type { Dispatch } from '@reduxjs/toolkit';
-// import { GenericVoidFunction } from 'shared/types';
-// import { getFailChannel, getSuccessChannel } from 'shared/utils/ipc';
-// import { useIpcEffect } from './utils';
+  // ? Returns a memoized callback function to send a message through IPC.
+  return useCallback(() => window.electron.ipc.send(channel), [channel]);
+}
 
-// function useDispatchIpc<P = undefined>({
-//   dispatch: _dispatch,
-//   failCallback,
-//   payload,
-//   successCallback,
-// }: {
-//   dispatch: Dispatch;
-//   payload?: P;
-//   failCallback: GenericVoidFunction;
-//   successCallback: GenericVoidFunction;
-// }) {
-//   useIpcEffect(getSuccessChannel(channel), successCallback);
-//   useIpcEffect(getFailChannel(channel), failCallback);
-
-//   dispatc;
-// }
-
-// export { useDispatchIpc };
+export { useDispatchIpc };

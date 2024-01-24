@@ -7,17 +7,78 @@ import {
 import fs from 'fs';
 
 import { IpcChannels, SetStoreValuePayload } from '../shared/types';
-import { getFailChannel, getSuccessChannel } from '../shared/utils/ipc';
+import {
+  replyFailure,
+  replyInvokeFailure,
+  replySuccess,
+} from '../shared/utils/ipc';
 import MainWindow from './mainWindow';
 import Store from './store';
+
+ipcMain.on(IpcChannels.closeApp, () => {
+  try {
+    MainWindow.close();
+    // setTimeout(() => {
+    //   event.reply(getSuccessChannel(IpcChannels.closeApp));
+    // }, 1000);
+  } catch (error: any) {
+    console.log('Failed to close app', error);
+    // setTimeout(() => {
+    //   event.reply(getFailChannel(IpcChannels.closeApp), error.toString());
+    // }, 1000);
+  }
+});
+
+ipcMain.on(IpcChannels.minimizeApp, () => {
+  try {
+    MainWindow.minimize();
+    // setTimeout(() => {
+    //   event.reply(getSuccessChannel(IpcChannels.minimizeApp));
+    // }, 1000);
+  } catch (error: any) {
+    console.log('Failed to minimize app', error);
+    // setTimeout(() => {
+    //   event.reply(getFailChannel(IpcChannels.minimizeApp), error.toString());
+    // }, 1000);
+  }
+});
+
+ipcMain.on(IpcChannels.maximizeApp, () => {
+  try {
+    MainWindow.maximize();
+    // setTimeout(() => {
+    //   event.reply(getSuccessChannel(IpcChannels.maximizeApp));
+    // }, 1000);
+  } catch (error: any) {
+    console.log('Failed to maximize app', error);
+    // setTimeout(() => {
+    //   event.reply(getFailChannel(IpcChannels.maximizeApp), error.toString());
+    // }, 1000);
+  }
+});
+
+ipcMain.on(IpcChannels.restartApp, (event) => {
+  try {
+    console.log('Trying to restart app');
+    MainWindow.getWebContents()?.reloadIgnoringCache();
+    setTimeout(() => {
+      replySuccess(event, IpcChannels.restartApp);
+    }, 1000);
+  } catch (error: any) {
+    console.log('Failed to restart app', error);
+    setTimeout(() => {
+      replyFailure(event, IpcChannels.restartApp, error.toString());
+    }, 1000);
+  }
+});
 
 ipcMain.on(IpcChannels.clearStore, (event) => {
   try {
     Store.clear();
-    event.reply(getSuccessChannel(IpcChannels.clearStore));
+    replySuccess(event, IpcChannels.clearStore);
   } catch (error: any) {
     console.log('Failed to clear store', error);
-    event.reply(getFailChannel(IpcChannels.clearStore), error.toString());
+    replyFailure(event, IpcChannels.clearStore, error.toString());
   }
 });
 
@@ -37,10 +98,10 @@ ipcMain.on(IpcChannels.exportStoreData, async (event) => {
     if (canceled || !filePath) return;
     const data = JSON.stringify(Store.getStore());
     fs.writeFileSync(filePath, data);
-    event.reply(getSuccessChannel(IpcChannels.exportStoreData));
+    replySuccess(event, IpcChannels.exportStoreData);
   } catch (error: any) {
     console.log(`Failed to save file: ${IpcChannels.exportStoreData}`, error);
-    event.reply(getFailChannel(IpcChannels.exportStoreData), error.toString());
+    replyFailure(event, IpcChannels.exportStoreData, error.toString());
   }
 });
 
@@ -73,36 +134,21 @@ ipcMain.on(IpcChannels.importStoreData, async (event) => {
       Store.clear();
       Store.setStore(data);
 
-      event.reply(getSuccessChannel(IpcChannels.importStoreData), data);
+      replySuccess(event, IpcChannels.importStoreData, data);
     });
   } catch (error: any) {
     console.log(`Failed to read file: ${IpcChannels.importStoreData}`, error);
-    event.reply(getFailChannel(IpcChannels.importStoreData), error.toString());
+    replyFailure(event, IpcChannels.importStoreData, error.toString());
   }
 });
 
 ipcMain.on(IpcChannels.loadStoreData, (event) => {
   try {
     const state = Store.getStore();
-    event.reply(getSuccessChannel(IpcChannels.loadStoreData), state);
+    replySuccess(event, IpcChannels.setStoreValue, state);
   } catch (error: any) {
     console.log(`Failed to load store`, error);
-    event.reply(getFailChannel(IpcChannels.loadStoreData), error.toString());
-  }
-});
-
-ipcMain.on(IpcChannels.restartApp, (event) => {
-  try {
-    console.log('Trying to restart app');
-    MainWindow.getWebContents()?.reloadIgnoringCache();
-    setTimeout(() => {
-      event.reply(getSuccessChannel(IpcChannels.restartApp));
-    }, 1000);
-  } catch (error: any) {
-    console.log('Failed to restart app', error);
-    setTimeout(() => {
-      event.reply(getFailChannel(IpcChannels.restartApp), error.toString());
-    }, 1000);
+    replyFailure(event, IpcChannels.loadStoreData, error.toString());
   }
 });
 
@@ -111,10 +157,40 @@ ipcMain.on(
   (event, { key, state }: SetStoreValuePayload) => {
     try {
       Store.set(key, state);
-      event.reply(getSuccessChannel(IpcChannels.setStoreValue));
+      replySuccess(
+        event,
+        IpcChannels.setStoreValue,
+        'Successfully changed electron store value and redux value',
+      );
     } catch (error: any) {
       console.log(`Failed to set Store of key ${key}`, error);
-      event.reply(getFailChannel(IpcChannels.setStoreValue), error.toString());
+      replyFailure(event, IpcChannels.setStoreValue, error.toString());
+      // dialog.showMessageBox({
+      //   type: 'error',
+      //   title: 'Wallpaper',
+      //   message: `Failed to change desktop wallaper\n ${error.toString()}`,
+      //   detail: error.toString(),
+      //  });
+    }
+  },
+);
+
+ipcMain.handle(
+  IpcChannels.setStoreValue,
+  (event, { key, state }: SetStoreValuePayload) => {
+    try {
+      Store.set(key, state);
+
+      // replyInvokeSuccess(
+      //   event,
+      //   IpcChannels.setStoreValue,
+      //   'Successfully changed electron store value and redux value',
+      // );
+      return state;
+    } catch (error: any) {
+      console.log(`Failed to set Store of key ${key}`, error);
+      replyInvokeFailure(event, IpcChannels.setStoreValue, error.toString());
+      return error.toString();
     }
   },
 );

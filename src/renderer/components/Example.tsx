@@ -1,20 +1,24 @@
+import { useAppDispatch, useAppSelector } from 'hooks/store';
 import { Button } from 'shadcn/components/ui/button';
-import { useToast } from 'shadcn/components/ui/use-toast';
-import { useAppDispatch } from '../hooks/store';
-import { toggleExampleVisibility } from '../store/stores/example/slice';
+import { selectExampleVisibility } from 'store/example/selectors';
+import {
+  setExampleVisibility,
+  toggleExampleVisibility,
+  toggleWithNoficiationExampleVisibility,
+} from 'store/example/slice';
+import { displayErrorToast, displaySuccessToast } from 'utils/toast';
 
-export default function ExampleToggleButtons() {
-  const { toast } = useToast();
+export function ExampleToggleButtons() {
   const dispatch = useAppDispatch();
 
-  // const handleImportStoreData = useReadIpc({
+  // useReadIpc({
   //   channel: IpcChannels.setStoreValue,
-  //   failCallback: importStoreDataFailToast,
-  //   successCallback: restartApp,
+  //   failCallback: (error: string) => displayErrorToast(error),
+  //   successCallback: (msg: string) => displaySuccessToast(msg),
   // });
 
   return (
-    <div className="flex gap-2">
+    <div className="grid grid-cols-2 gap-2">
       <Button
         variant="outline"
         onClick={() => {
@@ -22,32 +26,68 @@ export default function ExampleToggleButtons() {
         }}
       >
         Toggle
-      </Button>{' '}
-      <Button variant="outline" onClick={() => {}}>
+      </Button>
+      <Button
+        variant="outline"
+        onClick={() => {
+          dispatch(setExampleVisibility({ showBye: true }));
+        }}
+      >
+        Set to Bye (via payload)
+      </Button>
+      <Button
+        variant="outline"
+        onClick={() => {
+          dispatch(
+            toggleWithNoficiationExampleVisibility({ showBye: undefined }),
+          )
+            .then((res) => displaySuccessToast(res.payload))
+            .catch((error) => displayErrorToast(error));
+        }}
+      >
         Toggle with Notification
       </Button>
       <Button
         variant="outline"
         onClick={() => {
-          toast({
-            description:
-              'Successfully changed electron store value and redux value',
-          });
+          dispatch(toggleWithNoficiationExampleVisibility({ showBye: true }))
+            .then((res) => displaySuccessToast(res.payload))
+            .catch((error) => displayErrorToast(error));
         }}
       >
-        Success Example
+        Set to Bye (via payload) with Notification
       </Button>
       <Button
         variant="outline"
-        onClick={() => {
-          toast({
-            description:
-              'Failed to change electron store value and redux value',
-          });
-        }}
+        onClick={() =>
+          displaySuccessToast(
+            'Successfully changed electron store value and redux value',
+          )
+        }
       >
-        Fail Example
+        Success Notification
       </Button>
+      <Button
+        variant="outline"
+        onClick={() =>
+          displayErrorToast(
+            'Failed to change electron store value and redux value',
+          )
+        }
+      >
+        Fail Notification
+      </Button>
+    </div>
+  );
+}
+
+export default function Example() {
+  const exampleVisibility = useAppSelector(selectExampleVisibility);
+
+  return (
+    <div className="w-screen h-screen flex justify-center items-center flex-col gap-2">
+      <div>{exampleVisibility ? 'Bye' : 'Hi'}</div>
+      <ExampleToggleButtons />
     </div>
   );
 }

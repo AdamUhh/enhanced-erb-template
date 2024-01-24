@@ -1,5 +1,62 @@
+import { IpcMainEvent, IpcMainInvokeEvent } from 'electron';
 import { IpcChannels } from 'shared/types';
 
-export const getFailChannel = (channel: IpcChannels) => `${channel}-fail`;
+const getFailChannel = (channel: IpcChannels) => `${channel}-fail`;
 
-export const getSuccessChannel = (channel: IpcChannels) => `${channel}-success`;
+const getSuccessChannel = (channel: IpcChannels) => `${channel}-success`;
+
+const getReplyChannel = (channel: IpcChannels) => `${channel}-reply`;
+
+const replySuccess = (
+  event: IpcMainEvent,
+  channel: IpcChannels,
+  payload?: any,
+) => {
+  event.reply(getReplyChannel(channel), {
+    success: true,
+    ...(payload && { payload }),
+  });
+};
+
+const replyFailure = (
+  event: IpcMainEvent,
+  channel: IpcChannels,
+  payload?: any,
+) => {
+  event.reply(getReplyChannel(channel), {
+    success: false,
+    ...(payload && { payload }),
+  });
+};
+
+const replyInvokeSuccess = (
+  event: IpcMainInvokeEvent,
+  channel: IpcChannels,
+  payload?: any,
+) => {
+  event.sender.send(getReplyChannel(channel), {
+    success: true,
+    ...(payload && { payload }),
+  });
+};
+
+const replyInvokeFailure = (
+  event: IpcMainInvokeEvent,
+  channel: IpcChannels,
+  payload?: any,
+) => {
+  event.sender.send(getReplyChannel(channel), {
+    success: false,
+    ...(payload && { payload }),
+  });
+};
+
+export {
+  getFailChannel,
+  getSuccessChannel,
+  getReplyChannel,
+  replySuccess,
+  replyFailure,
+  replyInvokeSuccess,
+  replyInvokeFailure,
+};

@@ -11,7 +11,6 @@ import {
 import path from 'path';
 
 import { GenericVoidFunction } from '../shared/types';
-import MenuBuilder from './menu';
 import Store from './store';
 import { resolveHtmlPath } from './util';
 
@@ -29,10 +28,6 @@ class MainWindow {
   private static instance: BrowserWindow | null = null;
 
   public static async createWindow(): Promise<void> {
-    // if (isDevelopment) {
-    //   await installExtensions();
-    // }
-
     const RESOURCES_PATH = app.isPackaged
       ? path.join(process.resourcesPath, 'assets')
       : path.join(__dirname, '../../assets');
@@ -43,7 +38,6 @@ class MainWindow {
 
     MainWindow.set(
       new BrowserWindow({
-        height: 1080,
         icon: getAssetPath('icon.png'),
         show: false,
         webPreferences: {
@@ -51,23 +45,11 @@ class MainWindow {
             ? path.join(__dirname, 'preload.js')
             : path.join(__dirname, '../../.erb/dll/preload.js'),
           sandbox: false,
+          devTools: true,
         },
-        width: 1920,
+        frame: false,
       }),
     );
-
-    MainWindow.loadURL(resolveHtmlPath('index.html'));
-
-    MainWindow.on('ready-to-show', () => {
-      if (!MainWindow.exists()) {
-        throw new Error('"MainWindow" is not defined');
-      }
-      if (process.env.START_MINIMIZED) {
-        MainWindow.minimize();
-      } else {
-        MainWindow.show();
-      }
-    });
 
     /**
      * Retrieves the saved bounds from the store and checks if they are within the screen area.
@@ -78,13 +60,15 @@ class MainWindow {
     const savedBounds: Rectangle = Store.get('coreWindowBounds') as Rectangle;
     if (savedBounds !== undefined) {
       const screenArea = screen.getDisplayMatching(savedBounds).workArea;
+      // ? Note: + 7 is required, as for some reason `Win+LShift+LeftArrow` saves `x` bound as -7
       if (
         savedBounds.x > screenArea.x + screenArea.width ||
-        savedBounds.x < screenArea.x ||
+        savedBounds.x + 7 < screenArea.x ||
         savedBounds.y < screenArea.y ||
         savedBounds.y > screenArea.y + screenArea.height
       ) {
-        // Reset window into existing screenarea
+        // ? Default bounds
+        // ? Reset window into existing screenarea
         MainWindow.instance?.setBounds({
           x: 0,
           y: 0,
@@ -92,17 +76,29 @@ class MainWindow {
           height: 768,
         });
       } else {
-        const _bounds = Store.get('coreWindowBounds');
-        if (_bounds) MainWindow.instance?.setBounds(_bounds);
+        MainWindow.instance?.setBounds(savedBounds);
       }
     }
 
+    MainWindow.loadURL(resolveHtmlPath('index.html'));
+
+    MainWindow.on('ready-to-show', () => {
+      if (!MainWindow.exists()) {
+        throw new Error('"MainWindow" is not defined');
+      }
+      // if (process.env.START_MINIMIZED)
+      //   MainWindow.minimize();
+      // else
+      MainWindow.show();
+    });
+
     /**
-     * Handles the 'close' event of the mainWindow and saves its bounds to the store.
+     * Handles the 'resize' event of the mainWindow and saves its bounds to the store.
      */
     MainWindow.on('resize', () => {
-      if (MainWindow.exists())
+      if (MainWindow.exists()) {
         Store.set('coreWindowBounds', MainWindow.instance!.getBounds());
+      }
     });
 
     /**
@@ -117,8 +113,8 @@ class MainWindow {
       MainWindow.set(null);
     });
 
-    const menuBuilder = new MenuBuilder(MainWindow.instance!);
-    menuBuilder.buildMenu();
+    // const menuBuilder = new MenuBuilder(MainWindow.instance!);
+    // menuBuilder.buildMenu();
 
     // Open urls in the user's browser
     MainWindow.getWebContents()?.setWindowOpenHandler((eventData) => {
@@ -126,35 +122,78 @@ class MainWindow {
       return { action: 'deny' };
     });
 
+    MainWindow.getWebContents()?.openDevTools();
+
     // Remove this if your app does not use auto updates
     // eslint-disable-next-line
     //   new AppUpdater();
   }
 
+  /**
+   * Checks if the main window instance exists.
+   * @returns {boolean} Returns true if the main window instance exists, false otherwise.
+   */
   public static exists(): boolean {
     return !!MainWindow.instance;
   }
 
+  /**
+   * Gets the web contents of the main window.
+   * @returns {WebContents | null} Returns the web contents of the main window or null if it doesn't exist.
+   */
   public static getWebContents(): WebContents | null {
     return MainWindow.instance?.webContents || null;
   }
 
+  /**
+   * Loads the specified URL in the main window.
+   * @param {string} url - The URL to be loaded in the main window.
+   */
   public static loadURL(url: string): void {
     MainWindow.instance?.loadURL(url);
   }
 
+  /**
+   * Minimizes the main window.
+   */
   public static minimize(): void {
     MainWindow.instance?.minimize();
   }
 
+  /**
+   * Maximizes the main window.
+   */
+  public static maximize(): void {
+    MainWindow.instance?.maximize();
+  }
+
+  /**
+   * Closes the main window.
+   */
+  public static close(): void {
+    MainWindow.instance?.close();
+  }
+
+  /**
+   * Attaches an event listener to the main window.
+   * @param {OnEventType} event - The type of event to listen for.
+   * @param {GenericVoidFunction} listener - The function to be executed when the event occurs.
+   */
   public static on(event: OnEventType, listener: GenericVoidFunction): void {
     MainWindow.instance?.on(event as any, listener);
   }
 
+  /**
+   * Sets the main window instance.
+   * @param {BrowserWindow | null} window - The main window instance to be set.
+   */
   public static set(window: BrowserWindow | null): void {
     MainWindow.instance = window;
   }
 
+  /**
+   * Shows the main window.
+   */
   public static show(): void {
     MainWindow.instance?.show();
   }

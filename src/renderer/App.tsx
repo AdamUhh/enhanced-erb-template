@@ -1,30 +1,22 @@
+import Example from 'components/Example';
+import Titlebar from 'components/Titlebar';
 import { Provider } from 'react-redux';
 import { Route, MemoryRouter as Router, Routes } from 'react-router-dom';
 import { Toaster } from 'shadcn/components/ui/toaster';
-import ExampleToggleButtons from './components/Example';
 import { store } from './store';
-import { useAppSelector } from './hooks/store';
-import { selectExampleVisibility } from './store/stores/example/selectors';
-
-function Hello() {
-  const exampleVisibility = useAppSelector(selectExampleVisibility);
-  return (
-    <div className="w-screen h-screen flex justify-center items-center flex-col">
-      <div className="">{exampleVisibility ? 'Bye' : 'Hi'}</div>
-      <ExampleToggleButtons />
-    </div>
-  );
-}
 
 export default function App() {
   return (
     <Provider store={store}>
       <Toaster />
-      <Router>
-        <Routes>
-          <Route path="/" element={<Hello />} />
-        </Routes>
-      </Router>
+      <Titlebar />
+      <div>
+        <Router>
+          <Routes>
+            <Route path="/" element={<Example />} />
+          </Routes>
+        </Router>
+      </div>
     </Provider>
   );
 }

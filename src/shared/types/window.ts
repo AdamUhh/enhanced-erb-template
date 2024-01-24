@@ -1,11 +1,11 @@
-import { IpcApi } from './ipc';
+import { I_IpcApi } from './ipc';
 
-export interface ElectronApi {
-  ipc: IpcApi;
+export interface I_ElectronApi {
+  ipc: I_IpcApi;
 }
 
 declare global {
   interface Window {
-    electron: ElectronApi;
+    electron: I_ElectronApi;
   }
 }

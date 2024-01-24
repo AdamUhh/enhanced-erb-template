@@ -1,9 +1,9 @@
 import { contextBridge } from 'electron';
 
-import { ElectronApi } from '../shared/types';
+import { I_ElectronApi } from 'shared/types';
 import { ipcApi } from './bridges/ipc';
 
-const electronApi: ElectronApi = {
+const electronApi: I_ElectronApi = {
   ipc: ipcApi,
 };
 

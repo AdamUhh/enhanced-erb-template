@@ -1,15 +1,15 @@
 import { Bounds } from './bounds';
 import { GenericFunction, GenericVoidFunction } from './generic';
-import { IpcApi, IpcChannels, SetStoreValuePayload } from './ipc';
+import { I_IpcApi, IpcChannels, SetStoreValuePayload } from './ipc';
 import { LocalElectronStore } from './localElectronStore';
-import { ElectronApi } from './window';
+import { I_ElectronApi } from './window';
 
 export type {
   Bounds,
-  ElectronApi,
+  I_ElectronApi,
   GenericFunction,
   GenericVoidFunction,
-  IpcApi,
+  I_IpcApi,
   LocalElectronStore,
   SetStoreValuePayload,
 };

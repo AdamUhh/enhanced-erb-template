@@ -1,5 +1,60 @@
+References for later:
+  ☐ `event.reply`: https://www.tabnine.com/code/javascript/functions/electron/IpcMainEvent/reply
 
 Todo:
-  ☐ use 'useWriteIpc' and 'useReadIpc' in order to have the success/fail callbacks.
-    ☐ Add JSDoc to explain what it is 'literally read only ipc, write only ipc'
   ☐ Perhaps add setLocalAndStateReducer, it seems useful?
+  
+
+
+Some ideas:
+  ☐ Create a file that calls ipc, waits for return, and then calls redux?
+    ☐ This way, we can also handle errors?
+  ☐ Shortcuts 
+
+
+Need to be able to:
+  ☐ Toggle Click
+    ☐ with return
+    ☐ with notification
+  ☐ Shortcut toggle 
+    ☐ with return
+  
+Things to do:
+  ☐ Change to frameless titlebar and create custom one
+    ☐ Custom titlebar should have:
+      ☐ close, minimize, maximize
+      ☐ logo on left
+      ☐ custom menubars on left (menuregistry)
+        ☐ these menubars are defined & built by client side (not electron side accelerators)
+          ☐ this means shortcuts run on client side as well
+          ☐ Remember, not all shortcuts will be on the menubar, so they will be separate
+            ☐ perhaps combine menubar and keybindings data?
+
+            ☐ menubar is for appearances, and needs metadata:
+              ☐ command {
+                ☐ id
+                ☐ title (in future, perhaps localize it? (i18n)) }
+              ☐ order (ranking order to display)
+              ☐ category (which menu dropdown to display it on)
+              ☐ subcategory (optional)
+              ☐ isToggled?
+              ☐ when (think of it like a 'exist' fn, ex: menu item is only shown when editor is focused)
+                ☐ (continuation of when: ex 2: save all menu item will be disabled if there is nothing to be saved)
+
+            ☐ keybindings registry (shortcuts) will have 
+              ☐ id
+              ☐ keybindings
+              ☐ secondaryKeybindings
+              ☐ when
+
+          ☐ when a shortcut is clicked/keypressed
+            ☐ client will attempt to execute the id (in vscode src, find commandService.ts)
+            
+  ☐ state managed by client, with ipc requests to electron store to save data
+  ☐ example should showcase:
+    ☐ toggle
+    ☐ toggle with notification
+    ☐ toggle with shortcut
+    ☐ toggle with shortcut & notification
+    ☐ success example
+    ☐ fail example

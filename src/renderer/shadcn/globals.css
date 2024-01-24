@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
+  /* :original-root {
     --background: 0 0% 100%;
     --foreground: 222.2 47.4% 11.2%;
 
@@ -27,6 +27,39 @@
 
     --accent: 210 40% 96.1%;
     --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 210 40% 98%;
+
+    --ring: 215 20.2% 65.1%;
+  } */
+
+  :root {
+    --background: 213 12% 15%;
+    --background-hover: 218 7% 21%;
+    --foreground: 220 11% 63%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --popover: 213 12% 15%;
+    --popover-hover: 218 7% 21%;
+    --popover-foreground: 220 11% 63%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 47.4% 11.2%;
+
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --accent: 218 7% 21%;
+    --accent-foreground: 220 11% 63%;
 
     --destructive: 0 100% 50%;
     --destructive-foreground: 210 40% 98%;
@@ -71,7 +104,7 @@
     @apply box-border;
   }
   body {
-    -webkit-font-smoothing: subpixel-antialiased;
+    @apply overflow-hidden [-webkit-font-smoothing:subpixel-antialiased] bg-background text-foreground;
   }
 
   /* #region ===== Scrollbar CSS ===== */
@@ -83,12 +116,11 @@
 
   /* Chrome, Edge, and Safari */
   *::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    @apply size-[6px];
   }
 
   *::-webkit-scrollbar-track {
-    background: transparent;
+    @apply bg-transparent;
   }
 
   *::-webkit-scrollbar-thumb {

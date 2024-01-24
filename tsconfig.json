@@ -17,15 +17,27 @@
     "allowJs": true,
     "outDir": ".erb/dll",
     "paths": {
+      "components/*": [
+        "./src/renderer/components/*"
+      ],
       "shadcn/*": [
         "./src/renderer/shadcn/*"
       ],
       "types/*": [
         "./src/renderer/types/*"
       ],
+      "store/*": [
+        "./src/renderer/store/stores/*"
+      ],
+      "hooks/*": [
+        "./src/renderer/hooks/*"
+      ],
+      "utils/*": [
+        "./src/renderer/utils/*"
+      ],
       "shared/*": [
         "./src/shared/*"
-      ]
+      ],
     },
   },
   "exclude": [

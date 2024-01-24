@@ -3,14 +3,8 @@ module.exports = {
   content: ['./src/renderer/**/*.{js,jsx,ts,tsx,ejs}'],
   darkMode: ['class'],
   theme: {
-    container: {
-      center: true,
-      padding: '2rem',
-      screens: {
-        '2xl': '1400px',
-      },
-    },
     fontSize: {
+      xxs: '0.6rem',
       xs: '0.7rem',
       sm: '0.8rem',
       ms: '0.9rem',
@@ -50,7 +44,10 @@ module.exports = {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
-        background: 'hsl(var(--background))',
+        background: {
+          DEFAULT: 'hsl(var(--background))',
+          hover: 'hsl(var(--background-hover))',
+        },
         foreground: 'hsl(var(--foreground))',
         primary: {
           DEFAULT: 'hsl(var(--primary))',
