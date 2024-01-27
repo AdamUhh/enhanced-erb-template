@@ -12,12 +12,6 @@ import { displayErrorToast, displaySuccessToast } from 'utils/toast';
 export function ExampleToggleButtons() {
   const dispatch = useAppDispatch();
 
-  // useReadIpc({
-  //   channel: IpcChannels.setStoreValue,
-  //   failCallback: (error: string) => displayErrorToast(error),
-  //   successCallback: (msg: string) => displaySuccessToast(msg),
-  // });
-
   return (
     <div className="grid grid-cols-2 gap-2">
       <Button

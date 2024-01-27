@@ -3,6 +3,6 @@ import { Bounds } from './bounds';
 
 export const CORE_WINDOW_BOUNDS = 'coreWindowBounds';
 
-export interface LocalElectronStore extends AppElectronStore {
+export interface CoreElectronStore extends AppElectronStore {
   [CORE_WINDOW_BOUNDS]: Bounds;
 }

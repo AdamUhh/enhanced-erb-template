@@ -19,7 +19,7 @@ function useReadIpc({
   failCallback?: GenericVoidFunction;
   successCallback?: GenericVoidFunction;
 }): Function {
-  // ? Attach an IPC effect for handling failure events.
+  // ? Attach an IPC effect for handling success/failure events.
   useIpcEffect({
     channel: getReplyChannel(channel),
     successCallback,

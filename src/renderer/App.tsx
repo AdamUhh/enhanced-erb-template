@@ -8,9 +8,9 @@ import { store } from './store';
 export default function App() {
   return (
     <Provider store={store}>
-      <Toaster />
       <Titlebar />
       <div>
+        <Toaster />
         <Router>
           <Routes>
             <Route path="/" element={<Example />} />

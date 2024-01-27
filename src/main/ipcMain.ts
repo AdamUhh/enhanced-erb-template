@@ -6,11 +6,12 @@ import {
 } from 'electron';
 import fs from 'fs';
 
+import { IpcInvokeReturn } from 'shared/types/ipc';
 import { IpcChannels, SetStoreValuePayload } from '../shared/types';
 import {
   replyFailure,
-  replyInvokeFailure,
   replySuccess,
+  returnIpcInvokeError,
 } from '../shared/utils/ipc';
 import MainWindow from './mainWindow';
 import Store from './store';
@@ -18,56 +19,79 @@ import Store from './store';
 ipcMain.on(IpcChannels.closeApp, () => {
   try {
     MainWindow.close();
-    // setTimeout(() => {
-    //   event.reply(getSuccessChannel(IpcChannels.closeApp));
-    // }, 1000);
   } catch (error: any) {
     console.log('Failed to close app', error);
-    // setTimeout(() => {
-    //   event.reply(getFailChannel(IpcChannels.closeApp), error.toString());
-    // }, 1000);
+    setTimeout(() => {
+      dialog.showMessageBox({
+        type: 'error',
+        title: 'Failed to close app',
+        message: `${error.toString()}`,
+        detail: error.toString(),
+      });
+    }, 1000);
   }
 });
 
 ipcMain.on(IpcChannels.minimizeApp, () => {
   try {
     MainWindow.minimize();
-    // setTimeout(() => {
-    //   event.reply(getSuccessChannel(IpcChannels.minimizeApp));
-    // }, 1000);
   } catch (error: any) {
     console.log('Failed to minimize app', error);
-    // setTimeout(() => {
-    //   event.reply(getFailChannel(IpcChannels.minimizeApp), error.toString());
-    // }, 1000);
+    setTimeout(() => {
+      dialog.showMessageBox({
+        type: 'error',
+        title: 'Failed to minimize app',
+        message: `${error.toString()}`,
+        detail: error.toString(),
+      });
+    }, 1000);
   }
 });
 
 ipcMain.on(IpcChannels.maximizeApp, () => {
   try {
     MainWindow.maximize();
-    // setTimeout(() => {
-    //   event.reply(getSuccessChannel(IpcChannels.maximizeApp));
-    // }, 1000);
   } catch (error: any) {
     console.log('Failed to maximize app', error);
-    // setTimeout(() => {
-    //   event.reply(getFailChannel(IpcChannels.maximizeApp), error.toString());
-    // }, 1000);
+    setTimeout(() => {
+      dialog.showMessageBox({
+        type: 'error',
+        title: 'Failed to maximize app',
+        message: `${error.toString()}`,
+        detail: error.toString(),
+      });
+    }, 1000);
   }
 });
 
-ipcMain.on(IpcChannels.restartApp, (event) => {
+ipcMain.on(IpcChannels.restartApp, () => {
   try {
-    console.log('Trying to restart app');
     MainWindow.getWebContents()?.reloadIgnoringCache();
-    setTimeout(() => {
-      replySuccess(event, IpcChannels.restartApp);
-    }, 1000);
   } catch (error: any) {
     console.log('Failed to restart app', error);
     setTimeout(() => {
-      replyFailure(event, IpcChannels.restartApp, error.toString());
+      dialog.showMessageBox({
+        type: 'error',
+        title: 'Failed to restart app',
+        message: `${error.toString()}`,
+        detail: error.toString(),
+      });
+    }, 1000);
+  }
+});
+
+ipcMain.on(IpcChannels.toggleDevTools, () => {
+  try {
+    MainWindow.getWebContents()?.toggleDevTools();
+  } catch (error: any) {
+    console.log('Failed to toggle dev tools', error);
+    setTimeout(() => {
+      dialog.showMessageBox({
+        type: 'error',
+        title: 'Failed to toggle dev tools',
+        message: `${error.toString()}`,
+        detail: error.toString(),
+      });
     }, 1000);
   }
 });
@@ -154,7 +178,7 @@ ipcMain.on(IpcChannels.loadStoreData, (event) => {
 
 ipcMain.on(
   IpcChannels.setStoreValue,
-  (event, { key, state }: SetStoreValuePayload) => {
+  (event, { key, state }: SetStoreValuePayload): void => {
     try {
       Store.set(key, state);
       replySuccess(
@@ -177,23 +201,23 @@ ipcMain.on(
 
 ipcMain.handle(
   IpcChannels.setStoreValue,
-  (
-    event,
-    { key, state }: SetStoreValuePayload,
-  ): { msg: string; payload: any | any[] } => {
+  (event, { key, state }: SetStoreValuePayload): IpcInvokeReturn => {
     try {
-      Store.set(key, state);
-
       // replyInvokeSuccess(
       //   event,
       //   IpcChannels.setStoreValue,
       //   'Successfully changed electron store value and redux value',
       // );
-      return { msg: 'Successfully updated store', payload: state };
-    } catch (error: any) {
-      console.log(`Failed to set Store of key ${key}`, error);
-      replyInvokeFailure(event, IpcChannels.setStoreValue, error.toString());
-      return { msg: 'Failed to updated store', payload: error.toString() };
+
+      Store.set(key, state);
+      return {
+        success: true,
+        msg: 'Successfully updated store',
+        payload: state,
+      };
+    } catch (error: unknown) {
+      // replyInvokeFailure(event, IpcChannels.setStoreValue, error.toString());
+      return returnIpcInvokeError(error);
     }
   },
 );

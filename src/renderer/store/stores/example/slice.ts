@@ -1,8 +1,6 @@
-/* eslint-disable default-param-last */
-
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IpcChannels, SetStoreValuePayload } from 'shared/types';
-// import { RootState } from 'types/store';
+import { IpcInvokeReturn } from 'shared/types/ipc';
 
 const initialState: { exampleVisibility: boolean } = {
   exampleVisibility: false,
@@ -17,9 +15,9 @@ const formatState = (state: any) =>
 export const toggleWithNoficiationExampleVisibility = createAsyncThunk(
   'example/toggleWithNoficiationExampleVisibility',
   async (
-    payload: { showBye?: boolean } | null = null,
+    payload: { showBye?: boolean } | null,
     { getState },
-  ): Promise<{ success: boolean; msg: string; payload: any } | undefined> => {
+  ): Promise<IpcInvokeReturn> => {
     const { example } = getState() as {
       example: typeof initialState;
     };
@@ -35,7 +33,7 @@ export const toggleWithNoficiationExampleVisibility = createAsyncThunk(
       },
     );
 
-    return res.success === true || res.success === false ? res : undefined;
+    return res;
   },
   // {
   //   prepare: (showBye?: boolean) => {
@@ -73,8 +71,9 @@ export const exampleSlice = createSlice({
     builder.addCase(
       toggleWithNoficiationExampleVisibility.fulfilled,
       (state, action) => {
-        if (action.payload !== undefined)
+        if (action.payload !== undefined && action.payload.success) {
           state.exampleVisibility = action.payload.payload;
+        }
       },
     );
   },

@@ -16,4 +16,8 @@ const maximizeApp = () => {
   window.electron.ipc.send(IpcChannels.maximizeApp);
 };
 
-export { restartApp, closeApp, minimizeApp, maximizeApp };
+const toggleDevTools = () => {
+  window.electron.ipc.send(IpcChannels.toggleDevTools);
+};
+
+export { restartApp, closeApp, minimizeApp, maximizeApp, toggleDevTools };

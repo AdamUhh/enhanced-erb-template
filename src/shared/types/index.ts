@@ -1,7 +1,7 @@
 import { Bounds } from './bounds';
 import { GenericFunction, GenericVoidFunction } from './generic';
 import { I_IpcApi, IpcChannels, SetStoreValuePayload } from './ipc';
-import { LocalElectronStore } from './localElectronStore';
+import { CoreElectronStore } from './localElectronStore';
 import { I_ElectronApi } from './window';
 
 export type {
@@ -10,7 +10,7 @@ export type {
   GenericFunction,
   GenericVoidFunction,
   I_IpcApi,
-  LocalElectronStore,
+  CoreElectronStore as LocalElectronStore,
   SetStoreValuePayload,
 };
 

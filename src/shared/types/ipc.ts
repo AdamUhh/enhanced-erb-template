@@ -1,25 +1,38 @@
 import { GenericFunction } from './generic';
-import { LocalElectronStore } from './localElectronStore';
+import { CoreElectronStore } from './localElectronStore';
 
 type SetStoreValuePayload = {
-  key: keyof LocalElectronStore;
-  state: LocalElectronStore[keyof LocalElectronStore];
+  key: keyof CoreElectronStore;
+  state: CoreElectronStore[keyof CoreElectronStore];
+};
+
+enum IpcChannels {
+  closeApp = 'close-app',
+  minimizeApp = 'minimize-app',
+  maximizeApp = 'maximize-app',
+  restartApp = 'restart-app',
+  clearStore = 'clear-store',
+  toggleDevTools = 'toggle-dev-tools',
+  exportStoreData = 'export-store-data',
+  importStoreData = 'import-store-data',
+  loadStoreData = 'load-store-data',
+  setStoreValue = 'set-store-value',
+  getStoreValue = 'get-store-value',
+}
+
+type IpcInvokeReturn<P extends any = any> = {
+  success: boolean;
+  msg: string;
+  payload?: P;
 };
 
 /**
- * Typesafety payload for ipcChannels
+ * Typesafety: Expected payload input for ipcChannels
  */
 type IpcPayload = {
-  'close-app': any;
-  'minimize-app': any;
-  'maximize-app': any;
-  'restart-app': any;
-  'clear-store': any;
-  'export-store-data': any;
-  'import-store-data': any;
-  'load-store-data': any;
-  'set-store-value': SetStoreValuePayload;
-  'get-store-value': any;
+  [key in IpcChannels]: key extends 'set-store-value'
+    ? SetStoreValuePayload
+    : any;
 };
 
 interface I_IpcApi {
@@ -30,25 +43,12 @@ interface I_IpcApi {
     channel: T,
     payload?: T extends 'set-store-value' ? SetStoreValuePayload : any,
   ): void;
-  invoke<P, T extends keyof IpcPayload = keyof IpcPayload>(
+  invoke<P extends any | any[], T extends keyof IpcPayload = keyof IpcPayload>(
     channel: T,
     payload?: T extends 'set-store-value' ? SetStoreValuePayload : any,
-  ): Promise<{ success: boolean; msg: string; payload: P }>;
-}
-
-enum IpcChannels {
-  closeApp = 'close-app',
-  minimizeApp = 'minimize-app',
-  maximizeApp = 'maximize-app',
-  restartApp = 'restart-app',
-  clearStore = 'clear-store',
-  exportStoreData = 'export-store-data',
-  importStoreData = 'import-store-data',
-  loadStoreData = 'load-store-data',
-  setStoreValue = 'set-store-value',
-  getStoreValue = 'get-store-value',
+  ): Promise<IpcInvokeReturn<P>>;
 }
 
 export { IpcChannels };
 
-export type { I_IpcApi, IpcPayload, SetStoreValuePayload };
+export type { I_IpcApi, IpcPayload, SetStoreValuePayload, IpcInvokeReturn };

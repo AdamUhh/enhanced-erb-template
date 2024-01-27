@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { GenericVoidFunction, IpcChannels } from 'shared/types';
-import { getFailChannel, getSuccessChannel } from 'shared/utils/ipc';
+import { getReplyChannel } from 'shared/utils/ipc';
 import { useIpcEffect } from './utils';
 
 /**
@@ -22,11 +22,12 @@ function useWriteIpc<P = undefined>({
   payload?: P;
   successCallback: GenericVoidFunction;
 }): Function {
-  // ? Attach an IPC effect for handling failure events.
-  useIpcEffect(getFailChannel(channel), failCallback);
-
-  // ? Attach an IPC effect for handling success events.
-  useIpcEffect(getSuccessChannel(channel), successCallback);
+  // ? Attach an IPC effect for handling success/failure events.
+  useIpcEffect({
+    channel: getReplyChannel(channel),
+    successCallback,
+    failCallback,
+  });
 
   // ? Returns a memoized callback function to send a message with payload through IPC.
   return useCallback(

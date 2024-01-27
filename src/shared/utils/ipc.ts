@@ -1,5 +1,6 @@
 import { IpcMainEvent, IpcMainInvokeEvent } from 'electron';
 import { IpcChannels } from 'shared/types';
+import { IpcInvokeReturn } from 'shared/types/ipc';
 
 const getFailChannel = (channel: IpcChannels) => `${channel}-fail`;
 
@@ -51,6 +52,25 @@ const replyInvokeFailure = (
   });
 };
 
+const returnIpcInvokeError = (error: unknown): IpcInvokeReturn => {
+  if (typeof error === 'string')
+    return {
+      success: false,
+      msg: 'Failed to updated store',
+      payload: error,
+    };
+  if (error instanceof Error)
+    return {
+      success: false,
+      msg: 'Failed to updated store',
+      payload: error.message,
+    };
+  return {
+    success: false,
+    msg: 'Failed to updated store',
+  };
+};
+
 export {
   getFailChannel,
   getSuccessChannel,
@@ -59,4 +79,5 @@ export {
   replyFailure,
   replyInvokeSuccess,
   replyInvokeFailure,
+  returnIpcInvokeError,
 };

@@ -1,5 +1,6 @@
 import { ipcRenderer, IpcRendererEvent } from 'electron';
 import { I_IpcApi, IpcChannels } from 'shared/types';
+import { IpcInvokeReturn, IpcPayload } from 'shared/types/ipc';
 import { getReplyChannel } from '../../shared/utils/ipc';
 
 const baseValidChannels: IpcChannels[] = Object.values(IpcChannels);
@@ -77,20 +78,22 @@ const send = <P extends any[]>(channel: string, ...payload: P): void => {
  * @param {string} channel - The IPC channel to send the message to.
  * @param {any} payload - The data to be sent with the message.
  */
-const invoke = <P, T extends any[]>(
-  channel: string,
-  ...payload: T
-): Promise<{ success: boolean; msg: string; payload: P }> => {
-  return new Promise((resolve, reject) => {
+const invoke = <
+  P extends any | any[],
+  T extends keyof IpcPayload = keyof IpcPayload,
+>(
+  channel: T,
+  payload?: T,
+): Promise<IpcInvokeReturn<P>> =>
+  new Promise((resolve, reject) => {
     if (validChannels.includes(channel as IpcChannels)) {
       ipcRenderer
-        .invoke(channel, ...payload)
-        .then((result: { msg: string; payload: P }) =>
-          resolve({ success: true, msg: result.msg, payload: result.payload }),
-        )
-        .catch((error) =>
-          // Handle IPC error appropriately, e.g., log or reject with an error
-          reject({ success: false, msg: 'Error', payload: error.toString() }),
+        .invoke(channel, payload)
+        .then((result: IpcInvokeReturn<P>) => resolve(result))
+        .catch((error: unknown) =>
+          // ? This will basically never get called due to how the system works
+          // ? But ill keep it just in case :P
+          reject({ success: false, errorMsg: 'Error', payload: error }),
         );
     } else {
       // Handle the case when the channel is not valid, e.g., throw an error
@@ -101,7 +104,6 @@ const invoke = <P, T extends any[]>(
       });
     }
   });
-};
 
 export const ipcApi: I_IpcApi = {
   on,

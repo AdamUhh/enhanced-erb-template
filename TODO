@@ -1,29 +1,22 @@
 References for later:
   ☐ `event.reply`: https://www.tabnine.com/code/javascript/functions/electron/IpcMainEvent/reply
 
-Todo:
-  ☐ Perhaps add setLocalAndStateReducer, it seems useful?
-  
-
-
 Some ideas:
-  ☐ Create a file that calls ipc, waits for return, and then calls redux?
-    ☐ This way, we can also handle errors?
   ☐ Shortcuts 
 
 
 Need to be able to:
-  ☐ Toggle Click
-    ☐ with return
-    ☐ with notification
+  ✔ Toggle Click @done(24-01-27 22:48)
+    ✔ with return @done(24-01-27 22:48)
+    ✔ with notification @done(24-01-27 22:48)
   ☐ Shortcut toggle 
     ☐ with return
   
 Things to do:
-  ☐ Change to frameless titlebar and create custom one
-    ☐ Custom titlebar should have:
-      ☐ close, minimize, maximize
-      ☐ logo on left
+  ✔ Change to frameless titlebar and create custom one @done(24-01-27 22:48)
+    ✔ Custom titlebar should have: @done(24-01-27 22:48)
+      ✔ close, minimize, maximize @done(24-01-27 22:48)
+      ✔ logo on left @done(24-01-27 22:48)
       ☐ custom menubars on left (menuregistry)
         ☐ these menubars are defined & built by client side (not electron side accelerators)
           ☐ this means shortcuts run on client side as well
@@ -51,10 +44,10 @@ Things to do:
             ☐ client will attempt to execute the id (in vscode src, find commandService.ts)
             
   ☐ state managed by client, with ipc requests to electron store to save data
-  ☐ example should showcase:
-    ☐ toggle
-    ☐ toggle with notification
-    ☐ toggle with shortcut
-    ☐ toggle with shortcut & notification
-    ☐ success example
-    ☐ fail example
+  ✔ example should showcase: @done(24-01-27 22:49)
+    ✔ toggle @done(24-01-27 22:49)
+    ✔ toggle with notification @done(24-01-27 22:49)
+    ✔ toggle with shortcut @done(24-01-27 22:49)
+    ✔ toggle with shortcut & notification @done(24-01-27 22:49)
+    ✔ success example @done(24-01-27 22:49)
+    ✔ fail example @done(24-01-27 22:49)
