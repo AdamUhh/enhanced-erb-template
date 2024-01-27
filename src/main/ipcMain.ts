@@ -177,7 +177,10 @@ ipcMain.on(
 
 ipcMain.handle(
   IpcChannels.setStoreValue,
-  (event, { key, state }: SetStoreValuePayload) => {
+  (
+    event,
+    { key, state }: SetStoreValuePayload,
+  ): { msg: string; payload: any | any[] } => {
     try {
       Store.set(key, state);
 
@@ -186,11 +189,11 @@ ipcMain.handle(
       //   IpcChannels.setStoreValue,
       //   'Successfully changed electron store value and redux value',
       // );
-      return state;
+      return { msg: 'Successfully updated store', payload: state };
     } catch (error: any) {
       console.log(`Failed to set Store of key ${key}`, error);
       replyInvokeFailure(event, IpcChannels.setStoreValue, error.toString());
-      return error.toString();
+      return { msg: 'Failed to updated store', payload: error.toString() };
     }
   },
 );

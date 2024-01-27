@@ -30,10 +30,10 @@ interface I_IpcApi {
     channel: T,
     payload?: T extends 'set-store-value' ? SetStoreValuePayload : any,
   ): void;
-  invoke<R, T extends keyof IpcPayload = keyof IpcPayload>(
+  invoke<P, T extends keyof IpcPayload = keyof IpcPayload>(
     channel: T,
     payload?: T extends 'set-store-value' ? SetStoreValuePayload : any,
-  ): Promise<{ success: boolean; payload: R }>;
+  ): Promise<{ success: boolean; msg: string; payload: P }>;
 }
 
 enum IpcChannels {

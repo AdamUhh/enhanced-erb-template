@@ -15,20 +15,21 @@ const displayToast = (
   });
 };
 
-const displaySuccessToast = (msg: any) => {
-  let msgStr: string;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const displaySuccessToast = (msg: string, payload?: any) => {
+  // let msgStr: string;
 
-  if (typeof msg === 'string') {
-    msgStr = msg;
-  } else if (msg?.response?.data) {
-    msgStr = JSON.stringify(msg.response.data);
-  } else if (msg?.message) {
-    msgStr = msg.message;
-  } else {
-    msgStr = JSON.stringify(msg);
-  }
+  // if (typeof payload === 'string') {
+  //   msgStr = payload;
+  // } else if (payload?.response?.data) {
+  //   msgStr = JSON.stringify(payload.response.data);
+  // } else if (payload?.message) {
+  //   msgStr = payload.message;
+  // } else {
+  //   msgStr = JSON.stringify(payload);
+  // }
 
-  displayToast(msgStr, ToastType.default);
+  displayToast(msg, ToastType.default);
 };
 
 const displayErrorToast = (error: any) => {

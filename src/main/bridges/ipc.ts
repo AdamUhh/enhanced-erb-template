@@ -77,24 +77,27 @@ const send = <P extends any[]>(channel: string, ...payload: P): void => {
  * @param {string} channel - The IPC channel to send the message to.
  * @param {any} payload - The data to be sent with the message.
  */
-const invoke = <P extends any[], R>(
+const invoke = <P, T extends any[]>(
   channel: string,
-  ...payload: P
-): Promise<{ success: boolean; payload: R }> => {
+  ...payload: T
+): Promise<{ success: boolean; msg: string; payload: P }> => {
   return new Promise((resolve, reject) => {
     if (validChannels.includes(channel as IpcChannels)) {
       ipcRenderer
         .invoke(channel, ...payload)
-        .then((result: R) => resolve({ success: true, payload: result }))
+        .then((result: { msg: string; payload: P }) =>
+          resolve({ success: true, msg: result.msg, payload: result.payload }),
+        )
         .catch((error) =>
           // Handle IPC error appropriately, e.g., log or reject with an error
-          reject({ success: false, payload: error.toString() }),
+          reject({ success: false, msg: 'Error', payload: error.toString() }),
         );
     } else {
       // Handle the case when the channel is not valid, e.g., throw an error
       reject({
         success: false,
-        payload: `Invalid channel: ${channel}`,
+        msg: 'Invalid Channel',
+        payload: channel,
       });
     }
   });

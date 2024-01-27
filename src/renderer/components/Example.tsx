@@ -6,6 +6,7 @@ import {
   toggleExampleVisibility,
   toggleWithNoficiationExampleVisibility,
 } from 'store/example/slice';
+import { dispatchInvoke } from 'utils/dispatch';
 import { displayErrorToast, displaySuccessToast } from 'utils/toast';
 
 export function ExampleToggleButtons() {
@@ -38,11 +39,10 @@ export function ExampleToggleButtons() {
       <Button
         variant="outline"
         onClick={() => {
-          dispatch(
-            toggleWithNoficiationExampleVisibility({ showBye: undefined }),
-          )
-            .then((res) => displaySuccessToast(res.payload))
-            .catch((error) => displayErrorToast(error));
+          dispatchInvoke(
+            dispatch,
+            toggleWithNoficiationExampleVisibility(null),
+          );
         }}
       >
         Toggle with Notification
@@ -50,9 +50,10 @@ export function ExampleToggleButtons() {
       <Button
         variant="outline"
         onClick={() => {
-          dispatch(toggleWithNoficiationExampleVisibility({ showBye: true }))
-            .then((res) => displaySuccessToast(res.payload))
-            .catch((error) => displayErrorToast(error));
+          dispatchInvoke(
+            dispatch,
+            toggleWithNoficiationExampleVisibility({ showBye: true }),
+          );
         }}
       >
         Set to Bye (via payload) with Notification

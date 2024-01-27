@@ -16,7 +16,10 @@ const formatState = (state: any) =>
 
 export const toggleWithNoficiationExampleVisibility = createAsyncThunk(
   'example/toggleWithNoficiationExampleVisibility',
-  async (payload: { showBye?: boolean }, { getState }) => {
+  async (
+    payload: { showBye?: boolean } | null = null,
+    { getState },
+  ): Promise<{ success: boolean; msg: string; payload: any } | undefined> => {
     const { example } = getState() as {
       example: typeof initialState;
     };
@@ -32,7 +35,7 @@ export const toggleWithNoficiationExampleVisibility = createAsyncThunk(
       },
     );
 
-    return res.success ? res.payload : undefined;
+    return res.success === true || res.success === false ? res : undefined;
   },
   // {
   //   prepare: (showBye?: boolean) => {
@@ -71,7 +74,7 @@ export const exampleSlice = createSlice({
       toggleWithNoficiationExampleVisibility.fulfilled,
       (state, action) => {
         if (action.payload !== undefined)
-          state.exampleVisibility = action.payload;
+          state.exampleVisibility = action.payload.payload;
       },
     );
   },

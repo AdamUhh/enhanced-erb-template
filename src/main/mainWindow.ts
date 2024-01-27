@@ -108,7 +108,6 @@ class MainWindow {
       if (MainWindow.exists())
         Store.set('coreWindowBounds', MainWindow.instance!.getBounds());
     });
-
     MainWindow.on('closed', () => {
       MainWindow.set(null);
     });
