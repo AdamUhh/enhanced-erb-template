@@ -9,18 +9,14 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import { app } from 'electron';
+import { PRODUCTION_MODE } from './constants';
 import './ipcMain';
 import MainWindow from './mainWindow';
 
-// ? TODO: Create constants for NODE_ENV states
-if (process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === PRODUCTION_MODE) {
   const sourceMapSupport = require('source-map-support');
   sourceMapSupport.install();
 }
-
-// if (isDevelopment) {
-//   require('electron-debug')();
-// }
 
 /**
  * Add event listeners...

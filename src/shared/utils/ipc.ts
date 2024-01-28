@@ -52,22 +52,26 @@ const replyInvokeFailure = (
   });
 };
 
-const returnIpcInvokeError = (error: unknown): IpcInvokeReturn => {
-  if (typeof error === 'string')
-    return {
-      success: false,
-      msg: 'Failed to updated store',
-      payload: error,
-    };
-  if (error instanceof Error)
-    return {
-      success: false,
-      msg: 'Failed to updated store',
-      payload: error.message,
-    };
+const returnIpcInvokeError = (
+  error: any,
+  msg: string = 'Failed to update store',
+): IpcInvokeReturn => {
+  let errorStr: string = '';
+
+  if (typeof error === 'string') {
+    errorStr = error;
+  } else if (error?.response?.data) {
+    errorStr = JSON.stringify(error.response.data);
+  } else if (error?.message || error instanceof Error) {
+    errorStr = error.message;
+  } else {
+    errorStr = JSON.stringify(error);
+  }
+
   return {
     success: false,
-    msg: 'Failed to updated store',
+    msg,
+    ...(errorStr && { payload: errorStr }),
   };
 };
 

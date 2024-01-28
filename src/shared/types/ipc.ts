@@ -1,5 +1,5 @@
 import { GenericFunction } from './generic';
-import { CoreElectronStore } from './localElectronStore';
+import { CoreElectronStore } from './coreElectronStore';
 
 type SetStoreValuePayload = {
   key: keyof CoreElectronStore;
