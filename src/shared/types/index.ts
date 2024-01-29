@@ -7,6 +7,7 @@ import {
   IpcPayload,
   IpcInvokeReturn,
 } from './ipc';
+import { ShortcutKeybindingsAliases, ShortcutKeybindings } from './keybindings';
 import { CoreElectronStore } from './coreElectronStore';
 import { I_ElectronApi } from './window';
 
@@ -22,4 +23,4 @@ export type {
   SetStoreValuePayload,
 };
 
-export { IpcChannels };
+export { IpcChannels, ShortcutKeybindingsAliases, ShortcutKeybindings };

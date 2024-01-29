@@ -12,7 +12,7 @@ const formatState = (state: any) =>
     state,
   }) as SetStoreValuePayload;
 
-export const toggleWithNoficiationExampleVisibility = createAsyncThunk(
+export const toggleWithNotificationExampleVisibility = createAsyncThunk(
   'example/toggleWithNoficiationExampleVisibility',
   async (
     payload: { showBye?: boolean } | null,
@@ -69,7 +69,7 @@ export const exampleSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(
-      toggleWithNoficiationExampleVisibility.fulfilled,
+      toggleWithNotificationExampleVisibility.fulfilled,
       (state, action) => {
         if (action.payload !== undefined && action.payload.success) {
           state.exampleVisibility = action.payload.payload;
