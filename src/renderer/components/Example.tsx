@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from 'hooks/store';
-import { useShortcutRegisterEffect } from 'hooks/useShortcut';
+import { useShortcutRegisterEffect } from 'hooks/useShortcutRegisterEffect';
 import { Button } from 'shadcn/components/ui/button';
 import { ShortcutKeybindingsAliases } from 'shared/types';
 import { selectExampleVisibility } from 'store/example/selectors';
@@ -8,8 +8,9 @@ import {
   toggleExampleVisibility,
   toggleWithNotificationExampleVisibility,
 } from 'store/example/slice';
-import { dispatchInvoke } from 'utils/dispatch';
+import { dispatchInvokeWithNotif } from 'utils/dispatch';
 import { displayErrorToast, displaySuccessToast } from 'utils/toast';
+import ShortcutSettings from './Shortcuts';
 
 export function ExampleToggleButtons() {
   const dispatch = useAppDispatch();
@@ -22,12 +23,15 @@ export function ExampleToggleButtons() {
     {
       id: ShortcutKeybindingsAliases.toggleWithNotification,
       action: () =>
-        dispatchInvoke(dispatch, toggleWithNotificationExampleVisibility(null)),
+        dispatchInvokeWithNotif(
+          dispatch,
+          toggleWithNotificationExampleVisibility(null),
+        ),
     },
     {
       id: ShortcutKeybindingsAliases.toggleWithByeNotification,
       action: () =>
-        dispatchInvoke(
+        dispatchInvokeWithNotif(
           dispatch,
           toggleWithNotificationExampleVisibility({ showBye: true }),
         ),
@@ -55,7 +59,7 @@ export function ExampleToggleButtons() {
       <Button
         variant="outline"
         onClick={() => {
-          dispatchInvoke(
+          dispatchInvokeWithNotif(
             dispatch,
             toggleWithNotificationExampleVisibility(null),
           );
@@ -66,7 +70,7 @@ export function ExampleToggleButtons() {
       <Button
         variant="outline"
         onClick={() => {
-          dispatchInvoke(
+          dispatchInvokeWithNotif(
             dispatch,
             toggleWithNotificationExampleVisibility({ showBye: true }),
           );
@@ -102,9 +106,10 @@ export default function Example() {
   const exampleVisibility = useAppSelector(selectExampleVisibility);
 
   return (
-    <div className="w-screen h-screen flex justify-center items-center flex-col gap-2">
+    <div className="w-screen h-screen max-w-lg mx-auto flex justify-center items-center flex-col gap-2">
       <div>{exampleVisibility ? 'Bye' : 'Hi'}</div>
       <ExampleToggleButtons />
+      <ShortcutSettings />
     </div>
   );
 }

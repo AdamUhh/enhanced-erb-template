@@ -1,7 +1,7 @@
 /* eslint-disable react/function-component-definition */
 // ShortcutContext.tsx
 
-import KeyboardRegister from 'components/KeyboardRegister';
+import KeyboardRegister from 'components/Shortcuts/KeyboardRegister';
 import React, { ReactNode, createContext, useContext, useMemo } from 'react';
 import ShortcutManager from '../../shared/keyboard/shortcutManager';
 

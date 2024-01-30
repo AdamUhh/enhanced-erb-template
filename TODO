@@ -1,25 +1,22 @@
 References for later:
   ☐ `event.reply`: https://www.tabnine.com/code/javascript/functions/electron/IpcMainEvent/reply
 
-Some ideas:
-  ☐ Shortcuts 
-
 
 Need to be able to:
   ✔ Toggle Click @done(24-01-27 22:48)
     ✔ with return @done(24-01-27 22:48)
     ✔ with notification @done(24-01-27 22:48)
-  ☐ Shortcut toggle 
-    ☐ with return
+  ✔ Shortcut toggle @done(24-01-30 13:51)
+    ✔ with return @done(24-01-30 13:51)
   
 Things to do:
   ✔ Change to frameless titlebar and create custom one @done(24-01-27 22:48)
     ✔ Custom titlebar should have: @done(24-01-27 22:48)
       ✔ close, minimize, maximize @done(24-01-27 22:48)
       ✔ logo on left @done(24-01-27 22:48)
-      ☐ custom menubars on left (menuregistry)
-        ☐ these menubars are defined & built by client side (not electron side accelerators)
-          ☐ this means shortcuts run on client side as well
+      ✔ custom menubars on left (menuregistry) @done(24-01-30 13:51)
+        ✔ these menubars are defined & built by client side (not electron side accelerators) @done(24-01-30 13:51)
+          ✔ this means shortcuts run on client side as well @done(24-01-30 13:51)
           ☐ Remember, not all shortcuts will be on the menubar, so they will be separate
             ☐ perhaps combine menubar and keybindings data?
 
