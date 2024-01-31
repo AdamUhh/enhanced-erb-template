@@ -11,7 +11,7 @@ import {
 import {
   Shortcut,
   ShortcutEventListener,
-  ShortcutKeybindings,
+  DefaultShortcutKeybindings,
   ShortcutKeybindingsAliases,
 } from './keybindings';
 import { I_ElectronApi } from './window';
@@ -30,4 +30,4 @@ export type {
   ShortcutEventListener,
 };
 
-export { IpcChannels, ShortcutKeybindings, ShortcutKeybindingsAliases };
+export { IpcChannels, DefaultShortcutKeybindings, ShortcutKeybindingsAliases };

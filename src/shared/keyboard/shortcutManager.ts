@@ -1,8 +1,9 @@
 import {
   Shortcut,
   ShortcutEventListener,
-  ShortcutKeybindings,
+  DefaultShortcutKeybindings,
   ShortcutKeybindingsAliases,
+  IpcChannels,
 } from 'shared/types';
 
 /**
@@ -10,26 +11,52 @@ import {
  * It provides methods to register, unregister, execute, retrieve shortcuts, and emits changes when registering.
  */
 class ShortcutManager {
+  // ? used to relate a shortcut alias to a Shortcut object,
+  // ? containing an action callback, title, description, etc.
   private shortcuts: Map<ShortcutKeybindingsAliases, Shortcut>;
 
-  private keybindings: Record<ShortcutKeybindingsAliases, string>;
+  // ? used to relate a shortcut alias to a sequence of key combinations (shortcut)
+  private keybindings: typeof DefaultShortcutKeybindings;
 
-  private listeners: Map<number, ShortcutEventListener>; // Use Map instead of Set
+  private listeners: Map<number, ShortcutEventListener>;
 
   private listenerIdCounter: number;
 
   private userIsChangingKeybinds: boolean;
 
-  /**
-   * Constructs a new ShortcutManager instance.
-   */
   constructor() {
     this.shortcuts = new Map();
-    this.keybindings = ShortcutKeybindings;
+    this.keybindings = DefaultShortcutKeybindings;
     this.listeners = new Map();
     this.listenerIdCounter = 0;
     this.userIsChangingKeybinds = false;
+
+    this.initializeSavedKeybindings();
   }
+
+  /**
+   * Initializes user shortcuts and replaces any current shortcuts/keybinds
+   */
+  private async initializeSavedKeybindings() {
+    const res = await window.electron.ipc.invoke<
+      {
+        alias: ShortcutKeybindingsAliases;
+        keybind: string;
+      }[]
+    >(IpcChannels.getStoreValue, 'coreUserKeybinds');
+    if (res.success && !!res.payload) {
+      res.payload.forEach(({ alias, keybind }) => {
+        if (this.keybindings[alias]) {
+          this.keybindings[alias].keybind = keybind;
+          const shortcutValues = this.shortcuts.get(alias);
+          if (shortcutValues)
+            this.shortcuts.set(alias, { ...shortcutValues, keybind });
+        }
+      });
+    }
+  }
+
+  // #region Listeners for keyboard register/emits
 
   /**
    * Adds a listener for shortcut events.
@@ -58,6 +85,8 @@ class ShortcutManager {
     this.listeners.forEach((listener) => listener());
   }
 
+  // #endregion Listeners for keyboard register/emits
+
   /**
    * Registers a new keyboard shortcut.
    * @param id - The identifier for the shortcut.
@@ -67,9 +96,15 @@ class ShortcutManager {
     id: ShortcutKeybindingsAliases,
     action: (...args: any[]) => any,
   ) {
-    const key = this.keybindings[id];
-    if (key) {
-      this.shortcuts.set(id, { id, key, action });
+    const keybind = this.keybindings[id];
+    if (keybind) {
+      this.shortcuts.set(id, {
+        id,
+        keybind: keybind.keybind,
+        title: keybind.title,
+        description: keybind.description,
+        action,
+      });
     } else {
       console.error(`Keyboard shortcut not found for ID: ${id}`);
     }
@@ -90,7 +125,7 @@ class ShortcutManager {
   public executeShortcut(keyCombination: string) {
     // Find the matching shortcut
     const matchingShortcut = Array.from(this.shortcuts.values()).find(
-      (shortcut) => shortcut.key === keyCombination,
+      (shortcut) => shortcut.keybind === keyCombination,
     );
 
     // Execute the action if a matching shortcut is found
@@ -105,11 +140,18 @@ class ShortcutManager {
    * @param newKey - The new key combination for the shortcut.
    */
   public changeShortcut(id: ShortcutKeybindingsAliases, newKey: string) {
-    this.keybindings[id] = newKey;
     const shortcut = this.shortcuts.get(id);
     if (shortcut) {
-      shortcut.key = newKey;
-      // Notify Electron about the change if needed
+      shortcut.keybind = newKey;
+      this.keybindings[id] = { ...this.keybindings[id], keybind: newKey };
+
+      window.electron.ipc.invoke(IpcChannels.setStoreValue, {
+        key: 'coreUserKeybinds',
+        state: Object.entries(this.keybindings).map(([key, value]) => ({
+          alias: key as ShortcutKeybindingsAliases,
+          keybind: value.keybind,
+        })),
+      });
     }
   }
 
@@ -121,10 +163,18 @@ class ShortcutManager {
     return Array.from(this.shortcuts.values());
   }
 
+  /**
+   * Used to check if user is currently changing keybindings. if it is,
+   * halt all current shortcuts listeners for
+   * @param _bool - Is the user changing keybinds
+   */
   public setUserIsChangingKeybinds(_bool: boolean = false) {
     this.userIsChangingKeybinds = _bool;
   }
 
+  /**
+   * @returns A boolean on whether the user is currently changing keybinds
+   */
   get getUserIsChangingKeybinds(): boolean {
     return this.userIsChangingKeybinds;
   }

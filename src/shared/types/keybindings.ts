@@ -1,26 +1,44 @@
-// ? TODO: add title, description, order, groupby?, to shortcuts
-// ? TODO: save shortcuts (to system). either use Store, or edit a JSON
-
 enum ShortcutKeybindingsAliases {
   toggleExample = 'toggleExample',
   toggleWithNotification = 'toggleWithNotification',
   toggleWithByeNotification = 'toggleWithByeNotification',
+  toggleDeveloperTools = 'toggleDeveloperTools',
 }
 
-const ShortcutKeybindings: Record<ShortcutKeybindingsAliases, string> = {
-  [ShortcutKeybindingsAliases.toggleExample]: 'Ctrl+Shift+A',
-  [ShortcutKeybindingsAliases.toggleWithNotification]: 'Ctrl+Shift+S',
-  [ShortcutKeybindingsAliases.toggleWithByeNotification]: 'Ctrl+Shift+D',
+const DefaultShortcutKeybindings: Record<
+  ShortcutKeybindingsAliases,
+  { keybind: string; title: string; description?: string }
+> = {
+  [ShortcutKeybindingsAliases.toggleExample]: {
+    keybind: 'Ctrl+Shift+A',
+    title: 'Toggle Example',
+  },
+  [ShortcutKeybindingsAliases.toggleWithNotification]: {
+    keybind: 'Ctrl+Shift+S',
+    title: 'Toggle With Notification',
+  },
+  [ShortcutKeybindingsAliases.toggleWithByeNotification]: {
+    keybind: 'Ctrl+Shift+D',
+    title: 'Toggle With Bye Notification',
+  },
+  [ShortcutKeybindingsAliases.toggleDeveloperTools]: {
+    keybind: 'F12',
+    title: 'Toggle Developer Tools',
+    description:
+      'Shortcut will not work if window is not active/developer tools is active instead',
+  },
 };
 
 interface Shortcut {
   id: ShortcutKeybindingsAliases;
-  key: string;
+  keybind: string;
+  title: string;
+  description?: string;
   action: (...args: any[]) => any;
 }
 
 type ShortcutEventListener = (...args: any[]) => void;
 
-export { ShortcutKeybindingsAliases, ShortcutKeybindings };
+export { ShortcutKeybindingsAliases, DefaultShortcutKeybindings };
 
 export type { Shortcut, ShortcutEventListener };

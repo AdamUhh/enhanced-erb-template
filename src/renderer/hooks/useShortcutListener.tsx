@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react';
 import { Shortcut, ShortcutEventListener } from 'shared/types';
 import { useShortcutManager } from '../context/shortcutContext';
 
+/**
+ * @returns Latest shortcuts and global shortcut context
+ */
 const useShortcutListener = () => {
   const { shortcutManager } = useShortcutManager();
   const [shortcuts, setShortcuts] = useState<Shortcut[]>([]);

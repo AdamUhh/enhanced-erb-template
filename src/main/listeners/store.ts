@@ -9,6 +9,7 @@ import fs from 'fs';
 import {
   IpcChannels,
   IpcInvokeReturn,
+  LocalElectronStore,
   SetStoreValuePayload,
 } from '../../shared/types';
 import {
@@ -17,12 +18,13 @@ import {
   returnIpcInvokeError,
 } from '../../shared/utils/ipc';
 import Store from '../store';
+import MainWindow from '../mainWindow';
 
 export default () => {
   ipcMain.on(IpcChannels.clearStore, (event) => {
     try {
       Store.clear();
-      replySuccess(event, IpcChannels.clearStore);
+      MainWindow.getWebContents()?.reloadIgnoringCache();
     } catch (error: any) {
       console.log('Failed to clear store', error);
       replyFailure(event, IpcChannels.clearStore, error.toString());
@@ -137,6 +139,29 @@ export default () => {
           success: true,
           msg: 'Successfully updated store',
           payload: state,
+        };
+      } catch (error: unknown) {
+        // replyInvokeFailure(event, IpcChannels.setStoreValue, error.toString());
+        return returnIpcInvokeError(error);
+      }
+    },
+  );
+
+  ipcMain.handle(
+    IpcChannels.getStoreValue,
+    (event, key: keyof LocalElectronStore): IpcInvokeReturn => {
+      try {
+        // replyInvokeSuccess(
+        //   event,
+        //   IpcChannels.setStoreValue,
+        //   'Successfully changed electron store value and redux value',
+        // );
+
+        const res = Store.get(key);
+        return {
+          success: true,
+          msg: 'Successfully retrieved store',
+          payload: res,
         };
       } catch (error: unknown) {
         // replyInvokeFailure(event, IpcChannels.setStoreValue, error.toString());

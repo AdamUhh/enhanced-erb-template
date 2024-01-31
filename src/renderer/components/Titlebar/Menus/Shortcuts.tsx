@@ -16,7 +16,7 @@ export default function ShortcutsMenu() {
       <MenubarContent>
         {shortcuts.map((s) => (
           <MenubarItem key={s.id} onClick={s.action}>
-            {s.id} <MenubarShortcut>{s.key}</MenubarShortcut>
+            {s.title} <MenubarShortcut>{s.keybind}</MenubarShortcut>
           </MenubarItem>
         ))}
       </MenubarContent>

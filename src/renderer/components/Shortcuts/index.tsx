@@ -1,4 +1,3 @@
-/* eslint-disable jsx-a11y/no-autofocus */
 import { useShortcutListener } from 'hooks/useShortcutListener';
 import { CheckCircle2Icon, XCircleIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -22,6 +21,7 @@ import {
 import { cn } from 'shadcn/lib/utils';
 import ShortcutManager from 'shared/keyboard/shortcutManager';
 import { Shortcut } from 'shared/types';
+import { generateKeyCombination } from './KeyboardRegister';
 
 function EditShortcut({
   allShortcuts,
@@ -34,13 +34,12 @@ function EditShortcut({
   shortcut: Shortcut;
   handleShortcutEditFinished: () => void;
 }) {
-  const [newKey, setNewKey] = useState(shortcut.key);
-
+  const [newKey, setNewKey] = useState(shortcut.keybind);
   const [keyExists, setKeyExists] = useState(true);
   const [canSave, setCanSave] = useState(false);
 
   const handleSave = () => {
-    if (shortcut.key !== newKey)
+    if (shortcut.keybind !== newKey)
       shortcutManager.changeShortcut(shortcut.id, newKey);
 
     handleShortcutEditFinished();
@@ -48,47 +47,32 @@ function EditShortcut({
 
   useEffect(() => {
     shortcutManager.setUserIsChangingKeybinds(true);
-
     const handleKeyPress = (event: KeyboardEvent) => {
-      const key = event.key.toUpperCase();
-      if (key === 'ENTER' && canSave) {
-        handleSave();
-        return;
-      }
-      const isCtrl = event.ctrlKey;
-      const isShift = event.shiftKey;
-      const isAlt = event.altKey;
-
-      const _newKey = `${isCtrl ? 'Ctrl+' : ''}${isShift ? 'Shift+' : ''}${
-        isAlt ? 'Alt+' : ''
-      }${key}`;
-
-      // Check if the key combination is valid
-      const isValidKeyCombination =
-        (isCtrl || isShift || isAlt) &&
-        /^[a-zA-Z]$/.test(key) && // Ensure the ending key is a letter
-        _newKey; // Check if the new key combination matches any existing shortcut's key combination
+      const { newKey: _newKey, isValidKeyCombination } =
+        generateKeyCombination(event);
 
       // ? does the key already exist/mapped to some other shortcut
-      const hasExistingKey = allShortcuts.some((s) => s.key === _newKey);
+      const hasExistingKey = allShortcuts.some((s) => s.keybind === _newKey);
 
-      if (isValidKeyCombination) {
-        setNewKey(_newKey);
+      setNewKey(_newKey);
 
-        // ? if it does not have an existing key
-        if (!hasExistingKey) {
-          setCanSave(true);
-          setKeyExists(false);
-        } else {
-          // ? key already exists
-          setCanSave(false);
-          setKeyExists(true);
-        }
-      } else {
-        // ? not a valid key combination
-        setCanSave(false);
-        setKeyExists(false);
-      }
+      // if (isValidKeyCombination) {
+      //   // ? if it does not have an existing key
+      //   if (!hasExistingKey) {
+      //     setCanSave(true);
+      //     setKeyExists(false);
+      //   } else {
+      //     // ? key already exists
+      //     setCanSave(false);
+      //     setKeyExists(true);
+      //   }
+      // } else {
+      //   // ? not a valid key combination
+      //   setCanSave(false);
+      //   setKeyExists(false);
+      // }
+      setCanSave(!!(isValidKeyCombination && !hasExistingKey));
+      setKeyExists(!!(hasExistingKey && isValidKeyCombination));
     };
 
     // Add event listener for keypress
@@ -108,7 +92,7 @@ function EditShortcut({
       <div
         className={cn(
           'flex gap-1',
-          keyExists && !canSave && newKey !== shortcut.key && 'my-4',
+          keyExists && !canSave && newKey !== shortcut.keybind && 'my-4',
         )}
       >
         <div className="-ml-3 flex items-center h-8 w-full rounded-md border border-input/60 focus-visible:border-input bg-background px-3 py-2 text-sm ring-offset-background">
@@ -130,10 +114,10 @@ function EditShortcut({
           <XCircleIcon />
         </Button>
       </div>
-      {keyExists && !canSave && newKey !== shortcut.key && (
-        <span className="text-destructive absolute bottom-0 left-4">
+      {keyExists && !canSave && newKey !== shortcut.keybind && (
+        <span className="text-destructive font-semibold absolute bottom-0 left-4">
           Key exists, binded to:{' '}
-          {allShortcuts.find((f) => f.key === newKey)?.id}
+          {allShortcuts.find((f) => f.keybind === newKey)?.id}
         </span>
       )}
     </>
@@ -151,9 +135,6 @@ export default function ShortcutSettings() {
   };
 
   const handleShortcutEditFinished = () => {
-    // setTimeout(() => {
-    //   setSelectedShortcut(null);
-    // }, 100);
     setSelectedShortcut(null);
   };
 
@@ -204,7 +185,7 @@ export default function ShortcutSettings() {
                         handleShortcutEditFinished={handleShortcutEditFinished}
                       />
                     ) : (
-                      s.key
+                      s.keybind
                     )}
                   </TableCell>
                 </TableRow>

@@ -20,4 +20,15 @@ const toggleDevTools = () => {
   window.electron.ipc.send(IpcChannels.toggleDevTools);
 };
 
-export { restartApp, closeApp, minimizeApp, maximizeApp, toggleDevTools };
+const clearStore = () => {
+  window.electron.ipc.send(IpcChannels.clearStore);
+};
+
+export {
+  restartApp,
+  closeApp,
+  minimizeApp,
+  maximizeApp,
+  toggleDevTools,
+  clearStore,
+};

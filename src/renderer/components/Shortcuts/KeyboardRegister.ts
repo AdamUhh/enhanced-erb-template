@@ -1,7 +1,11 @@
 import { useEffect } from 'react';
 import ShortcutManager from 'shared/keyboard/shortcutManager';
 
-export function generateKeyCombination(event: KeyboardEvent): string {
+export function generateKeyCombination(event: KeyboardEvent): {
+  key: string;
+  newKey: string;
+  isValidKeyCombination: boolean;
+} {
   const key = event.key.toUpperCase();
   const isCtrl = event.ctrlKey;
   const isShift = event.shiftKey;
@@ -9,9 +13,20 @@ export function generateKeyCombination(event: KeyboardEvent): string {
 
   const newKey = `${isCtrl ? 'Ctrl+' : ''}${isShift ? 'Shift+' : ''}${
     isAlt ? 'Alt+' : ''
-  }${key}`;
+  }${key
+    .replaceAll('CONTROL', '')
+    .replaceAll('SHIFT', '')
+    .replaceAll('ALT', '')}`;
 
-  return newKey;
+  // Updated regular expression to include F keys without requiring Ctrl/Shift/Alt
+  const isValidKeyCombination =
+    isCtrl ||
+    isShift ||
+    isAlt ||
+    (/^[A-Z0-9]$/.test(key) && (isCtrl || isShift || isAlt)) || // Requires at least one of Ctrl/Shift/Alt for single letters or numbers
+    /^F[1-9]$|^F1[0-2]$/.test(key); // Accepts F1-F12 without requiring Ctrl/Shift/Alt
+
+  return { key, newKey, isValidKeyCombination };
 }
 
 export default function KeyboardRegister({
@@ -23,7 +38,7 @@ export default function KeyboardRegister({
     const handleKeyDown = (event: KeyboardEvent) => {
       if (!shortcutManager.getUserIsChangingKeybinds) {
         const keyCombination = generateKeyCombination(event);
-        shortcutManager.executeShortcut(keyCombination);
+        shortcutManager.executeShortcut(keyCombination.newKey);
       }
     };
 

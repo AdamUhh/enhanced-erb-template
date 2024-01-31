@@ -102,12 +102,16 @@ export function ExampleToggleButtons() {
   );
 }
 
-export default function Example() {
+function ExampleContainer() {
   const exampleVisibility = useAppSelector(selectExampleVisibility);
 
+  return <h3 className="text-xl">{exampleVisibility ? 'Bye' : 'Hi'}</h3>;
+}
+
+export default function Example() {
   return (
     <div className="w-screen h-screen max-w-lg mx-auto flex justify-center items-center flex-col gap-2">
-      <div>{exampleVisibility ? 'Bye' : 'Hi'}</div>
+      <ExampleContainer />
       <ExampleToggleButtons />
       <ShortcutSettings />
     </div>
