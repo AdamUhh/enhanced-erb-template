@@ -2,7 +2,7 @@ References for later:
   ☐ `event.reply`: https://www.tabnine.com/code/javascript/functions/electron/IpcMainEvent/reply
 
 Things to do:
-  ☐ Auto app updates
+  ✔ Auto app updates @done(24-02-01 18:59)
 
   ✔ menubar is for appearances, and needs metadata: @done(24-01-31 20:59)
       ✔ id @done(24-01-31 20:59)

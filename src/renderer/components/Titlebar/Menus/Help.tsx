@@ -7,7 +7,8 @@ import {
   MenubarTrigger,
 } from 'shadcn/components/ui/custom/menubar';
 import { ShortcutKeybindingsAliases } from 'shared/types';
-import { clearStore, toggleDevTools } from 'utils/ipc';
+import { isDevelopment } from 'shared/utils/environment';
+import { checkForupdates, clearStore, toggleDevTools } from 'utils/ipc';
 
 export default function HelpMenu() {
   useShortcutRegisterEffect({
@@ -23,6 +24,9 @@ export default function HelpMenu() {
           Toggle Developer Tools <MenubarShortcut>F12</MenubarShortcut>
         </MenubarItem>
         <MenubarItem onClick={clearStore}>Clear Store</MenubarItem>
+        {!isDevelopment && (
+          <MenubarItem onClick={checkForupdates}>Check for updates</MenubarItem>
+        )}
       </MenubarContent>
     </MenubarMenu>
   );

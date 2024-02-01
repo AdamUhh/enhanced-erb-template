@@ -12,6 +12,7 @@ enum IpcChannels {
   maximizeApp = 'maximize-app',
   restartApp = 'restart-app',
   clearStore = 'clear-store',
+  checkForUpdates = 'check-for-updates',
   toggleDevTools = 'toggle-dev-tools',
   exportStoreData = 'export-store-data',
   importStoreData = 'import-store-data',

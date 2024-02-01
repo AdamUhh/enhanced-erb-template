@@ -24,6 +24,10 @@ const clearStore = () => {
   window.electron.ipc.send(IpcChannels.clearStore);
 };
 
+const checkForupdates = () => {
+  window.electron.ipc.send(IpcChannels.checkForUpdates);
+};
+
 export {
   restartApp,
   closeApp,
@@ -31,4 +35,5 @@ export {
   maximizeApp,
   toggleDevTools,
   clearStore,
+  checkForupdates,
 };

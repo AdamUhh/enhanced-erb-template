@@ -9,11 +9,11 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import { app } from 'electron';
-import { PRODUCTION_MODE } from './constants';
+import { isDevelopment } from '../shared/utils/environment';
 import './ipcMain';
 import MainWindow from './mainWindow';
 
-if (process.env.NODE_ENV === PRODUCTION_MODE) {
+if (!isDevelopment) {
   const sourceMapSupport = require('source-map-support');
   sourceMapSupport.install();
 }

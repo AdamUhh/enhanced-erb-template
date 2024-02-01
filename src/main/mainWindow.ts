@@ -11,10 +11,10 @@ import {
 import path from 'path';
 
 import { GenericVoidFunction } from '../shared/types';
-import { AppUpdater } from './appupdater';
-import { DEVELOPMENT_MODE } from './constants';
+import { isDevelopment } from '../shared/utils/environment';
 import Store from './store';
 import { resolveHtmlPath } from './util';
+import ApplicationUpdater from './appupdater';
 
 type OnEventType = 'closed' | 'ready-to-show' | 'close' | 'resize';
 
@@ -84,12 +84,9 @@ class MainWindow {
       return { action: 'deny' };
     });
 
-    if (process.env.NODE_ENV === DEVELOPMENT_MODE)
-      MainWindow.getWebContents()?.openDevTools();
+    if (isDevelopment) MainWindow.getWebContents()?.openDevTools();
 
-    // Remove this if your app does not use auto updates
-    // eslint-disable-next-line
-    new AppUpdater();
+    if (!isDevelopment) ApplicationUpdater.initializeAppUpdater();
   }
 
   /**

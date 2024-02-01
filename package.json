@@ -20,6 +20,10 @@
     "lint": "cross-env NODE_ENV=development eslint . --ext .js,.jsx,.ts,.tsx",
     "package": "ts-node ./.erb/scripts/clean.js dist && npm run build && electron-builder build --publish never && npm run build:dll",
     "package-publish": "ts-node ./.erb/scripts/clean.js dist && npm run build && electron-builder build --publish always && npm run build:dll",
+    "package-publish:mac": "ts-node ./.erb/scripts/clean.js dist && npm run build && electron-builder --mac --publish always && npm run build:dll",
+    "package-publish:win": "ts-node ./.erb/scripts/clean.js dist && npm run build && electron-builder --win --publish always && npm run build:dll",
+    "package-publish:linux": "ts-node ./.erb/scripts/clean.js dist && npm run build && electron-builder --linux --publish always && npm run build:dll",
+    "package-publish:all": "ts-node ./.erb/scripts/clean.js dist && npm run build && electron-builder -mwl --publish always && npm run build:dll",
     "rebuild": "electron-rebuild --parallel --types prod,dev,optional --module-dir release/app",
     "start": "ts-node ./.erb/scripts/check-port-in-use.js && npm run start:renderer",
     "start:main": "cross-env NODE_ENV=development electronmon -r ts-node/register/transpile-only .",
@@ -90,6 +94,7 @@
     "electron-log": "^4.4.8",
     "electron-store": "^8.1.0",
     "electron-updater": "^6.1.4",
+    "jsdom": "^24.0.0",
     "lucide-react": "^0.289.0",
     "postcss": "^8.4.31",
     "postcss-loader": "^7.3.3",
@@ -172,21 +177,24 @@
     "webpack-dev-server": "^4.15.1",
     "webpack-merge": "^5.9.0"
   },
-  "author": "AdamUhh",
-  "version": "0.0.12",
+  "author": {
+    "name": "AdamUhh",
+    "email": "adamuhh.dev@gmail.com",
+    "url": "https://github.com/adamuhh"
+  },
   "description": "An enhanced foundation for scalable desktop apps",
+  "license": "MIT",
   "homepage": "https://github.com/AdamUhh/enhanced-erb-template",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AdamUhh/enhanced-erb-template.git"
   },
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/AdamUhh/enhanced-erb-template/issues"
   },
   "build": {
-    "appId": "adamuhh.EnhancedErbTemplate",
-    "productName": "EnhancedErbTemplate",
+    "productName": "Enhanced Erb Template",
+    "appId": "dev.adamuhh.EnhancedErbTemplate",
     "asar": true,
     "asarUnpack": "**\\*.{node,dll}",
     "files": [
@@ -246,7 +254,7 @@
       "provider": "github",
       "owner": "adamuhh",
       "repo": "enhanced-erb-template",
-      "releaseType": "prerelease"
+      "releaseType": "release"
     }
   },
   "devEngines": {

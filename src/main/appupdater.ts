@@ -1,30 +1,20 @@
-import { autoUpdater } from 'electron-updater';
-import log from 'electron-log';
 import { dialog } from 'electron';
+import log from 'electron-log';
+import { autoUpdater } from 'electron-updater';
+import { JSDOM } from 'jsdom';
 
-// class AppUpdater {
-//   constructor() {
-//     autoUpdater.logger = log;
-//     log.transports.file.level = 'debug';
-//     autoUpdater.checkForUpdatesAndNotify();
-
-//     autoUpdater.autoDownload = false;
-//     autoUpdater.autoInstallOnAppQuit = true;
-//   }
-// }
-
-class AppUpdater {
-  constructor() {
+class ApplicationUpdater {
+  public static initializeAppUpdater() {
     autoUpdater.logger = log;
-    log.transports.file.level = 'debug';
+    log.transports.file.level = 'info';
 
-    autoUpdater.on('update-available', () => {
-      dialog.showMessageBox({
-        type: 'info',
-        message: 'Update available. Downloading...',
-      });
-    });
+    autoUpdater.autoInstallOnAppQuit = false;
+    autoUpdater.fullChangelog = true;
 
+    autoUpdater.on('update-available', () => log.info('update-available'));
+    autoUpdater.on('update-not-available', () =>
+      log.info('update-not-available'),
+    );
     autoUpdater.on('error', (err) => {
       dialog.showErrorBox(
         'Error in auto-updater',
@@ -32,29 +22,58 @@ class AppUpdater {
       );
     });
 
-    autoUpdater.on('update-downloaded', async () => {
-      /** response - The index of the clicked button */
-      const response = await dialog.showMessageBox({
-        type: 'question',
-        buttons: ['Install and Relaunch', 'Auto-Install when I close the app'],
-        defaultId: 0,
-        message: 'Update downloaded. Install now and restart?',
-      });
+    autoUpdater.on(
+      'update-downloaded',
+      async ({ releaseName, releaseNotes }) => {
+        let formattedReleaseNotes = '';
 
-      if ((response as unknown as number) === 0) {
-        autoUpdater.quitAndInstall();
-      }
-    });
+        if (Array.isArray(releaseNotes)) {
+          // If releaseNotes is an array, iterate over each item and extract text content
+          formattedReleaseNotes = releaseNotes
+            .map((r) => {
+              if (r.note) {
+                const dom = new JSDOM(r.note);
+                return dom.window.document.body.textContent || '';
+              }
+              return '';
+            })
+            .join('\n');
+        } else if (typeof releaseNotes === 'string') {
+          // If releaseNotes is a string, extract text content
+          const dom = new JSDOM(releaseNotes);
+          formattedReleaseNotes = dom.window.document.body.textContent || '';
+        }
 
-    // Check for updates
+        // Show the message box with formatted release notes
+        dialog
+          .showMessageBox({
+            title: 'Update Available',
+            type: 'question',
+            detail: `${releaseName || ''}\n${formattedReleaseNotes || ''}`,
+            message: 'Update available. Install now and restart?',
+            buttons: ['Install and Relaunch', 'Later'],
+            defaultId: 0,
+            cancelId: 1,
+          })
+          .then((result) => {
+            // eslint-disable-next-line promise/always-return
+            if (result.response === 0) autoUpdater.quitAndInstall();
+          })
+          .catch((error) => {
+            log.info(error);
+          });
+      },
+    );
+
     autoUpdater.checkForUpdates();
   }
 
-  checkForUpdates() {
+  /**
+   * User manually checks for an update
+   */
+  public static checkForUpdates() {
     autoUpdater.checkForUpdates();
   }
 }
 
-export default AppUpdater;
-
-export { AppUpdater };
+export default ApplicationUpdater;
