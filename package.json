@@ -182,19 +182,19 @@
     "email": "adamuhh.dev@gmail.com",
     "url": "https://github.com/adamuhh"
   },
-  "description": "A VSCode like Todo App",
+  "description": "An enhanced foundation for scalable desktop apps",
   "license": "MIT",
-  "homepage": "https://github.com/AdamUhh/VSTL",
+  "homepage": "https://github.com/AdamUhh/enhanced-erb-template",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/AdamUhh/VSTL.git"
+    "url": "git+https://github.com/AdamUhh/enhanced-erb-template.git"
   },
   "bugs": {
-    "url": "https://github.com/AdamUhh/VSTL/issues"
+    "url": "https://github.com/AdamUhh/enhanced-erb-template/issues"
   },
   "build": {
-    "productName": "VSTL",
-    "appId": "dev.adamuhh.VSTL",
+    "productName": "Enhanced Erb Template",
+    "appId": "dev.adamuhh.EnhancedErbTemplate",
     "asar": true,
     "asarUnpack": "**\\*.{node,dll}",
     "files": [
@@ -253,7 +253,7 @@
     "publish": {
       "provider": "github",
       "owner": "adamuhh",
-      "repo": "VSTL",
+      "repo": "enhanced-erb-template",
       "releaseType": "release"
     }
   },
