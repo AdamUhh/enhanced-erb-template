@@ -1,8 +1,13 @@
 # Enhanced ERB Template
 
-This template was created to make it easier and faster to create applications with essential features like shortcuts that can actually be used by the application, for both user macros and menubar shortcuts (I'm looking at you, accelerator -.-).
+This template was created to make it easier and faster to create applications with essential features like an automatic app updater or shortcuts that can actually be used by the application, for both user macros and menubar shortcuts (I'm looking at you, accelerator -.-).
 
 It also follows an app architecture that allows for multiple apps within one Electron application, though it may take some time to get used to.
+
+## The Template
+
+![The Template](<https://i.imgur.com/hF5N0e1.gif>
+ "The Template")
 
 ## Install
 
@@ -87,11 +92,12 @@ GH_TOKEN=YOUR-GITHUB-TOKEN-HERE npm run package-publish
 ## References
 
 - Installing Tailwind
-  - First, Docs: <https://electron-react-boilerplate.js.org/docs/styling>
-  - Then, <https://github.com/electron-react-boilerplate/electron-react-boilerplate/issues/3084>
+  - First, [Docs](https://electron-react-boilerplate.js.org/docs/styling)
+  - Then, this [Issue](https://github.com/electron-react-boilerplate/electron-react-boilerplate/issues/3084)
 
-- Installing shadcn/ui
-  - Just follow this <https://ui.shadcn.com/docs/installation/manual>
+- Installing [shadcn/ui](https://ui.shadcn.com/docs/installation/manual)
+
+- View [Logs](https://www.npmjs.com/package/electron-log)
   
 ## Contributions
 

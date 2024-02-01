@@ -1,26 +1,9 @@
 import { ipcRenderer, IpcRendererEvent } from 'electron';
 import { I_IpcApi, IpcChannels } from 'shared/types';
 import { IpcInvokeReturn, IpcPayload } from 'shared/types/ipc';
-import { getReplyChannel } from '../../shared/utils/ipc';
+import { getReplyChannel } from '../util/ipc';
 
 const baseValidChannels: IpcChannels[] = Object.values(IpcChannels);
-// [
-// IpcChannels.closeApp,
-// IpcChannels.restartApp,
-// IpcChannels.clearStore,
-// IpcChannels.exportStoreData,
-// IpcChannels.importStoreData,
-// IpcChannels.loadStoreData,
-// IpcChannels.setStoreValue,
-// IpcChannels.getStoreValue,
-// ];
-// const failValidChannels = baseValidChannels.map(getFailChannel);
-// const successValidChannels = baseValidChannels.map(getSuccessChannel);
-// const validChannels = [
-//   ...baseValidChannels,
-//   ...failValidChannels,
-//   ...successValidChannels,
-// ];
 const replyValidChannels = baseValidChannels.map(getReplyChannel);
 const validChannels = [...baseValidChannels, ...replyValidChannels];
 

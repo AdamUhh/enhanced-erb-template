@@ -2,15 +2,15 @@ import { useAppDispatch, useAppSelector } from 'hooks/store';
 import { useShortcutRegisterEffect } from 'hooks/useShortcutRegisterEffect';
 import { Button } from 'shadcn/components/ui/button';
 import { ShortcutKeybindingsAliases } from 'shared/types';
-import { selectExampleVisibility } from 'store/example/selectors';
+import { selectExampleVisibility } from 'store/exampleStore/selectors';
 import {
   setExampleVisibility,
   toggleExampleVisibility,
   toggleWithNotificationExampleVisibility,
-} from 'store/example/slice';
+} from 'store/exampleStore/slice';
 import { dispatchInvokeWithNotif } from 'utils/dispatch';
 import { displayErrorToast, displaySuccessToast } from 'utils/toast';
-import ShortcutSettings from './Shortcuts';
+import ShortcutSettings from './ShortcutSettings';
 
 export function ExampleToggleButtons() {
   const dispatch = useAppDispatch();

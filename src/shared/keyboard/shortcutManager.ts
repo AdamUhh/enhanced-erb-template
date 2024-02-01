@@ -1,10 +1,11 @@
 import {
-  Shortcut,
-  ShortcutEventListener,
-  DefaultShortcutKeybindings,
-  ShortcutKeybindingsAliases,
+  GenericFunction,
+  GenericVoidFunction,
   IpcChannels,
+  Shortcut,
 } from 'shared/types';
+import { DefaultShortcutKeybindings } from './defaultKeybindings';
+import { ShortcutKeybindingsAliases } from './keybindingAliases';
 
 /**
  * ShortcutManager class manages keyboard shortcuts.
@@ -21,7 +22,7 @@ class ShortcutManager {
   /** used to relate a shortcut alias to a sequence of key combinations (shortcut) */
   private keybindings: typeof DefaultShortcutKeybindings;
 
-  private listeners: Map<number, ShortcutEventListener>;
+  private listeners: Map<number, GenericVoidFunction>;
 
   private listenerIdCounter: number;
 
@@ -69,7 +70,7 @@ class ShortcutManager {
    * @param listener - The function to be called when a shortcut event occurs.
    * @returns The listener ID.
    */
-  public addListener(listener: ShortcutEventListener): number {
+  public addListener(listener: GenericVoidFunction): number {
     const listenerId = ++this.listenerIdCounter;
     this.listeners.set(listenerId, listener);
     this.emitEvent();
@@ -100,7 +101,7 @@ class ShortcutManager {
    */
   public registerShortcut(
     id: ShortcutKeybindingsAliases,
-    action: (...args: any[]) => any,
+    action: GenericFunction,
   ) {
     const keybind = this.keybindings[id];
     if (keybind) {

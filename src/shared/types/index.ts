@@ -1,4 +1,5 @@
-import { Bounds } from './bounds';
+import { DefaultShortcutKeybindings } from '../keyboard/defaultKeybindings';
+import { ShortcutKeybindingsAliases } from '../keyboard/keybindingAliases';
 import { CoreElectronStore } from './coreElectronStore';
 import { GenericFunction, GenericVoidFunction } from './generic';
 import {
@@ -8,26 +9,19 @@ import {
   IpcPayload,
   SetStoreValuePayload,
 } from './ipc';
-import {
-  Shortcut,
-  ShortcutEventListener,
-  DefaultShortcutKeybindings,
-  ShortcutKeybindingsAliases,
-} from './keybindings';
+import { Shortcut } from './keybindings';
 import { I_ElectronApi } from './window';
 
 export type {
-  Bounds,
   GenericFunction,
   GenericVoidFunction,
   I_ElectronApi,
   I_IpcApi,
   IpcInvokeReturn,
   IpcPayload,
-  CoreElectronStore as LocalElectronStore,
+  CoreElectronStore,
   SetStoreValuePayload,
   Shortcut,
-  ShortcutEventListener,
 };
 
-export { IpcChannels, DefaultShortcutKeybindings, ShortcutKeybindingsAliases };
+export { DefaultShortcutKeybindings, IpcChannels, ShortcutKeybindingsAliases };

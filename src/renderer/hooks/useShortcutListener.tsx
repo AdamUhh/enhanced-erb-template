@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Shortcut, ShortcutEventListener } from 'shared/types';
+import { GenericVoidFunction, Shortcut } from 'shared/types';
 import { useShortcutManager } from '../context/shortcutContext';
 
 /**
@@ -10,7 +10,7 @@ const useShortcutListener = () => {
   const [shortcuts, setShortcuts] = useState<Shortcut[]>([]);
 
   useEffect(() => {
-    const handleShortcutChange: ShortcutEventListener = () => {
+    const handleShortcutChange: GenericVoidFunction = () => {
       const sc = shortcutManager.getShortcuts;
       setShortcuts(sc);
     };

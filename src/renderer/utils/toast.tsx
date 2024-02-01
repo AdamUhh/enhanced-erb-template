@@ -7,32 +7,44 @@ enum ToastType {
 
 const displayToast = (
   description: string,
+  payload: string | null,
   type: ToastType = ToastType.default,
 ): void => {
+  if (payload !== null) {
+    toast({
+      variant: type,
+      title: description,
+      description: payload,
+    });
+    return;
+  }
   toast({
     variant: type,
     description,
   });
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const displaySuccessToast = (msg: string, payload?: any) => {
-  // let msgStr: string;
+const displaySuccessToast = (msg: string, payload?: any | null) => {
+  if (payload !== null) {
+    let payloadStr: string;
 
-  // if (typeof payload === 'string') {
-  //   msgStr = payload;
-  // } else if (payload?.response?.data) {
-  //   msgStr = JSON.stringify(payload.response.data);
-  // } else if (payload?.message) {
-  //   msgStr = payload.message;
-  // } else {
-  //   msgStr = JSON.stringify(payload);
-  // }
+    if (typeof payload === 'string') {
+      payloadStr = payload;
+    } else if (payload?.response?.data) {
+      payloadStr = JSON.stringify(payload.response.data);
+    } else if (payload?.message) {
+      payloadStr = payload.message;
+    } else {
+      payloadStr = JSON.stringify(payload);
+    }
 
-  displayToast(msg, ToastType.default);
+    displayToast(msg, payloadStr, ToastType.default);
+  } else {
+    displayToast(msg, null, ToastType.default);
+  }
 };
 
-const displayErrorToast = (error: any) => {
+const displayErrorToast = (error: any, payload?: any | null) => {
   let errorStr: string;
 
   if (typeof error === 'string') {
@@ -45,7 +57,24 @@ const displayErrorToast = (error: any) => {
     errorStr = JSON.stringify(error);
   }
 
-  displayToast(errorStr, ToastType.error);
+  if (payload !== null) {
+    let payloadStr: string;
+
+    if (typeof payload === 'string') {
+      payloadStr = payload;
+    } else if (payload?.response?.data) {
+      payloadStr = JSON.stringify(payload.response.data);
+    } else if (payload?.message) {
+      payloadStr = payload.message;
+    } else {
+      payloadStr = JSON.stringify(payload);
+    }
+
+    displayToast(errorStr, payloadStr, ToastType.error);
+    return;
+  }
+
+  displayToast(errorStr, null, ToastType.error);
 };
 
 const loadStoreFailToast = (_: any, errorMessage: string) => {

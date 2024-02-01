@@ -1,3 +1,7 @@
-import { ExampleElectronStore } from '../stores/example/_constants';
+import { ExampleElectronStore } from 'store/exampleStore/types';
 
-export interface AppElectronStore extends ExampleElectronStore {}
+/**
+ * View coreElectronStore.ts for explanation
+ */
+export interface AppElectronStore
+  extends ExampleElectronStore /* Extend your other redux stores here */ {}

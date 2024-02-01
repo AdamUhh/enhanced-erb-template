@@ -1,5 +1,3 @@
-/* eslint global-require: off, @typescript-eslint/no-var-requires: off */
-
 import {
   app,
   BrowserWindow,
@@ -12,9 +10,9 @@ import path from 'path';
 
 import { GenericVoidFunction } from '../shared/types';
 import { isDevelopment } from '../shared/utils/environment';
+import ApplicationUpdater from './appUpdater';
 import Store from './store';
-import { resolveHtmlPath } from './util';
-import ApplicationUpdater from './appupdater';
+import { resolveHtmlPath } from './util/htmlPath';
 
 type OnEventType = 'closed' | 'ready-to-show' | 'close' | 'resize';
 
@@ -93,6 +91,7 @@ class MainWindow {
    * Retrieves the saved bounds from the store and checks if they are within the screen area.
    * If the saved bounds are not within the screen area, resets the window to default bounds.
    * Otherwise, sets the window bounds to the saved bounds.
+   *
    * Source: https://github.com/electron/electron/issues/526#issuecomment-1663959513
    */
   private static initializeWindowBounds() {

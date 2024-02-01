@@ -1,14 +1,14 @@
 import { useCallback } from 'react';
 import { GenericVoidFunction, IpcChannels } from 'shared/types';
-import { getReplyChannel } from 'shared/utils/ipc';
-import { useIpcEffect } from './utils';
+import { getReplyChannel } from '../../../main/util/ipc';
+import { useIpcEffect } from './useIpcEffect';
 
 /**
  * Used to send an IPC request and handle its success/failure reply.
- * @param {IpcChannels} options.channel - The IPC channel to read.
- * @param {GenericVoidFunction} [options.failCallback] - Callback to be invoked on failure.
- * @param {GenericVoidFunction} [options.successCallback] - Callback to be invoked on success.
- * @returns {Function} A callback function to send a message through IPC.
+ * @param options.channel - The IPC channel to read.
+ * @param options.failCallback - Callback to be invoked on failure.
+ * @param options.successCallback - Callback to be invoked on success.
+ * @returns A callback function to send a message through IPC.
  */
 function useReadIpc({
   channel,
@@ -18,7 +18,7 @@ function useReadIpc({
   channel: IpcChannels;
   failCallback?: GenericVoidFunction;
   successCallback?: GenericVoidFunction;
-}): Function {
+}) {
   // ? Attach an IPC effect for handling success/failure events.
   useIpcEffect({
     channel: getReplyChannel(channel),

@@ -10,7 +10,7 @@
  */
 import { app } from 'electron';
 import { isDevelopment } from '../shared/utils/environment';
-import './ipcMain';
+import './listeners';
 import MainWindow from './mainWindow';
 
 if (!isDevelopment) {

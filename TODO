@@ -1,21 +1,4 @@
-References for later:
-  ☐ `event.reply`: https://www.tabnine.com/code/javascript/functions/electron/IpcMainEvent/reply
-
-Things to do:
-  ✔ Auto app updates @done(24-02-01 18:59)
-
-  ✔ menubar is for appearances, and needs metadata: @done(24-01-31 20:59)
-      ✔ id @done(24-01-31 20:59)
-      ✔ title (in future, perhaps localize it? (i18n)) @done(24-01-31 20:59)
-      ✔ description (in future, perhaps localize it? (i18n)) @done(24-01-31 20:59)
-    ✘ order (ranking order to display) @cancelled(24-01-31 20:59)
-    ✘ category (which menu dropdown to display it on) @cancelled(24-01-31 20:59)
-    ✘ subcategory (optional) @cancelled(24-01-31 20:59)
-    ✘ isToggled? @cancelled(24-01-31 20:59)
-    ✘ when (think of it like a 'exist' fn, ex: menu item is only shown when editor is focused) @cancelled(24-01-31 20:59)
-      ✘ (continuation of when: ex 2: save all menu item will be disabled if there is nothing to be saved) @cancelled(24-01-31 20:59)
-
-Issues for later:
+Known issues:
   ☐ Keyboard shortcuts currently dont have support for:
-    ☐ chords(Ctrl+K, Ctrl+Shift+S)
+    ☐ chords (Ctrl+K, Ctrl+Shift+S)
     ☐ double key sequences (Ctrl+K+S)

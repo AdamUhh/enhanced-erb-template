@@ -1,6 +1,5 @@
-/* eslint-disable import/prefer-default-export */
 import { configureStore } from '@reduxjs/toolkit';
-import exampleReducer from './stores/example/slice';
+import exampleReducer from './stores/exampleStore/slice';
 
 export const store = configureStore({
   reducer: {

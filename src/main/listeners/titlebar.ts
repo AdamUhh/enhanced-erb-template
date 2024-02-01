@@ -1,7 +1,7 @@
-import { dialog, ipcMain } from 'electron';
-
+import { ipcMain } from 'electron';
 import { IpcChannels } from '../../shared/types';
 import MainWindow from '../mainWindow';
+import { delayedErrorDialog } from './util';
 
 export default () => {
   ipcMain.on(IpcChannels.closeApp, () => {
@@ -9,14 +9,7 @@ export default () => {
       MainWindow.close();
     } catch (error: any) {
       console.log('Failed to close app', error);
-      setTimeout(() => {
-        dialog.showMessageBox({
-          type: 'error',
-          title: 'Failed to close app',
-          message: `${error.toString()}`,
-          detail: error.toString(),
-        });
-      }, 1000);
+      delayedErrorDialog('Failed to close app', error);
     }
   });
 
@@ -25,14 +18,7 @@ export default () => {
       MainWindow.minimize();
     } catch (error: any) {
       console.log('Failed to minimize app', error);
-      setTimeout(() => {
-        dialog.showMessageBox({
-          type: 'error',
-          title: 'Failed to minimize app',
-          message: `${error.toString()}`,
-          detail: error.toString(),
-        });
-      }, 1000);
+      delayedErrorDialog('Failed to minimize app', error);
     }
   });
 
@@ -41,14 +27,7 @@ export default () => {
       MainWindow.maximize();
     } catch (error: any) {
       console.log('Failed to maximize app', error);
-      setTimeout(() => {
-        dialog.showMessageBox({
-          type: 'error',
-          title: 'Failed to maximize app',
-          message: `${error.toString()}`,
-          detail: error.toString(),
-        });
-      }, 1000);
+      delayedErrorDialog('Failed to maximize app', error);
     }
   });
 
@@ -57,14 +36,7 @@ export default () => {
       MainWindow.getWebContents()?.reloadIgnoringCache();
     } catch (error: any) {
       console.log('Failed to restart app', error);
-      setTimeout(() => {
-        dialog.showMessageBox({
-          type: 'error',
-          title: 'Failed to restart app',
-          message: `${error.toString()}`,
-          detail: error.toString(),
-        });
-      }, 1000);
+      delayedErrorDialog('Failed to restart app', error);
     }
   });
 
@@ -73,14 +45,7 @@ export default () => {
       MainWindow.getWebContents()?.toggleDevTools();
     } catch (error: any) {
       console.log('Failed to toggle dev tools', error);
-      setTimeout(() => {
-        dialog.showMessageBox({
-          type: 'error',
-          title: 'Failed to toggle dev tools',
-          message: `${error.toString()}`,
-          detail: error.toString(),
-        });
-      }, 1000);
+      delayedErrorDialog('Failed to toggle dev tools', error);
     }
   });
 };

@@ -9,14 +9,10 @@ import fs from 'fs';
 import {
   IpcChannels,
   IpcInvokeReturn,
-  LocalElectronStore,
+  CoreElectronStore,
   SetStoreValuePayload,
 } from '../../shared/types';
-import {
-  replyFailure,
-  replySuccess,
-  returnIpcInvokeError,
-} from '../../shared/utils/ipc';
+import { replyFailure, replySuccess, returnIpcInvokeError } from '../util/ipc';
 import Store from '../store';
 import MainWindow from '../mainWindow';
 
@@ -114,12 +110,6 @@ export default () => {
       } catch (error: any) {
         console.log(`Failed to set Store of key ${key}`, error);
         replyFailure(event, IpcChannels.setStoreValue, error.toString());
-        // dialog.showMessageBox({
-        //   type: 'error',
-        //   title: 'Wallpaper',
-        //   message: `Failed to change desktop wallaper\n ${error.toString()}`,
-        //   detail: error.toString(),
-        //  });
       }
     },
   );
@@ -128,12 +118,6 @@ export default () => {
     IpcChannels.setStoreValue,
     (event, { key, state }: SetStoreValuePayload): IpcInvokeReturn => {
       try {
-        // replyInvokeSuccess(
-        //   event,
-        //   IpcChannels.setStoreValue,
-        //   'Successfully changed electron store value and redux value',
-        // );
-
         Store.set(key, state);
         return {
           success: true,
@@ -141,7 +125,6 @@ export default () => {
           payload: state,
         };
       } catch (error: unknown) {
-        // replyInvokeFailure(event, IpcChannels.setStoreValue, error.toString());
         return returnIpcInvokeError(error);
       }
     },
@@ -149,14 +132,8 @@ export default () => {
 
   ipcMain.handle(
     IpcChannels.getStoreValue,
-    (event, key: keyof LocalElectronStore): IpcInvokeReturn => {
+    (event, key: keyof CoreElectronStore): IpcInvokeReturn => {
       try {
-        // replyInvokeSuccess(
-        //   event,
-        //   IpcChannels.setStoreValue,
-        //   'Successfully changed electron store value and redux value',
-        // );
-
         const res = Store.get(key);
         return {
           success: true,
@@ -164,7 +141,6 @@ export default () => {
           payload: res,
         };
       } catch (error: unknown) {
-        // replyInvokeFailure(event, IpcChannels.setStoreValue, error.toString());
         return returnIpcInvokeError(error);
       }
     },

@@ -4,6 +4,8 @@ import { autoUpdater } from 'electron-updater';
 import { JSDOM } from 'jsdom';
 
 class ApplicationUpdater {
+  private static didUserCheckForUpdate: boolean = false;
+
   public static initializeAppUpdater() {
     autoUpdater.logger = log;
     log.transports.file.level = 'info';
@@ -12,9 +14,7 @@ class ApplicationUpdater {
     autoUpdater.fullChangelog = true;
 
     autoUpdater.on('update-available', () => log.info('update-available'));
-    autoUpdater.on('update-not-available', () =>
-      log.info('update-not-available'),
-    );
+
     autoUpdater.on('error', (err) => {
       dialog.showErrorBox(
         'Error in auto-updater',
@@ -72,7 +72,24 @@ class ApplicationUpdater {
    * User manually checks for an update
    */
   public static checkForUpdates() {
+    this.generateNoUpdateAvailable();
     autoUpdater.checkForUpdates();
+  }
+
+  private static generateNoUpdateAvailable() {
+    // ? generate only one listener
+    if (!ApplicationUpdater.didUserCheckForUpdate) {
+      autoUpdater.on('update-not-available', () =>
+        dialog.showMessageBox({
+          title: 'Update',
+          type: 'info',
+          message: 'No updates found',
+          buttons: ['Okay'],
+          cancelId: 0,
+        }),
+      );
+      ApplicationUpdater.didUserCheckForUpdate = true;
+    }
   }
 }
 
