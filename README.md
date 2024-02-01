@@ -18,7 +18,6 @@ cd your-project-name
 npm install
 ```
 
-**Having issues installing? See our [debugging guide](https://github.com/electron-react-boilerplate/electron-react-boilerplate/issues/400)**
 
 ## Starting Development
 
@@ -28,10 +27,47 @@ Start the app in the `dev` environment:
 npm start
 ```
 
+# Packaging
+
+Ensure that your `package.json` is updated with your info, specifically:
+
+Within `./package.json`:
+
+- author
+- homepage
+- repository
+- bugs.url
+- build.appId
+- build.productName
+- build.publish.private (true/false)
+- build.publish.releaseType (draft/prerelease/release)
+
+Within `./release/app/package.json`:
+
+- name
+- version (Very important for github release versioning)
+- description
+- license
+- author.name
+- author.email
+- author.url
+
 ## Packaging for Production
 
 To package apps for the local platform:
 
 ```bash
 npm run package
+```
+
+## Packaging for Production (Github Releases)
+
+To package apps for the all platforms & release it to github:
+
+1. Go to github and create a new release/a new tag (ex: 0.0.10)
+
+2. Type the below into your terminal
+
+```bash
+GH_TOKEN=YOUR-GITHUB-TOKEN-HERE npm run package-publish
 ```

@@ -8,14 +8,17 @@ import {
 
 /**
  * ShortcutManager class manages keyboard shortcuts.
- * It provides methods to register, unregister, execute, retrieve shortcuts, and emits changes when registering.
+ *
+ * Provides methods to register, unregister, execute, retrieve shortcuts, and emits changes when registering.
  */
 class ShortcutManager {
-  // ? used to relate a shortcut alias to a Shortcut object,
-  // ? containing an action callback, title, description, etc.
+  /**
+   *  Used to relate a shortcut alias to a Shortcut object
+   *  containing an action callback, title, description, etc.
+   * */
   private shortcuts: Map<ShortcutKeybindingsAliases, Shortcut>;
 
-  // ? used to relate a shortcut alias to a sequence of key combinations (shortcut)
+  /** used to relate a shortcut alias to a sequence of key combinations (shortcut) */
   private keybindings: typeof DefaultShortcutKeybindings;
 
   private listeners: Map<number, ShortcutEventListener>;
@@ -53,6 +56,9 @@ class ShortcutManager {
             this.shortcuts.set(alias, { ...shortcutValues, keybind });
         }
       });
+      setTimeout(() => {
+        this.emitEvent();
+      }, 100);
     }
   }
 
@@ -145,6 +151,7 @@ class ShortcutManager {
       shortcut.keybind = newKey;
       this.keybindings[id] = { ...this.keybindings[id], keybind: newKey };
 
+      // ? save all keybinds to electron store
       window.electron.ipc.invoke(IpcChannels.setStoreValue, {
         key: 'coreUserKeybinds',
         state: Object.entries(this.keybindings).map(([key, value]) => ({

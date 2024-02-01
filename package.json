@@ -1,5 +1,4 @@
 {
-  "description": "A foundation for scalable desktop apps",
   "keywords": [
     "electron",
     "boilerplate",
@@ -20,6 +19,7 @@
     "postinstall": "ts-node .erb/scripts/check-native-dep.js && electron-builder install-app-deps && npm run build:dll",
     "lint": "cross-env NODE_ENV=development eslint . --ext .js,.jsx,.ts,.tsx",
     "package": "ts-node ./.erb/scripts/clean.js dist && npm run build && electron-builder build --publish never && npm run build:dll",
+    "package-publish": "ts-node ./.erb/scripts/clean.js dist && npm run build && electron-builder build --publish always && npm run build:dll",
     "rebuild": "electron-rebuild --parallel --types prod,dev,optional --module-dir release/app",
     "start": "ts-node ./.erb/scripts/check-port-in-use.js && npm run start:renderer",
     "start:main": "cross-env NODE_ENV=development electronmon -r ts-node/register/transpile-only .",
@@ -172,17 +172,20 @@
     "webpack-dev-server": "^4.15.1",
     "webpack-merge": "^5.9.0"
   },
+  "author": "AdamUhh",
+  "description": "An enhanced foundation for scalable desktop apps",
   "homepage": "https://github.com/AdamUhh/enhanced-erb-template",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AdamUhh/enhanced-erb-template.git"
   },
   "license": "MIT",
-  "author": "AdamUhh",
-  "version": "0.0.10",
+  "bugs": {
+    "url": "https://github.com/AdamUhh/enhanced-erb-template/issues"
+  },
   "build": {
+    "appId": "adamuhh.EnhancedErbTemplate",
     "productName": "EnhancedErbTemplate",
-    "appId": "org.erb.EnhancedErbTemplate",
     "asar": true,
     "asarUnpack": "**\\*.{node,dll}",
     "files": [
@@ -241,7 +244,9 @@
     "publish": {
       "provider": "github",
       "owner": "adamuhh",
-      "repo": "enhanced-erb-template"
+      "repo": "enhanced-erb-template",
+      "private": true,
+      "releaseType": "prerelease"
     }
   },
   "devEngines": {

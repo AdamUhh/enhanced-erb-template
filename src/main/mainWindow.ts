@@ -11,9 +11,10 @@ import {
 import path from 'path';
 
 import { GenericVoidFunction } from '../shared/types';
+import { AppUpdater } from './appupdater';
+import { DEVELOPMENT_MODE } from './constants';
 import Store from './store';
 import { resolveHtmlPath } from './util';
-import { AppUpdater } from './appupdater';
 
 type OnEventType = 'closed' | 'ready-to-show' | 'close' | 'resize';
 
@@ -40,11 +41,7 @@ class MainWindow {
           sandbox: false,
           devTools: true,
         },
-        frame: true,
-        // titleBarStyle: 'hidden',
-        transparent: true,
-        vibrancy: 'under-window', // on MacOS
-        backgroundMaterial: 'acrylic', // on Windows 11
+        frame: false,
       }),
     );
 
@@ -87,7 +84,8 @@ class MainWindow {
       return { action: 'deny' };
     });
 
-    MainWindow.getWebContents()?.openDevTools();
+    if (process.env.NODE_ENV === DEVELOPMENT_MODE)
+      MainWindow.getWebContents()?.openDevTools();
 
     // Remove this if your app does not use auto updates
     // eslint-disable-next-line
