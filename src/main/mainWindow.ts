@@ -13,16 +13,9 @@ import path from 'path';
 import { GenericVoidFunction } from '../shared/types';
 import Store from './store';
 import { resolveHtmlPath } from './util';
+import { AppUpdater } from './appupdater';
 
 type OnEventType = 'closed' | 'ready-to-show' | 'close' | 'resize';
-
-// class AppUpdater {
-//   constructor() {
-//     log.transports.file.level = 'info';
-//     autoUpdater.logger = log;
-//     autoUpdater.checkForUpdatesAndNotify();
-//   }
-// }
 
 class MainWindow {
   private static instance: BrowserWindow | null = null;
@@ -47,38 +40,15 @@ class MainWindow {
           sandbox: false,
           devTools: true,
         },
-        frame: false,
+        frame: true,
+        // titleBarStyle: 'hidden',
+        transparent: true,
+        vibrancy: 'under-window', // on MacOS
+        backgroundMaterial: 'acrylic', // on Windows 11
       }),
     );
 
-    /**
-     * Retrieves the saved bounds from the store and checks if they are within the screen area.
-     * If the saved bounds are not within the screen area, resets the window to default bounds.
-     * Otherwise, sets the window bounds to the saved bounds.
-     * Source: https://github.com/electron/electron/issues/526#issuecomment-1663959513
-     */
-    const savedBounds: Rectangle = Store.get('coreWindowBounds') as Rectangle;
-    if (savedBounds !== undefined) {
-      const screenArea = screen.getDisplayMatching(savedBounds).workArea;
-      // ? Note: + 7 is required, as for some reason `Win+LShift+LeftArrow` saves `x` bound as -7
-      if (
-        savedBounds.x > screenArea.x + screenArea.width ||
-        savedBounds.x + 7 < screenArea.x ||
-        savedBounds.y < screenArea.y ||
-        savedBounds.y > screenArea.y + screenArea.height
-      ) {
-        // ? Default bounds
-        // ? Reset window into existing screenarea
-        MainWindow.instance?.setBounds({
-          x: 0,
-          y: 0,
-          width: 1024,
-          height: 768,
-        });
-      } else {
-        MainWindow.instance?.setBounds(savedBounds);
-      }
-    }
+    this.initializeWindowBounds();
 
     MainWindow.loadURL(resolveHtmlPath('index.html'));
 
@@ -86,9 +56,6 @@ class MainWindow {
       if (!MainWindow.exists()) {
         throw new Error('"MainWindow" is not defined');
       }
-      // if (process.env.START_MINIMIZED)
-      //   MainWindow.minimize();
-      // else
       MainWindow.show();
     });
 
@@ -112,10 +79,9 @@ class MainWindow {
       MainWindow.set(null);
     });
 
-    // const menuBuilder = new MenuBuilder(MainWindow.instance!);
-    // menuBuilder.buildMenu();
-
-    // Open urls in the user's browser
+    /**
+     * Open urls in the user's browser
+     */
     MainWindow.getWebContents()?.setWindowOpenHandler((eventData) => {
       shell.openExternal(eventData.url);
       return { action: 'deny' };
@@ -125,7 +91,38 @@ class MainWindow {
 
     // Remove this if your app does not use auto updates
     // eslint-disable-next-line
-    //   new AppUpdater();
+    new AppUpdater();
+  }
+
+  /**
+   * Retrieves the saved bounds from the store and checks if they are within the screen area.
+   * If the saved bounds are not within the screen area, resets the window to default bounds.
+   * Otherwise, sets the window bounds to the saved bounds.
+   * Source: https://github.com/electron/electron/issues/526#issuecomment-1663959513
+   */
+  private static initializeWindowBounds() {
+    const savedBounds: Rectangle = Store.get('coreWindowBounds');
+    if (savedBounds !== undefined) {
+      const screenArea = screen.getDisplayMatching(savedBounds).workArea;
+      // ? Note: + 7 is required (atleast for my screen), as for some reason `Win+LShift+LeftArrow` saves `x` bound as -7
+      if (
+        savedBounds.x > screenArea.x + screenArea.width ||
+        savedBounds.x + 7 < screenArea.x ||
+        savedBounds.y < screenArea.y ||
+        savedBounds.y > screenArea.y + screenArea.height
+      ) {
+        // ? Default bounds
+        // ? Reset window into existing screenarea
+        MainWindow.instance?.setBounds({
+          x: 0,
+          y: 0,
+          width: 1024,
+          height: 768,
+        });
+        return;
+      }
+      MainWindow.instance?.setBounds(savedBounds);
+    }
   }
 
   /**
