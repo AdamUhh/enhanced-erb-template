@@ -1,7 +1,7 @@
 {
-  "name": "enhanced-erb-template",
+  "name": "vstl",
   "version": "0.1.0",
-  "description": "An enhanced foundation for scalable desktop apps",
+  "description": "A VSCode like Todo App",
   "license": "MIT",
   "author": {
     "name": "AdamUhh",
