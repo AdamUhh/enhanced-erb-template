@@ -105,7 +105,7 @@ export function ExampleToggleButtons() {
 function ExampleContainer() {
   const exampleVisibility = useAppSelector(selectExampleVisibility);
 
-  return <h3 className="text-xl">{exampleVisibility ? 'Bye' : 'Hi'}</h3>;
+  return <h3 className="text-xl">{exampleVisibility ? 'Bye :(' : 'Hi :D'}</h3>;
 }
 
 export default function Example() {

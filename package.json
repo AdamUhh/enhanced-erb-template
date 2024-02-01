@@ -173,6 +173,7 @@
     "webpack-merge": "^5.9.0"
   },
   "author": "AdamUhh",
+  "version": "0.0.12",
   "description": "An enhanced foundation for scalable desktop apps",
   "homepage": "https://github.com/AdamUhh/enhanced-erb-template",
   "repository": {
@@ -245,7 +246,6 @@
       "provider": "github",
       "owner": "adamuhh",
       "repo": "enhanced-erb-template",
-      "private": true,
       "releaseType": "prerelease"
     }
   },

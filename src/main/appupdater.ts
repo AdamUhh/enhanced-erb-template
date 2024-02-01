@@ -18,24 +18,10 @@ class AppUpdater {
     autoUpdater.logger = log;
     log.transports.file.level = 'debug';
 
-    autoUpdater.on('checking-for-update', () => {
-      dialog.showMessageBox({
-        type: 'info',
-        message: 'Checking for update...',
-      });
-    });
-
     autoUpdater.on('update-available', () => {
       dialog.showMessageBox({
         type: 'info',
         message: 'Update available. Downloading...',
-      });
-    });
-
-    autoUpdater.on('update-not-available', () => {
-      dialog.showMessageBox({
-        type: 'info',
-        message: 'Update not available.',
       });
     });
 
@@ -46,16 +32,11 @@ class AppUpdater {
       );
     });
 
-    autoUpdater.on('download-progress', (progressObj) => {
-      const { percent } = progressObj;
-      console.log(`Download progress: ${percent}%`);
-    });
-
     autoUpdater.on('update-downloaded', async () => {
       /** response - The index of the clicked button */
       const response = await dialog.showMessageBox({
         type: 'question',
-        buttons: ['Install and Relaunch', 'Later'],
+        buttons: ['Install and Relaunch', 'Auto-Install when I close the app'],
         defaultId: 0,
         message: 'Update downloaded. Install now and restart?',
       });
