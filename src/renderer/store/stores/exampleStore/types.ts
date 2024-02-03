@@ -1,8 +1,8 @@
-import { EXAMPLE_VISIBILITY } from './constants';
+import { ExampleStoreConstants } from './constants';
 
 /**
  * View coreElectronStore.ts for explanation
  */
 export interface ExampleElectronStore {
-  [EXAMPLE_VISIBILITY]: boolean;
+  [ExampleStoreConstants.EXAMPLE_VISIBILITY]: boolean;
 }

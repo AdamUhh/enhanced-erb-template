@@ -34,6 +34,9 @@
   "browserslist": [],
   "prettier": {
     "singleQuote": true,
+    "plugins": [
+      "prettier-plugin-tailwindcss"
+    ],
     "overrides": [
       {
         "files": [

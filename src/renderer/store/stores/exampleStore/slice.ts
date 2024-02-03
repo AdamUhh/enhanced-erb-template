@@ -1,14 +1,15 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { IpcChannels, SetStoreValuePayload } from 'shared/types';
 import { IpcInvokeReturn } from 'shared/types/ipc';
-import { EXAMPLE_VISIBILITY } from './constants';
+import { ExampleStoreConstants } from './constants';
+import { ExampleElectronStore } from './types';
 
-const initialState: { exampleVisibility: boolean } = {
+const initialState: ExampleElectronStore = {
   exampleVisibility: false,
 };
 
 const formatState = (state: any): SetStoreValuePayload => ({
-  key: EXAMPLE_VISIBILITY,
+  key: ExampleStoreConstants.EXAMPLE_VISIBILITY,
   state,
 });
 
@@ -28,7 +29,7 @@ export const toggleWithNotificationExampleVisibility = createAsyncThunk(
     const res = await window.electron.ipc.invoke<boolean>(
       IpcChannels.setStoreValue,
       {
-        key: EXAMPLE_VISIBILITY,
+        key: ExampleStoreConstants.EXAMPLE_VISIBILITY,
         state: flipped,
       },
     );
@@ -54,7 +55,7 @@ export const exampleSlice = createSlice({
       { payload }: PayloadAction<{ showBye: boolean }>,
     ) => {
       window.electron.ipc.send(IpcChannels.setStoreValue, {
-        key: EXAMPLE_VISIBILITY,
+        key: ExampleStoreConstants.EXAMPLE_VISIBILITY,
         state: payload.showBye,
       });
       state.exampleVisibility = payload.showBye;
