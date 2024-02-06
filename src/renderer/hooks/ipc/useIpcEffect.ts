@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
-import { GenericVoidFunction } from 'shared/types';
+import { GenericVoidFunction } from 'shared/types/generic';
 
 /**
  * Utility function for useReadIpc and useWriteIpc
  */
-const useIpcEffect = ({
+export const useIpcEffect = ({
   channel,
   failCallback = () => {},
   successCallback = () => {},
@@ -27,5 +27,3 @@ const useIpcEffect = ({
     };
   }, [channel, successCallback, failCallback]);
 };
-
-export { useIpcEffect };

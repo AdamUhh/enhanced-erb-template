@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
-import { GenericVoidFunction, IpcChannels } from 'shared/types';
+import { GenericVoidFunction } from 'shared/types/generic';
+import { IpcChannels } from 'shared/types/ipc';
 import { getReplyChannel } from '../../../main/util/ipc';
 import { useIpcEffect } from './useIpcEffect';
 
@@ -10,7 +11,7 @@ import { useIpcEffect } from './useIpcEffect';
  * @param options.successCallback - Callback to be invoked on success.
  * @returns A callback function to send a message through IPC.
  */
-function useReadIpc({
+export function useReadIpc({
   channel,
   failCallback = () => {},
   successCallback = () => {},
@@ -29,5 +30,3 @@ function useReadIpc({
   // ? Returns a memoized callback function to send a message through IPC.
   return useCallback(() => window.electron.ipc.send(channel), [channel]);
 }
-
-export { useReadIpc };

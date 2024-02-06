@@ -6,15 +6,15 @@ import {
 } from 'electron';
 import fs from 'fs';
 
+import { CoreElectronStore } from '../../shared/types/coreElectronStore';
 import {
   IpcChannels,
   IpcInvokeReturn,
-  CoreElectronStore,
   SetStoreValuePayload,
-} from '../../shared/types';
-import { replyFailure, replySuccess, returnIpcInvokeError } from '../util/ipc';
-import Store from '../store';
+} from '../../shared/types/ipc';
 import MainWindow from '../mainWindow';
+import Store from '../store';
+import { replyFailure, replySuccess, returnIpcInvokeError } from '../util/ipc';
 
 export default () => {
   ipcMain.on(IpcChannels.clearStore, (event) => {

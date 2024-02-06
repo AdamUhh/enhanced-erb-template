@@ -1,10 +1,9 @@
 import { IpcMainEvent, IpcMainInvokeEvent } from 'electron';
-import { IpcChannels } from 'shared/types';
-import { IpcInvokeReturn } from 'shared/types/ipc';
+import { IpcChannels, IpcInvokeReturn } from '../../shared/types/ipc';
 
-const getReplyChannel = (channel: IpcChannels) => `${channel}-reply`;
+export const getReplyChannel = (channel: IpcChannels) => `${channel}-reply`;
 
-const replySuccess = (
+export const replySuccess = (
   event: IpcMainEvent,
   channel: IpcChannels,
   payload?: any,
@@ -15,7 +14,7 @@ const replySuccess = (
   });
 };
 
-const replyFailure = (
+export const replyFailure = (
   event: IpcMainEvent,
   channel: IpcChannels,
   payload?: any,
@@ -26,7 +25,7 @@ const replyFailure = (
   });
 };
 
-const replyInvokeSuccess = (
+export const replyInvokeSuccess = (
   event: IpcMainInvokeEvent,
   channel: IpcChannels,
   payload?: any,
@@ -37,7 +36,7 @@ const replyInvokeSuccess = (
   });
 };
 
-const replyInvokeFailure = (
+export const replyInvokeFailure = (
   event: IpcMainInvokeEvent,
   channel: IpcChannels,
   payload?: any,
@@ -48,7 +47,7 @@ const replyInvokeFailure = (
   });
 };
 
-const returnIpcInvokeError = (
+export const returnIpcInvokeError = (
   error: any,
   msg: string = 'Failed to update store',
 ): IpcInvokeReturn => {
@@ -69,13 +68,4 @@ const returnIpcInvokeError = (
     msg,
     ...(errorStr && { payload: errorStr }),
   };
-};
-
-export {
-  getReplyChannel,
-  replySuccess,
-  replyFailure,
-  replyInvokeSuccess,
-  replyInvokeFailure,
-  returnIpcInvokeError,
 };

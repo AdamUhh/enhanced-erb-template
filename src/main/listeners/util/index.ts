@@ -1,6 +1,6 @@
 import { dialog } from 'electron';
 
-function delayedErrorDialog(
+export function delayedErrorDialog(
   title: string,
   message: string,
   delay: number = 1000,
@@ -13,5 +13,3 @@ function delayedErrorDialog(
     });
   }, delay);
 }
-
-export { delayedErrorDialog };

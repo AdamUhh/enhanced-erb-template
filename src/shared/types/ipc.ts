@@ -1,12 +1,12 @@
 import { GenericFunction } from './generic';
 import { CoreElectronStore } from './coreElectronStore';
 
-type SetStoreValuePayload = {
+export type SetStoreValuePayload = {
   key: keyof CoreElectronStore;
   state: CoreElectronStore[keyof CoreElectronStore];
 };
 
-enum IpcChannels {
+export enum IpcChannels {
   closeApp = 'close-app',
   minimizeApp = 'minimize-app',
   maximizeApp = 'maximize-app',
@@ -21,7 +21,7 @@ enum IpcChannels {
   getStoreValue = 'get-store-value',
 }
 
-type IpcInvokeReturn<P extends any = any> = {
+export type IpcInvokeReturn<P extends any = any> = {
   success: boolean;
   msg: string;
   payload?: P;
@@ -30,13 +30,13 @@ type IpcInvokeReturn<P extends any = any> = {
 /**
  * Typesafety: Expected payload input for ipcChannels
  */
-type IpcPayload = {
+export type IpcPayload = {
   [key in IpcChannels]: key extends 'set-store-value'
     ? SetStoreValuePayload
     : any;
 };
 
-interface I_IpcApi {
+export interface I_IpcApi {
   on(channel: string, callback: GenericFunction): void;
   removeListener(channel: string, callback: GenericFunction): void;
   removeAllListeners(channel: string): void;
@@ -49,7 +49,3 @@ interface I_IpcApi {
     payload?: T extends 'set-store-value' ? SetStoreValuePayload : any,
   ): Promise<IpcInvokeReturn<P>>;
 }
-
-export { IpcChannels };
-
-export type { I_IpcApi, IpcPayload, SetStoreValuePayload, IpcInvokeReturn };

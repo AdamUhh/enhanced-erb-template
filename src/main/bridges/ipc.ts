@@ -1,6 +1,10 @@
 import { ipcRenderer, IpcRendererEvent } from 'electron';
-import { I_IpcApi, IpcChannels } from 'shared/types';
-import { IpcInvokeReturn, IpcPayload } from 'shared/types/ipc';
+import {
+  I_IpcApi,
+  IpcChannels,
+  IpcInvokeReturn,
+  IpcPayload,
+} from '../../shared/types/ipc';
 import { getReplyChannel } from '../util/ipc';
 
 const baseValidChannels: IpcChannels[] = Object.values(IpcChannels);

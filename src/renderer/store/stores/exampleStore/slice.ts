@@ -1,6 +1,9 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { IpcChannels, SetStoreValuePayload } from 'shared/types';
-import { IpcInvokeReturn } from 'shared/types/ipc';
+import {
+  IpcChannels,
+  IpcInvokeReturn,
+  SetStoreValuePayload,
+} from 'shared/types/ipc';
 import { ExampleStoreConstants } from './constants';
 import { ExampleElectronStore } from './types';
 
@@ -14,17 +17,21 @@ const formatState = (state: any): SetStoreValuePayload => ({
 });
 
 export const toggleWithNotificationExampleVisibility = createAsyncThunk(
-  'example/toggleWithNoficiationExampleVisibility',
+  'exampleStore/toggleWithNoficiationExampleVisibility',
   async (
     payload: { showBye?: boolean } | null,
     { getState },
   ): Promise<IpcInvokeReturn> => {
-    const { example } = getState() as {
-      example: typeof initialState;
+    // ? its very important that `example` is the same name as
+    // ? in your main store reducer (renderer/store/index.ts)
+    const { exampleStore } = getState() as {
+      exampleStore: typeof initialState;
     };
 
     const flipped =
-      payload && payload.showBye ? payload.showBye : !example.exampleVisibility;
+      payload && payload.showBye
+        ? payload.showBye
+        : !exampleStore.exampleVisibility;
 
     const res = await window.electron.ipc.invoke<boolean>(
       IpcChannels.setStoreValue,
@@ -45,7 +52,7 @@ export const toggleWithNotificationExampleVisibility = createAsyncThunk(
 );
 
 export const exampleSlice = createSlice({
-  name: 'example',
+  name: 'exampleStore',
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
   reducers: {

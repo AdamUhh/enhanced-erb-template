@@ -13,11 +13,9 @@ export type RootState = ReturnType<typeof store.getState>;
 /**
  * Typesafe useDispatch.
  */
-const useAppDispatch: () => AppDispatch = useDispatch;
+export const useAppDispatch: () => AppDispatch = useDispatch;
 
 /**
  * Typesafe useSelector.
  */
-const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
-
-export { useAppDispatch, useAppSelector };
+export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;

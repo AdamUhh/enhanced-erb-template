@@ -1,9 +1,6 @@
-import {
-  GenericFunction,
-  GenericVoidFunction,
-  IpcChannels,
-  Shortcut,
-} from 'shared/types';
+import { GenericFunction, GenericVoidFunction } from 'shared/types/generic';
+import { IpcChannels } from 'shared/types/ipc';
+import { Shortcut } from 'shared/types/keybindings';
 import { DefaultShortcutKeybindings } from './defaultKeybindings';
 import { ShortcutKeybindingsAliases } from './keybindingAliases';
 
@@ -28,12 +25,15 @@ class ShortcutManager {
 
   private userIsChangingKeybinds: boolean;
 
+  private allShortcutsRegistered: boolean;
+
   constructor() {
     this.shortcuts = new Map();
     this.keybindings = DefaultShortcutKeybindings;
     this.listeners = new Map();
     this.listenerIdCounter = 0;
     this.userIsChangingKeybinds = false;
+    this.allShortcutsRegistered = false;
 
     this.initializeSavedKeybindings();
   }
@@ -112,6 +112,15 @@ class ShortcutManager {
         description: keybind.description,
         action,
       });
+
+      // Check if all keybind-shortcuts have been registered, then emit
+      const allShortcutsRegistered = Object.keys(this.keybindings).every(
+        (key) => this.shortcuts.has(key as ShortcutKeybindingsAliases),
+      );
+      if (allShortcutsRegistered && !this.allShortcutsRegistered) {
+        this.allShortcutsRegistered = true;
+        this.emitEvent();
+      }
     } else {
       console.error(`Keyboard shortcut not found for ID: ${id}`);
     }
@@ -160,6 +169,7 @@ class ShortcutManager {
           keybind: value.keybind,
         })),
       });
+      this.emitEvent();
     }
   }
 

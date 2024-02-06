@@ -17,7 +17,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from 'shadcn/components/ui/dialog';
-import { Shortcut } from 'shared/types';
+import { Shortcut } from 'shared/types/keybindings';
 import EditShortcut from './EditShortcut';
 
 export default function ShortcutSettings() {

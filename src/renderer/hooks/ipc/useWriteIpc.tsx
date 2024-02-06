@@ -1,7 +1,8 @@
 import { useCallback } from 'react';
-import { GenericVoidFunction, IpcChannels } from 'shared/types';
 import { getReplyChannel } from '../../../main/util/ipc';
 import { useIpcEffect } from './useIpcEffect';
+import { GenericVoidFunction } from 'shared/types/generic';
+import { IpcChannels } from 'shared/types/ipc';
 
 /**
  * Used to send an IPC request with a payload and handle its success/failure reply.
@@ -11,7 +12,7 @@ import { useIpcEffect } from './useIpcEffect';
  * @param options.payload - optional payload attached to request
  * @returns A callback function to send a message with payload through IPC.
  */
-function useWriteIpc<P = undefined>({
+export function useWriteIpc<P = undefined>({
   channel,
   failCallback,
   successCallback,
@@ -35,5 +36,3 @@ function useWriteIpc<P = undefined>({
     [channel, payload],
   );
 }
-
-export { useWriteIpc };

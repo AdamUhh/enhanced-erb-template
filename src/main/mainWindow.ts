@@ -8,7 +8,7 @@ import {
 } from 'electron';
 import path from 'path';
 
-import { GenericVoidFunction } from '../shared/types';
+import { GenericVoidFunction } from 'shared/types/generic';
 import { isDevelopment } from '../shared/utils/environment';
 import ApplicationUpdater from './appUpdater';
 import Store from './store';

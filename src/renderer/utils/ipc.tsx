@@ -1,39 +1,29 @@
-import { IpcChannels } from 'shared/types';
+import { IpcChannels } from 'shared/types/ipc';
 
-const restartApp = () => {
+export const restartApp = () => {
   window.electron.ipc.send(IpcChannels.restartApp);
 };
 
-const closeApp = () => {
+export const closeApp = () => {
   window.electron.ipc.send(IpcChannels.closeApp);
 };
 
-const minimizeApp = () => {
+export const minimizeApp = () => {
   window.electron.ipc.send(IpcChannels.minimizeApp);
 };
 
-const maximizeApp = () => {
+export const maximizeApp = () => {
   window.electron.ipc.send(IpcChannels.maximizeApp);
 };
 
-const toggleDevTools = () => {
+export const toggleDevTools = () => {
   window.electron.ipc.send(IpcChannels.toggleDevTools);
 };
 
-const clearStore = () => {
+export const clearStore = () => {
   window.electron.ipc.send(IpcChannels.clearStore);
 };
 
-const checkForupdates = () => {
+export const checkForupdates = () => {
   window.electron.ipc.send(IpcChannels.checkForUpdates);
-};
-
-export {
-  restartApp,
-  closeApp,
-  minimizeApp,
-  maximizeApp,
-  toggleDevTools,
-  clearStore,
-  checkForupdates,
 };

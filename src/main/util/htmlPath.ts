@@ -2,7 +2,7 @@
 import path from 'path';
 import { URL } from 'url';
 
-function resolveHtmlPath(htmlFileName: string) {
+export function resolveHtmlPath(htmlFileName: string) {
   if (process.env.NODE_ENV === 'development') {
     const port = process.env.PORT || 1212;
     const url = new URL(`http://localhost:${port}`);
@@ -11,5 +11,3 @@ function resolveHtmlPath(htmlFileName: string) {
   }
   return `file://${path.resolve(__dirname, '../renderer/', htmlFileName)}`;
 }
-
-export { resolveHtmlPath };

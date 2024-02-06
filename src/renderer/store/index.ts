@@ -3,6 +3,6 @@ import exampleReducer from './stores/exampleStore/slice';
 
 export const store = configureStore({
   reducer: {
-    example: exampleReducer,
+    exampleStore: exampleReducer,
   },
 });

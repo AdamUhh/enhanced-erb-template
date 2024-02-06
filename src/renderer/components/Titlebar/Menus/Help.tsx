@@ -6,7 +6,7 @@ import {
   MenubarShortcut,
   MenubarTrigger,
 } from 'shadcn/components/ui/custom/menubar';
-import { ShortcutKeybindingsAliases } from 'shared/types';
+import { ShortcutKeybindingsAliases } from 'shared/keyboard/keybindingAliases';
 import { isDevelopment } from 'shared/utils/environment';
 import { checkForupdates, clearStore, toggleDevTools } from 'utils/ipc';
 

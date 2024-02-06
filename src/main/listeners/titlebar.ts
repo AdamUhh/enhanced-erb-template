@@ -1,5 +1,5 @@
 import { ipcMain } from 'electron';
-import { IpcChannels } from '../../shared/types';
+import { IpcChannels } from '../../shared/types/ipc';
 import MainWindow from '../mainWindow';
 import { delayedErrorDialog } from './util';
 

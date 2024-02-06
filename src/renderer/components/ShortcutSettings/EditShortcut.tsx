@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Button } from 'shadcn/components/ui/button';
 import { cn } from 'shadcn/lib/utils';
 import ShortcutManager from 'shared/keyboard/shortcutManager';
-import { Shortcut } from 'shared/types';
+import { Shortcut } from 'shared/types/keybindings';
 import { generateKeyCombination } from 'utils/keyboard';
 
 export default function EditShortcut({
@@ -78,7 +78,7 @@ export default function EditShortcut({
           keyExists && !canSave && newKey !== shortcut.keybind && 'my-4',
         )}
       >
-        <div className="-ml-3 flex items-center h-8 w-full rounded-md border border-input/60 focus-visible:border-input bg-background px-3 py-2 text-sm ring-offset-background">
+        <div className="-ml-3 flex h-8 w-full items-center rounded-md border border-input/60 bg-background px-3 py-2 text-sm ring-offset-background focus-visible:border-input">
           {newKey}
         </div>
         <Button
@@ -98,7 +98,7 @@ export default function EditShortcut({
         </Button>
       </div>
       {keyExists && !canSave && newKey !== shortcut.keybind && (
-        <span className="text-destructive font-semibold absolute bottom-0 left-4">
+        <span className="absolute bottom-0 left-4 font-semibold text-destructive">
           Key exists, binded to:{' '}
           {allShortcuts.find((f) => f.keybind === newKey)?.id}
         </span>

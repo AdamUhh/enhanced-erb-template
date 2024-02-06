@@ -1,6 +1,6 @@
 import { I_IpcApi } from './ipc';
 
-interface I_ElectronApi {
+export interface I_ElectronApi {
   ipc: I_IpcApi;
 }
 
@@ -9,4 +9,3 @@ declare global {
     electron: I_ElectronApi;
   }
 }
-export type { I_ElectronApi };

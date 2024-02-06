@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
-import { GenericVoidFunction, Shortcut } from 'shared/types';
+import { GenericVoidFunction } from 'shared/types/generic';
+import { Shortcut } from 'shared/types/keybindings';
 import { useShortcutManager } from '../context/shortcutContext';
 
 /**
  * @returns Latest shortcuts and global shortcut context
  */
-const useShortcutListener = () => {
+export const useShortcutListener = () => {
   const { shortcutManager } = useShortcutManager();
   const [shortcuts, setShortcuts] = useState<Shortcut[]>([]);
 
@@ -26,5 +27,3 @@ const useShortcutListener = () => {
 
   return { shortcuts, shortcutManager };
 };
-
-export { useShortcutListener };

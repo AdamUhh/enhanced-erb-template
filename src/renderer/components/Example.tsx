@@ -1,14 +1,14 @@
 import { useAppDispatch, useAppSelector } from 'hooks/store';
 import { useShortcutRegisterEffect } from 'hooks/useShortcutRegisterEffect';
 import { Button } from 'shadcn/components/ui/button';
-import { ShortcutKeybindingsAliases } from 'shared/types';
+import { ShortcutKeybindingsAliases } from 'shared/keyboard/keybindingAliases';
 import { selectExampleVisibility } from 'store/exampleStore/selectors';
 import {
   setExampleVisibility,
   toggleExampleVisibility,
   toggleWithNotificationExampleVisibility,
 } from 'store/exampleStore/slice';
-import { dispatchInvokeWithNotif } from 'utils/dispatch';
+import { dispatchInvokeWithCallback } from 'utils/dispatch';
 import { displayErrorToast, displaySuccessToast } from 'utils/toast';
 import ShortcutSettings from './ShortcutSettings';
 
@@ -23,7 +23,7 @@ export function ExampleToggleButtons() {
     {
       id: ShortcutKeybindingsAliases.toggleWithNotification,
       action: () =>
-        dispatchInvokeWithNotif(
+        dispatchInvokeWithCallback(
           dispatch,
           toggleWithNotificationExampleVisibility(null),
         ),
@@ -31,7 +31,7 @@ export function ExampleToggleButtons() {
     {
       id: ShortcutKeybindingsAliases.toggleWithByeNotification,
       action: () =>
-        dispatchInvokeWithNotif(
+        dispatchInvokeWithCallback(
           dispatch,
           toggleWithNotificationExampleVisibility({ showBye: true }),
         ),
@@ -59,7 +59,7 @@ export function ExampleToggleButtons() {
       <Button
         variant="outline"
         onClick={() => {
-          dispatchInvokeWithNotif(
+          dispatchInvokeWithCallback(
             dispatch,
             toggleWithNotificationExampleVisibility(null),
           );
@@ -70,7 +70,7 @@ export function ExampleToggleButtons() {
       <Button
         variant="outline"
         onClick={() => {
-          dispatchInvokeWithNotif(
+          dispatchInvokeWithCallback(
             dispatch,
             toggleWithNotificationExampleVisibility({ showBye: true }),
           );
@@ -112,7 +112,7 @@ function ExampleContainer() {
 
 export default function Example() {
   return (
-    <div className="w-screen h-screen max-w-lg mx-auto flex justify-center items-center flex-col gap-2">
+    <div className="mx-auto flex h-screen w-screen max-w-lg flex-col items-center justify-center gap-2">
       <ExampleContainer />
       <ExampleToggleButtons />
       <ShortcutSettings />

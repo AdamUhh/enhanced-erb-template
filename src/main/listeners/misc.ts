@@ -1,6 +1,6 @@
 import { ipcMain } from 'electron';
 
-import { IpcChannels } from '../../shared/types';
+import { IpcChannels } from '../../shared/types/ipc';
 import ApplicationUpdater from '../appUpdater';
 import { delayedErrorDialog } from './util';
 

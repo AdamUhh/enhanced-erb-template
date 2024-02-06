@@ -8,7 +8,7 @@ import { displayErrorToast, displaySuccessToast } from './toast';
  * @param callbacks.successCallback - The callback function to invoke upon successful action dispatch.
  * @param callbacks.failCallback - The callback function to invoke upon failed action dispatch.
  */
-const dispatchInvokeWithNotif = (
+export const dispatchInvokeWithCallback = (
   dispatch: Dispatch,
   dispatchAction: any,
   {
@@ -30,4 +30,20 @@ const dispatchInvokeWithNotif = (
     .catch((error: string) => failCallback(error));
 };
 
-export { dispatchInvokeWithNotif };
+/**
+ * A function to dispatch an action and handle success and failure callbacks.
+ * @param dispatch - The Redux dispatch function.
+ * @param dispatchAction - The (dispatch) action to dispatch.
+ * @param callbacks.failCallback - The callback function to invoke upon failed action dispatch.
+ */
+export const dispatchInvoke = (
+  dispatch: Dispatch,
+  dispatchAction: any,
+  {
+    failCallback = displayErrorToast,
+  }: {
+    failCallback?: (error: string, payload?: any) => void;
+  } = {},
+) => {
+  dispatch(dispatchAction).catch((error: string) => failCallback(error));
+};

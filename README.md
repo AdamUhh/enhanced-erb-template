@@ -98,7 +98,11 @@ GH_TOKEN=YOUR-GITHUB-TOKEN-HERE npm run package-publish
 - Installing [shadcn/ui](https://ui.shadcn.com/docs/installation/manual)
 
 - View [Logs](https://www.npmjs.com/package/electron-log)
-  
+
+## Notes
+
+- Webpack plugins, such as `monaco-editor-webpack-plugin` must be in `devDependencies`, or else you will not be able to package the app
+
 ## Contributions
 
 Inspired by:

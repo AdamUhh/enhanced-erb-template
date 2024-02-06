@@ -24,7 +24,7 @@ const displayToast = (
   });
 };
 
-const displaySuccessToast = (msg: string, payload?: any | null) => {
+export const displaySuccessToast = (msg: string, payload?: any | null) => {
   if (payload !== null) {
     let payloadStr: string;
 
@@ -44,7 +44,7 @@ const displaySuccessToast = (msg: string, payload?: any | null) => {
   }
 };
 
-const displayErrorToast = (error: any, payload?: any | null) => {
+export const displayErrorToast = (error: any, payload?: any | null) => {
   let errorStr: string;
 
   if (typeof error === 'string') {
@@ -77,8 +77,6 @@ const displayErrorToast = (error: any, payload?: any | null) => {
   displayToast(errorStr, null, ToastType.error);
 };
 
-const loadStoreFailToast = (_: any, errorMessage: string) => {
+export const loadStoreFailToast = (_: any, errorMessage: string) => {
   displayErrorToast(`Could not load store data: ${errorMessage}`);
 };
-
-export { displaySuccessToast, displayErrorToast, loadStoreFailToast };

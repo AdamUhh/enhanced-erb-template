@@ -5,7 +5,7 @@ import { RootState } from 'hooks/store';
 // in the slice file. For example: `useSelector((state: RootState) => state.counter.value)`
 // export const selectSidebar = (state: RootState) => state.sidebar."propertyName";
 
-const selectExampleVisibility = (state: RootState) =>
-  state.example.exampleVisibility;
+export const selectExampleVisibility = (state: RootState) =>
+  state.exampleStore.exampleVisibility;
 
-export { selectExampleVisibility };
+// ? check out `createSelector` if you want to select a mutated state.store

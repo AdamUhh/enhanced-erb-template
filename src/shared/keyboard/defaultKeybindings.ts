@@ -1,6 +1,6 @@
 import { ShortcutKeybindingsAliases } from './keybindingAliases';
 
-const DefaultShortcutKeybindings: Record<
+export const DefaultShortcutKeybindings: Record<
   ShortcutKeybindingsAliases,
   { keybind: string; title: string; description?: string }
 > = {
@@ -23,5 +23,3 @@ const DefaultShortcutKeybindings: Record<
       'Shortcut will not work if window is not active/developer tools is active instead',
   },
 };
-
-export { DefaultShortcutKeybindings };
