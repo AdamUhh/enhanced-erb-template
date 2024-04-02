@@ -68,7 +68,7 @@ npm run package
 
 To package apps for your `local platform` & release it to github:
 
-1. Go to github and create a new release/a new tag (ex: 0.0.10)
+1. Go to github and create a new release/a new tag (ex: 0.0.10) and publish
 
 2. Go to `./release/app/package.json` and match the version number (to ex: 0.0.10)
 
