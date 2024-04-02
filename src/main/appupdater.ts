@@ -1,12 +1,12 @@
 import { dialog } from 'electron';
 import log from 'electron-log';
 import { autoUpdater } from 'electron-updater';
-import { JSDOM } from 'jsdom';
+// ? TODO: Remove need for jsdom, directly send to renderer
 
 class ApplicationUpdater {
   private static didUserCheckForUpdate: boolean = false;
 
-  public static initializeAppUpdater() {
+  public static initializeAppUpdater(): void {
     autoUpdater.logger = log;
     log.transports.file.level = 'info';
 
@@ -22,48 +22,44 @@ class ApplicationUpdater {
       );
     });
 
-    autoUpdater.on(
-      'update-downloaded',
-      async ({ releaseName, releaseNotes }) => {
-        let formattedReleaseNotes = '';
+    autoUpdater.on('update-downloaded', async ({ releaseName }) => {
+      const formattedReleaseNotes = '';
 
-        if (Array.isArray(releaseNotes)) {
-          // If releaseNotes is an array, iterate over each item and extract text content
-          formattedReleaseNotes = releaseNotes
-            .map((r) => {
-              if (r.note) {
-                const dom = new JSDOM(r.note);
-                return dom.window.document.body.textContent || '';
-              }
-              return '';
-            })
-            .join('\n');
-        } else if (typeof releaseNotes === 'string') {
-          // If releaseNotes is a string, extract text content
-          const dom = new JSDOM(releaseNotes);
-          formattedReleaseNotes = dom.window.document.body.textContent || '';
-        }
+      // if (Array.isArray(releaseNotes)) {
+      //   // If releaseNotes is an array, iterate over each item and extract text content
+      //   formattedReleaseNotes = releaseNotes
+      //     .map((r) => {
+      //       if (r.note) {
+      //         const dom = new JSDOM(r.note);
+      //         return dom.window.document.body.textContent || "";
+      //       }
+      //       return "";
+      //     })
+      //     .join("\n");
+      // } else if (typeof releaseNotes === "string") {
+      //   // If releaseNotes is a string, extract text content
+      //   const dom = new JSDOM(releaseNotes);
+      //   formattedReleaseNotes = dom.window.document.body.textContent || "";
+      // }
 
-        // Show the message box with formatted release notes
-        dialog
-          .showMessageBox({
-            title: 'Update Available',
-            type: 'question',
-            detail: `${releaseName || ''}\n${formattedReleaseNotes || ''}`,
-            message: 'Update available. Install now and restart?',
-            buttons: ['Install and Relaunch', 'Later'],
-            defaultId: 0,
-            cancelId: 1,
-          })
-          .then((result) => {
-            // eslint-disable-next-line promise/always-return
-            if (result.response === 0) autoUpdater.quitAndInstall();
-          })
-          .catch((error) => {
-            log.info(error);
-          });
-      },
-    );
+      // Show the message box with formatted release notes
+      dialog
+        .showMessageBox({
+          title: 'Update Available',
+          type: 'question',
+          detail: `${releaseName || ''}\n${formattedReleaseNotes || ''}`,
+          message: 'Update available. Install now and restart?',
+          buttons: ['Install and Relaunch', 'Later'],
+          defaultId: 0,
+          cancelId: 1,
+        })
+        .then((result) => {
+          if (result.response === 0) autoUpdater.quitAndInstall();
+        })
+        .catch((error) => {
+          log.info(error);
+        });
+    });
 
     autoUpdater.checkForUpdates();
   }
@@ -71,12 +67,12 @@ class ApplicationUpdater {
   /**
    * User manually checks for an update
    */
-  public static checkForUpdates() {
+  public static checkForUpdates(): void {
     this.generateNoUpdateAvailable();
     autoUpdater.checkForUpdates();
   }
 
-  private static generateNoUpdateAvailable() {
+  private static generateNoUpdateAvailable(): void {
     // ? generate only one listener
     if (!ApplicationUpdater.didUserCheckForUpdate) {
       autoUpdater.on('update-not-available', () =>

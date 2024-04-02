@@ -1,4 +1,6 @@
-import { useShortcutRegisterEffect } from 'hooks/useShortcutRegisterEffect';
+import { useRegisterShortcut } from 'core/hooks/useShortcutRegisterEffect';
+import { ShortcutKeybindingsAliases } from 'core/keyboard/keybindingAliases';
+import { checkForupdates, clearStore, toggleDevTools } from 'core/utils/ipc';
 import {
   MenubarContent,
   MenubarItem,
@@ -6,12 +8,9 @@ import {
   MenubarShortcut,
   MenubarTrigger,
 } from 'shadcn/components/ui/custom/menubar';
-import { ShortcutKeybindingsAliases } from 'shared/keyboard/keybindingAliases';
-import { isDevelopment } from 'shared/utils/environment';
-import { checkForupdates, clearStore, toggleDevTools } from 'utils/ipc';
 
 export default function HelpMenu() {
-  useShortcutRegisterEffect({
+  useRegisterShortcut({
     id: ShortcutKeybindingsAliases.toggleDeveloperTools,
     action: toggleDevTools,
   });
@@ -24,9 +23,7 @@ export default function HelpMenu() {
           Toggle Developer Tools <MenubarShortcut>F12</MenubarShortcut>
         </MenubarItem>
         <MenubarItem onClick={clearStore}>Clear Store</MenubarItem>
-        {!isDevelopment && (
-          <MenubarItem onClick={checkForupdates}>Check for updates</MenubarItem>
-        )}
+        <MenubarItem onClick={checkForupdates}>Check for updates</MenubarItem>
       </MenubarContent>
     </MenubarMenu>
   );

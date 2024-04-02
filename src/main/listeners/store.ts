@@ -1,33 +1,25 @@
-import {
-  OpenDialogOptions,
-  SaveDialogOptions,
-  dialog,
-  ipcMain,
-} from 'electron';
-import fs from 'fs';
+import { OpenDialogOptions, SaveDialogOptions, dialog } from 'electron';
+import fs from 'fs-extra';
 
 import { CoreElectronStore } from '../../shared/types/coreElectronStore';
-import {
-  IpcChannels,
-  IpcInvokeReturn,
-  SetStoreValuePayload,
-} from '../../shared/types/ipc';
+import { IpcChannels } from '../../shared/types/ipc';
+import { ipcMainHandle, ipcMainOn } from '../bridges/ipcMain';
 import MainWindow from '../mainWindow';
 import Store from '../store';
-import { replyFailure, replySuccess, returnIpcInvokeError } from '../util/ipc';
+import { replySuccess, returnIpcInvokeError } from './util/ipcReplies';
+import { SendErrorToRendererDialog } from './util/sendToRenderer';
 
 export default () => {
-  ipcMain.on(IpcChannels.clearStore, (event) => {
+  ipcMainOn(IpcChannels.clearStore, () => {
     try {
       Store.clear();
       MainWindow.getWebContents()?.reloadIgnoringCache();
     } catch (error: any) {
-      console.log('Failed to clear store', error);
-      replyFailure(event, IpcChannels.clearStore, error.toString());
+      SendErrorToRendererDialog('Failed to clear store', error);
     }
   });
 
-  ipcMain.on(IpcChannels.exportStoreData, async (event) => {
+  ipcMainOn(IpcChannels.exportStoreData, async () => {
     const options: SaveDialogOptions = {
       buttonLabel: 'Export',
       defaultPath: 'store-data.json',
@@ -43,14 +35,12 @@ export default () => {
       if (canceled || !filePath) return;
       const data = JSON.stringify(Store.getStore());
       fs.writeFileSync(filePath, data);
-      replySuccess(event, IpcChannels.exportStoreData);
     } catch (error: any) {
-      console.log(`Failed to save file: ${IpcChannels.exportStoreData}`, error);
-      replyFailure(event, IpcChannels.exportStoreData, error.toString());
+      SendErrorToRendererDialog('Failed to export file', error);
     }
   });
 
-  ipcMain.on(IpcChannels.importStoreData, async (event) => {
+  ipcMainOn(IpcChannels.importStoreData, async () => {
     const options: OpenDialogOptions = {
       buttonLabel: 'Import',
       filters: [
@@ -79,60 +69,47 @@ export default () => {
         Store.clear();
         Store.setStore(data);
 
-        replySuccess(event, IpcChannels.importStoreData, data);
+        // replySuccess(event, IpcChannels.importStoreData, data);
       });
     } catch (error: any) {
-      console.log(`Failed to read file: ${IpcChannels.importStoreData}`, error);
-      replyFailure(event, IpcChannels.importStoreData, error.toString());
+      SendErrorToRendererDialog('Failed to read import file', error);
     }
   });
 
-  ipcMain.on(IpcChannels.loadStoreData, (event) => {
+  ipcMainOn(IpcChannels.loadStoreData, (event) => {
     try {
       const state = Store.getStore();
-      replySuccess(event, IpcChannels.setStoreValue, state);
+
+      replySuccess(event, IpcChannels.loadStoreData, { payload: state });
     } catch (error: any) {
-      console.log(`Failed to load store`, error);
-      replyFailure(event, IpcChannels.loadStoreData, error.toString());
+      SendErrorToRendererDialog('Failed to load store', error);
     }
   });
 
-  ipcMain.on(
-    IpcChannels.setStoreValue,
-    (event, { key, state }: SetStoreValuePayload): void => {
-      try {
-        Store.set(key, state);
-        replySuccess(
-          event,
-          IpcChannels.setStoreValue,
-          'Successfully changed electron store value and redux value',
-        );
-      } catch (error: any) {
-        console.log(`Failed to set Store of key ${key}`, error);
-        replyFailure(event, IpcChannels.setStoreValue, error.toString());
-      }
-    },
-  );
+  ipcMainOn(IpcChannels.setStoreValue, (_, { key, state }) => {
+    try {
+      Store.set(key, state);
+    } catch (error: any) {
+      SendErrorToRendererDialog(`Failed to set Store of key ${key}`, error);
+    }
+  });
 
-  ipcMain.handle(
-    IpcChannels.setStoreValue,
-    (event, { key, state }: SetStoreValuePayload): IpcInvokeReturn => {
-      try {
-        Store.set(key, state);
-        return {
-          success: true,
-          msg: 'Successfully updated store',
-          payload: state,
-        };
-      } catch (error: unknown) {
-        return returnIpcInvokeError(error);
-      }
-    },
-  );
+  ipcMainHandle(IpcChannels.setStoreValue, async (_, { key, state }) => {
+    try {
+      Store.set(key, state);
+      return {
+        success: true,
+        msg: 'Successfully updated store',
+        payload: state,
+      };
+    } catch (error: unknown) {
+      return returnIpcInvokeError(error);
+    }
+  });
 
-  ipcMain.handle(
+  ipcMainHandle(
     IpcChannels.getStoreValue,
-    (event, key: keyof CoreElectronStore): IpcInvokeReturn => {
+    async (_, key: keyof CoreElectronStore) => {
       try {
         const res = Store.get(key);
         return {

@@ -1,6 +1,6 @@
-import titlebar from './titlebar';
-import store from './store';
 import misc from './misc';
+import store from './store';
+import titlebar from './titlebar';
 
 const initializeListeners = () => {
   titlebar();

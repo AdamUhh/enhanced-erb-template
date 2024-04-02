@@ -1,6 +1,6 @@
+import { generateKeyCombination } from 'core/keyboard/generateKeyCombination';
+import ShortcutManager from 'core/keyboard/shortcutManager';
 import { useEffect } from 'react';
-import ShortcutManager from 'shared/keyboard/shortcutManager';
-import { generateKeyCombination } from 'utils/keyboard';
 
 export default function KeyboardRegister({
   shortcutManager,

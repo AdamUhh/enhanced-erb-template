@@ -1,8 +1,8 @@
 import { useCallback } from 'react';
-import { getReplyChannel } from '../../../main/util/ipc';
-import { useIpcEffect } from './useIpcEffect';
 import { GenericVoidFunction } from 'shared/types/generic';
-import { IpcChannels } from 'shared/types/ipc';
+import { IpcChannels, IpcInputConditional } from 'shared/types/ipc';
+import { getReplyChannel } from 'shared/utils/getReplyChannel';
+import { useListenIpc } from './useListenIpc';
 
 /**
  * Used to send an IPC request with a payload and handle its success/failure reply.
@@ -12,27 +12,27 @@ import { IpcChannels } from 'shared/types/ipc';
  * @param options.payload - optional payload attached to request
  * @returns A callback function to send a message with payload through IPC.
  */
-export function useWriteIpc<P = undefined>({
+export function useWriteIpc<P extends IpcChannels>({
   channel,
+  payload,
   failCallback,
   successCallback,
-  payload,
 }: {
-  channel: IpcChannels;
+  channel: P;
+  payload: IpcInputConditional<P>;
   failCallback: GenericVoidFunction;
   successCallback: GenericVoidFunction;
-  payload?: P;
 }) {
   // ? Attach an IPC effect for handling success/failure events.
-  useIpcEffect({
-    channel: getReplyChannel(channel),
+  useListenIpc({
+    channel: getReplyChannel(channel) as IpcChannels,
     successCallback,
     failCallback,
   });
 
   // ? Returns a memoized callback function to send a message with payload through IPC.
   return useCallback(
-    () => window.electron.ipc.send(channel, payload),
+    () => window.electron.ipc.send(channel as any, payload),
     [channel, payload],
   );
 }

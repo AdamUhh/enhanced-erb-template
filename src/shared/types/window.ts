@@ -1,3 +1,9 @@
+/**
+ *
+ * Sets global `window` to include `electron-ipc` api
+ *
+ */
+
 import { I_IpcApi } from './ipc';
 
 export interface I_ElectronApi {

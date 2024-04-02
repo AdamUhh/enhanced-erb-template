@@ -1,21 +1,30 @@
-import { useAppDispatch, useAppSelector } from 'hooks/store';
-import { useShortcutRegisterEffect } from 'hooks/useShortcutRegisterEffect';
+import { useReplyListenIpc } from 'core/hooks/ipc/useReplyListenIpc';
+import { useAppDispatch, useAppSelector } from 'core/hooks/store';
+import { useRegisterShortcut } from 'core/hooks/useShortcutRegisterEffect';
+import { ShortcutKeybindingsAliases } from 'core/keyboard/keybindingAliases';
+import {
+  dispatchInvoke,
+  dispatchInvokeWithCallback,
+} from 'core/utils/dispatch';
+import {
+  displayErrorToast,
+  displaySuccessToast,
+} from 'core/utils/displayToast';
 import { Button } from 'shadcn/components/ui/button';
-import { ShortcutKeybindingsAliases } from 'shared/keyboard/keybindingAliases';
+import { IpcChannels } from 'shared/types/ipc';
 import { selectExampleVisibility } from 'store/exampleStore/selectors';
 import {
   setExampleVisibility,
   toggleExampleVisibility,
+  toggleWithNotificationExampleFAIL,
   toggleWithNotificationExampleVisibility,
 } from 'store/exampleStore/slice';
-import { dispatchInvokeWithCallback } from 'utils/dispatch';
-import { displayErrorToast, displaySuccessToast } from 'utils/toast';
 import ShortcutSettings from './ShortcutSettings';
 
 export function ExampleToggleButtons() {
   const dispatch = useAppDispatch();
 
-  useShortcutRegisterEffect(
+  useRegisterShortcut(
     {
       id: ShortcutKeybindingsAliases.toggleExample,
       action: () => dispatch(toggleExampleVisibility()),
@@ -91,9 +100,7 @@ export function ExampleToggleButtons() {
       <Button
         variant="outline"
         onClick={() =>
-          displayErrorToast(
-            'Failed to change electron store value and redux value',
-          )
+          dispatchInvoke(dispatch, toggleWithNotificationExampleFAIL(null))
         }
       >
         Fail Notification
@@ -111,6 +118,11 @@ function ExampleContainer() {
 }
 
 export default function Example() {
+  useReplyListenIpc({
+    channel: IpcChannels.toggleRendererErrorDialog,
+    failCallback: displayErrorToast,
+  });
+
   return (
     <div className="mx-auto flex h-screen w-screen max-w-lg flex-col items-center justify-center gap-2">
       <ExampleContainer />

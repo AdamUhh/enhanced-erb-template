@@ -1,10 +1,10 @@
+import { generateKeyCombination } from 'core/keyboard/generateKeyCombination';
+import ShortcutManager from 'core/keyboard/shortcutManager';
+import { Shortcut } from 'core/keyboard/types';
 import { CheckCircle2Icon, XCircleIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Button } from 'shadcn/components/ui/button';
 import { cn } from 'shadcn/lib/utils';
-import ShortcutManager from 'shared/keyboard/shortcutManager';
-import { Shortcut } from 'shared/types/keybindings';
-import { generateKeyCombination } from 'utils/keyboard';
 
 export default function EditShortcut({
   allShortcuts,
@@ -67,8 +67,7 @@ export default function EditShortcut({
       handleShortcutEditFinished();
       window.removeEventListener('keydown', handleKeyPress);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [allShortcuts, shortcut.id, shortcutManager]);
+  }, [allShortcuts, handleShortcutEditFinished, shortcut.id, shortcutManager]);
 
   return (
     <>

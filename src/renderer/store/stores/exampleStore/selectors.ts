@@ -1,4 +1,4 @@
-import { RootState } from 'hooks/store';
+import { RootState } from 'core/hooks/store';
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of

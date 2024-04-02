@@ -1,7 +1,7 @@
+import { useShortcutManager } from 'core/context/shortcutContext';
 import { useEffect, useState } from 'react';
 import { GenericVoidFunction } from 'shared/types/generic';
-import { Shortcut } from 'shared/types/keybindings';
-import { useShortcutManager } from '../context/shortcutContext';
+import { Shortcut } from '../keyboard/types';
 
 /**
  * @returns Latest shortcuts and global shortcut context

@@ -2,8 +2,8 @@
 // ShortcutContext.tsx
 
 import KeyboardRegister from 'components/ShortcutSettings/KeyboardRegister';
+import ShortcutManager from 'core/keyboard/shortcutManager';
 import React, { ReactNode, createContext, useContext, useMemo } from 'react';
-import ShortcutManager from '../../shared/keyboard/shortcutManager';
 
 interface ShortcutContextType {
   shortcutManager: ShortcutManager;

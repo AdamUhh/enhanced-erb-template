@@ -1,5 +1,5 @@
 import ElectronStore from 'electron-store';
-import { CoreElectronStore } from 'shared/types/coreElectronStore';
+import { CoreElectronStore } from '../shared/types/coreElectronStore';
 
 class Store {
   private static instance = new ElectronStore<CoreElectronStore>();

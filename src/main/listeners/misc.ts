@@ -1,16 +1,14 @@
-import { ipcMain } from 'electron';
-
 import { IpcChannels } from '../../shared/types/ipc';
 import ApplicationUpdater from '../appUpdater';
-import { delayedErrorDialog } from './util';
+import { ipcMainOn } from '../bridges/ipcMain';
+import { SendErrorToRendererDialog } from './util/sendToRenderer';
 
 export default () => {
-  ipcMain.on(IpcChannels.checkForUpdates, () => {
+  ipcMainOn(IpcChannels.checkForUpdates, () => {
     try {
       ApplicationUpdater.checkForUpdates();
     } catch (error: any) {
-      console.log('Failed to check for updates', error);
-      delayedErrorDialog('Failed to check for updates', error);
+      SendErrorToRendererDialog('Failed to check for updates', error);
     }
   });
 };

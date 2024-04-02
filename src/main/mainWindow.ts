@@ -1,25 +1,34 @@
-import {
-  app,
-  BrowserWindow,
-  Rectangle,
-  screen,
-  shell,
-  WebContents,
-} from 'electron';
+import { app, BrowserWindow, shell, WebContents } from 'electron';
 import path from 'path';
 
-import { GenericVoidFunction } from 'shared/types/generic';
+import { GenericVoidFunction } from '../shared/types/generic';
+import { IpcChannels, IpcInvokeReturn } from '../shared/types/ipc';
 import { isDevelopment } from '../shared/utils/environment';
+import { getReplyChannel } from '../shared/utils/getReplyChannel';
 import ApplicationUpdater from './appUpdater';
-import Store from './store';
-import { resolveHtmlPath } from './util/htmlPath';
+import Bounds from './bounds';
+import DummyMenu from './menu';
+import { resolveHtmlPath } from './utils/resolvePath';
 
-type OnEventType = 'closed' | 'ready-to-show' | 'close' | 'resize';
+// async function installExtensions() {
+//   installExtension(REACT_DEVELOPER_TOOLS, {
+//     forceDownload: true,
+//     loadExtensionOptions: { allowFileAccess: true },
+//   })
+//     .then((name) => console.log(`Added Extension:  ${name}`))
+//     .catch((err) => console.error('An error occurred "redux_devtools": ', err));
+// }
+
+type OnEventType = 'closed' | 'ready-to-show' | 'close' | 'resized' | 'moved';
 
 class MainWindow {
   private static instance: BrowserWindow | null = null;
 
   public static async createWindow(): Promise<void> {
+    // if (isDevelopment) {
+    //   await installExtensions();
+    // }
+
     const RESOURCES_PATH = app.isPackaged
       ? path.join(process.resourcesPath, 'assets')
       : path.join(__dirname, '../../assets');
@@ -30,7 +39,7 @@ class MainWindow {
 
     MainWindow.set(
       new BrowserWindow({
-        icon: getAssetPath('icon.png'),
+        icon: getAssetPath('icons/64x64.png'),
         show: false,
         webPreferences: {
           preload: app.isPackaged
@@ -43,36 +52,17 @@ class MainWindow {
       }),
     );
 
-    this.initializeWindowBounds();
+    // ? Initialize window bounds listeners (resize, move, etc)
+    Bounds.getInstance().initializeListeners(MainWindow.instance!);
 
     MainWindow.loadURL(resolveHtmlPath('index.html'));
 
     MainWindow.on('ready-to-show', () => {
-      if (!MainWindow.exists()) {
-        throw new Error('"MainWindow" is not defined');
-      }
+      if (!MainWindow.exists()) throw new Error('"MainWindow" is not defined');
       MainWindow.show();
     });
 
-    /**
-     * Handles the 'resize' event of the mainWindow and saves its bounds to the store.
-     */
-    MainWindow.on('resize', () => {
-      if (MainWindow.exists()) {
-        Store.set('coreWindowBounds', MainWindow.instance!.getBounds());
-      }
-    });
-
-    /**
-     * Handles the 'close' event of the mainWindow and saves its bounds to the store.
-     */
-    MainWindow.on('close', () => {
-      if (MainWindow.exists())
-        Store.set('coreWindowBounds', MainWindow.instance!.getBounds());
-    });
-    MainWindow.on('closed', () => {
-      MainWindow.set(null);
-    });
+    MainWindow.on('closed', () => MainWindow.set(null));
 
     /**
      * Open urls in the user's browser
@@ -82,46 +72,16 @@ class MainWindow {
       return { action: 'deny' };
     });
 
+    DummyMenu(MainWindow.getWebContents());
+
     if (isDevelopment) MainWindow.getWebContents()?.openDevTools();
 
     if (!isDevelopment) ApplicationUpdater.initializeAppUpdater();
   }
 
   /**
-   * Retrieves the saved bounds from the store and checks if they are within the screen area.
-   * If the saved bounds are not within the screen area, resets the window to default bounds.
-   * Otherwise, sets the window bounds to the saved bounds.
-   *
-   * Source: https://github.com/electron/electron/issues/526#issuecomment-1663959513
-   */
-  private static initializeWindowBounds() {
-    const savedBounds: Rectangle = Store.get('coreWindowBounds');
-    if (savedBounds !== undefined) {
-      const screenArea = screen.getDisplayMatching(savedBounds).workArea;
-      // ? Note: + 7 is required (atleast for my screen), as for some reason `Win+LShift+LeftArrow` saves `x` bound as -7
-      if (
-        savedBounds.x > screenArea.x + screenArea.width ||
-        savedBounds.x + 7 < screenArea.x ||
-        savedBounds.y < screenArea.y ||
-        savedBounds.y > screenArea.y + screenArea.height
-      ) {
-        // ? Default bounds
-        // ? Reset window into existing screenarea
-        MainWindow.instance?.setBounds({
-          x: 0,
-          y: 0,
-          width: 1024,
-          height: 768,
-        });
-        return;
-      }
-      MainWindow.instance?.setBounds(savedBounds);
-    }
-  }
-
-  /**
    * Checks if the main window instance exists.
-   * @returns {boolean} Returns true if the main window instance exists, false otherwise.
+   * @returns Returns true if the main window instance exists, false otherwise.
    */
   public static exists(): boolean {
     return !!MainWindow.instance;
@@ -129,7 +89,7 @@ class MainWindow {
 
   /**
    * Gets the web contents of the main window.
-   * @returns {WebContents | null} Returns the web contents of the main window or null if it doesn't exist.
+   * @returns Returns the web contents of the main window or null if it doesn't exist.
    */
   public static getWebContents(): WebContents | null {
     return MainWindow.instance?.webContents || null;
@@ -152,9 +112,23 @@ class MainWindow {
 
   /**
    * Maximizes the main window.
+   * @returns boolean
    */
-  public static maximize(): void {
+  public static toggleMaximize(): boolean {
+    if (MainWindow.instance?.isMaximized()) {
+      MainWindow.instance.unmaximize();
+      return false;
+    }
     MainWindow.instance?.maximize();
+    return true;
+  }
+
+  /**
+   * Checks if main window maximized
+   * @returns boolean
+   */
+  public static isMaximized(): boolean {
+    return MainWindow.instance?.isMaximized() ?? false;
   }
 
   /**
@@ -179,6 +153,28 @@ class MainWindow {
    */
   public static set(window: BrowserWindow | null): void {
     MainWindow.instance = window;
+  }
+
+  /**
+   * Gets the main window instance.
+   * @returns {BrowserWindow | null} window - The main window instance.
+   */
+  public static get(): BrowserWindow | null {
+    return MainWindow.instance;
+  }
+
+  /**
+   * Sends an ipc message to the renderer
+   * @param channel - Channel to send message to. This is automatically converted into a `*-reply` channel
+   */
+  public static sendToRenderer(
+    channel: IpcChannels,
+    returnPayload: IpcInvokeReturn,
+  ) {
+    return MainWindow.instance?.webContents.send(
+      getReplyChannel(channel),
+      returnPayload,
+    );
   }
 
   /**

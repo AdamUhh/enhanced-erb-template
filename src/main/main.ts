@@ -1,5 +1,4 @@
-/* eslint global-require: off, no-console: off, promise/always-return: off */
-
+/* eslint-disable promise/always-return */
 /**
  * This module executes inside of electron's main process. You can start
  * electron renderer process from here and communicate with the other processes
@@ -14,6 +13,7 @@ import './listeners';
 import MainWindow from './mainWindow';
 
 if (!isDevelopment) {
+  // eslint-disable-next-line global-require
   const sourceMapSupport = require('source-map-support');
   sourceMapSupport.install();
 }

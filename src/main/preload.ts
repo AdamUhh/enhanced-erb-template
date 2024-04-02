@@ -1,7 +1,7 @@
 import { contextBridge } from 'electron';
 
-import { I_ElectronApi } from 'shared/types/window';
-import { ipcApi } from './bridges/ipc';
+import { ipcApi } from './bridges/ipcRenderer';
+import { I_ElectronApi } from '../shared/types/window';
 
 const electronApi: I_ElectronApi = {
   ipc: ipcApi,

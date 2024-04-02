@@ -2,8 +2,8 @@ import Example from 'components/Example';
 import Titlebar from 'components/Titlebar';
 import { Provider } from 'react-redux';
 import { Route, MemoryRouter as Router, Routes } from 'react-router-dom';
-import { Toaster } from 'shadcn/components/ui/toaster';
-import { ShortcutProvider } from './context/shortcutContext';
+import { Toaster } from 'sonner';
+import { ShortcutProvider } from './core/context/shortcutContext';
 import { store } from './store';
 
 export default function App() {
@@ -12,7 +12,7 @@ export default function App() {
       <ShortcutProvider>
         <Titlebar />
         <div>
-          <Toaster />
+          <Toaster richColors closeButton />
           <Router>
             <Routes>
               <Route path="/" element={<Example />} />

@@ -1,27 +1,27 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import {
-  IpcChannels,
-  IpcInvokeReturn,
-  SetStoreValuePayload,
-} from 'shared/types/ipc';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { appCreateAsyncThunk } from 'core/hooks/store';
+import { IpcChannels, IpcReturn, SetStoreValuePayload } from 'shared/types/ipc';
 import { ExampleStoreConstants } from './constants';
 import { ExampleElectronStore } from './types';
+
+const STORE_NAME = 'exampleStore';
 
 const initialState: ExampleElectronStore = {
   exampleVisibility: false,
 };
 
-const formatState = (state: any): SetStoreValuePayload => ({
-  key: ExampleStoreConstants.EXAMPLE_VISIBILITY,
+const formatState = (
+  key: ExampleStoreConstants,
+  state: any,
+): SetStoreValuePayload => ({
+  key,
   state,
 });
 
-export const toggleWithNotificationExampleVisibility = createAsyncThunk(
-  'exampleStore/toggleWithNoficiationExampleVisibility',
-  async (
-    payload: { showBye?: boolean } | null,
-    { getState },
-  ): Promise<IpcInvokeReturn> => {
+export const toggleWithNotificationExampleVisibility = appCreateAsyncThunk(
+  STORE_NAME,
+  IpcChannels.toggleExampleVisibility,
+  async (payload, { getState }) => {
     // ? its very important that `example` is the same name as
     // ? in your main store reducer (renderer/store/index.ts)
     const { exampleStore } = getState() as {
@@ -33,7 +33,7 @@ export const toggleWithNotificationExampleVisibility = createAsyncThunk(
         ? payload.showBye
         : !exampleStore.exampleVisibility;
 
-    const res = await window.electron.ipc.invoke<boolean>(
+    await window.electron.ipc.invoke<IpcChannels.setStoreValue>(
       IpcChannels.setStoreValue,
       {
         key: ExampleStoreConstants.EXAMPLE_VISIBILITY,
@@ -41,7 +41,11 @@ export const toggleWithNotificationExampleVisibility = createAsyncThunk(
       },
     );
 
-    return res;
+    return {
+      success: true,
+      payload: flipped,
+      msg: '',
+    } satisfies IpcReturn<IpcChannels.toggleExampleVisibility>;
   },
   // {
   //   prepare: (showBye?: boolean) => {
@@ -49,6 +53,18 @@ export const toggleWithNotificationExampleVisibility = createAsyncThunk(
   //     return { payload: { showBye } ?? true };
   //   },
   // },
+);
+
+export const toggleWithNotificationExampleFAIL = appCreateAsyncThunk(
+  STORE_NAME,
+  IpcChannels.toggleExampleVisibility,
+  async () => {
+    return {
+      success: false,
+      msg: 'Failed to toggle',
+      payload: 'Failed to change electron store value and redux value',
+    };
+  },
 );
 
 export const exampleSlice = createSlice({
@@ -70,7 +86,10 @@ export const exampleSlice = createSlice({
     toggleExampleVisibility: (state) => {
       window.electron.ipc.send(
         IpcChannels.setStoreValue,
-        formatState(!state.exampleVisibility),
+        formatState(
+          ExampleStoreConstants.EXAMPLE_VISIBILITY,
+          !state.exampleVisibility,
+        ),
       );
       state.exampleVisibility = !state.exampleVisibility;
     },

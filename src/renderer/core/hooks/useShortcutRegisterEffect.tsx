@@ -1,7 +1,7 @@
+import { useShortcutManager } from 'core/context/shortcutContext';
 import { useEffect } from 'react';
-import { ShortcutKeybindingsAliases } from 'shared/keyboard/keybindingAliases';
 import { GenericFunction } from 'shared/types/generic';
-import { useShortcutManager } from '../context/shortcutContext';
+import { ShortcutKeybindingsAliases } from '../keyboard/keybindingAliases';
 
 interface ShortcutRegistration {
   id: ShortcutKeybindingsAliases;
@@ -12,7 +12,7 @@ interface ShortcutRegistration {
  * A hook to register shortcuts for components.
  * @param shortcutRegistrations - An array of shortcut registrations.
  */
-export const useShortcutRegisterEffect = (
+export const useRegisterShortcut = (
   ...shortcutRegistrations: ShortcutRegistration[]
 ) => {
   const { shortcutManager } = useShortcutManager();

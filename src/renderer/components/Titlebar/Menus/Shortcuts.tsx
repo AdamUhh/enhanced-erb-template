@@ -1,4 +1,4 @@
-import { useShortcutListener } from 'hooks/useShortcutListener';
+import { useShortcutListener } from 'core/hooks/useShortcutListener';
 import {
   MenubarContent,
   MenubarItem,

@@ -1,4 +1,5 @@
-import { useShortcutListener } from 'hooks/useShortcutListener';
+import { useShortcutListener } from 'core/hooks/useShortcutListener';
+import { Shortcut } from 'core/keyboard/types';
 import { useState } from 'react';
 import { Button } from 'shadcn/components/ui/button';
 import {
@@ -17,7 +18,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from 'shadcn/components/ui/dialog';
-import { Shortcut } from 'shared/types/keybindings';
 import EditShortcut from './EditShortcut';
 
 export default function ShortcutSettings() {

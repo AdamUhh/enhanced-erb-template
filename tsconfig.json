@@ -29,11 +29,14 @@
       "store/*": [
         "./src/renderer/store/stores/*"
       ],
+      "core/*": [
+        "./src/renderer/core/*"
+      ],
       "hooks/*": [
         "./src/renderer/hooks/*"
       ],
       "utils/*": [
-        "./src/renderer/utils/*"
+        "./src/renderer/core/utils/*"
       ],
       "shared/*": [
         "./src/shared/*"

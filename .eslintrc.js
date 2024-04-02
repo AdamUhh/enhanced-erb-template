@@ -20,6 +20,7 @@ module.exports = {
     'react/require-default-props': 'off',
     'react/jsx-props-no-spreading': 'off',
     'prefer-promise-reject-errors': 'off',
+    'promise/always-return': 'off',
     camelcase: 'off',
     'prettier/prettier': [
       'error',

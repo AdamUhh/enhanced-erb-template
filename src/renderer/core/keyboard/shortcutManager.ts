@@ -1,8 +1,17 @@
+/**
+ *
+ * File should probably be in renderer (`/src`), given that it only works there,
+ * but I feel like it should be in shared :p
+ *
+ */
+
+import { displayErrorToast } from 'core/utils/displayToast';
+import { CoreElectronStore } from 'shared/types/coreElectronStore';
 import { GenericFunction, GenericVoidFunction } from 'shared/types/generic';
 import { IpcChannels } from 'shared/types/ipc';
-import { Shortcut } from 'shared/types/keybindings';
 import { DefaultShortcutKeybindings } from './defaultKeybindings';
 import { ShortcutKeybindingsAliases } from './keybindingAliases';
+import { Shortcut } from './types';
 
 /**
  * ShortcutManager class manages keyboard shortcuts.
@@ -42,14 +51,15 @@ class ShortcutManager {
    * Initializes user shortcuts and replaces any current shortcuts/keybinds
    */
   private async initializeSavedKeybindings() {
-    const res = await window.electron.ipc.invoke<
-      {
-        alias: ShortcutKeybindingsAliases;
-        keybind: string;
-      }[]
-    >(IpcChannels.getStoreValue, 'coreUserKeybinds');
+    const res = await window.electron.ipc.invoke(
+      IpcChannels.getStoreValue,
+      'coreUserKeybinds',
+    );
     if (res.success && !!res.payload) {
-      res.payload.forEach(({ alias, keybind }) => {
+      const coreUserKeybinds =
+        res.payload as CoreElectronStore['coreUserKeybinds'];
+
+      coreUserKeybinds.forEach(({ alias, keybind }) => {
         if (this.keybindings[alias]) {
           this.keybindings[alias].keybind = keybind;
           const shortcutValues = this.shortcuts.get(alias);
@@ -107,10 +117,8 @@ class ShortcutManager {
     if (keybind) {
       this.shortcuts.set(id, {
         id,
-        keybind: keybind.keybind,
-        title: keybind.title,
-        description: keybind.description,
         action,
+        ...keybind,
       });
 
       // Check if all keybind-shortcuts have been registered, then emit
@@ -155,21 +163,23 @@ class ShortcutManager {
    * @param id - The identifier of the shortcut to be modified.
    * @param newKey - The new key combination for the shortcut.
    */
-  public changeShortcut(id: ShortcutKeybindingsAliases, newKey: string) {
+  public async changeShortcut(id: ShortcutKeybindingsAliases, newKey: string) {
     const shortcut = this.shortcuts.get(id);
     if (shortcut) {
       shortcut.keybind = newKey;
       this.keybindings[id] = { ...this.keybindings[id], keybind: newKey };
 
       // ? save all keybinds to electron store
-      window.electron.ipc.invoke(IpcChannels.setStoreValue, {
+      const res = await window.electron.ipc.invoke(IpcChannels.setStoreValue, {
         key: 'coreUserKeybinds',
         state: Object.entries(this.keybindings).map(([key, value]) => ({
           alias: key as ShortcutKeybindingsAliases,
           keybind: value.keybind,
         })),
       });
-      this.emitEvent();
+
+      if (res.success) this.emitEvent();
+      else displayErrorToast('Error saving keybind(s) to electron store');
     }
   }
 

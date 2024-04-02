@@ -1,51 +1,60 @@
-import { ipcMain } from 'electron';
 import { IpcChannels } from '../../shared/types/ipc';
+import { ipcMainOn } from '../bridges/ipcMain';
 import MainWindow from '../mainWindow';
-import { delayedErrorDialog } from './util';
+import { replySuccess } from './util/ipcReplies';
+import { SendErrorToRendererDialog } from './util/sendToRenderer';
 
 export default () => {
-  ipcMain.on(IpcChannels.closeApp, () => {
+  ipcMainOn(IpcChannels.closeApp, () => {
     try {
       MainWindow.close();
     } catch (error: any) {
-      console.log('Failed to close app', error);
-      delayedErrorDialog('Failed to close app', error);
+      SendErrorToRendererDialog('Failed to close app', error);
     }
   });
 
-  ipcMain.on(IpcChannels.minimizeApp, () => {
+  ipcMainOn(IpcChannels.minimizeApp, () => {
     try {
       MainWindow.minimize();
     } catch (error: any) {
-      console.log('Failed to minimize app', error);
-      delayedErrorDialog('Failed to minimize app', error);
+      SendErrorToRendererDialog('Failed to minimize app', error);
     }
   });
 
-  ipcMain.on(IpcChannels.maximizeApp, () => {
+  ipcMainOn(IpcChannels.maximizeApp, () => {
     try {
-      MainWindow.maximize();
+      MainWindow.toggleMaximize();
     } catch (error: any) {
-      console.log('Failed to maximize app', error);
-      delayedErrorDialog('Failed to maximize app', error);
+      SendErrorToRendererDialog('Failed to maximize app', error);
     }
   });
 
-  ipcMain.on(IpcChannels.restartApp, () => {
+  ipcMainOn(IpcChannels.isAppMaximized, (event) => {
+    try {
+      const res = MainWindow.isMaximized();
+      replySuccess(event, IpcChannels.isAppMaximized, { payload: res });
+    } catch (error: any) {
+      SendErrorToRendererDialog(
+        'Failed checking whether app is maximized',
+        error,
+      );
+    }
+    return false;
+  });
+
+  ipcMainOn(IpcChannels.restartApp, () => {
     try {
       MainWindow.getWebContents()?.reloadIgnoringCache();
     } catch (error: any) {
-      console.log('Failed to restart app', error);
-      delayedErrorDialog('Failed to restart app', error);
+      SendErrorToRendererDialog('Failed to restart app', error);
     }
   });
 
-  ipcMain.on(IpcChannels.toggleDevTools, () => {
+  ipcMainOn(IpcChannels.toggleDevTools, () => {
     try {
       MainWindow.getWebContents()?.toggleDevTools();
     } catch (error: any) {
-      console.log('Failed to toggle dev tools', error);
-      delayedErrorDialog('Failed to toggle dev tools', error);
+      SendErrorToRendererDialog('Failed to toggle dev tools', error);
     }
   });
 };
