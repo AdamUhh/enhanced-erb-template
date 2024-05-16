@@ -7,7 +7,7 @@
 import { IpcMainEvent, IpcMainInvokeEvent, ipcMain } from 'electron';
 import {
   IpcChannels,
-  IpcExpectedReturnLookup,
+  IpcPayloadOutputLookup,
   IpcInputConditional,
   IpcReturn,
 } from '../../shared/types/ipc';
@@ -23,8 +23,8 @@ export const ipcMainOn = <T extends IpcChannels>(
   callback: (
     event: IpcMainEvent,
     payload: IpcInputConditional<T>,
-  ) => T extends keyof IpcExpectedReturnLookup
-    ? IpcExpectedReturnLookup[T]
+  ) => T extends keyof IpcPayloadOutputLookup
+    ? IpcPayloadOutputLookup[T]
     : void,
 ) => {
   if (baseValidChannels.includes(channel))

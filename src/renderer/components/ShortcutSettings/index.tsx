@@ -71,7 +71,13 @@ export default function ShortcutSettings() {
                   onDoubleClick={() => handleRowDoubleClick(s)}
                   className="relative"
                 >
-                  <TableCell className="whitespace-pre-wrap">{s.id}</TableCell>
+                  <TableCell
+                    title={s.description}
+                    className="whitespace-pre-wrap"
+                  >
+                    {s.title}
+                    <br />
+                  </TableCell>
                   <TableCell>
                     {selectedShortcut === s ? (
                       <EditShortcut

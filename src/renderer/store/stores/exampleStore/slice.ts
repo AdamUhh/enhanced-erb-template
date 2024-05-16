@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { appCreateAsyncThunk } from 'core/hooks/store';
-import { IpcChannels, IpcReturn, SetStoreValuePayload } from 'shared/types/ipc';
+import { IpcChannels, SetStoreValuePayload } from 'shared/types/ipc';
+import { appCreateAsyncThunk } from '../../utils';
 import { ExampleStoreConstants } from './constants';
 import { ExampleElectronStore } from './types';
 
@@ -29,9 +29,7 @@ export const toggleWithNotificationExampleVisibility = appCreateAsyncThunk(
     };
 
     const flipped =
-      payload && payload.showBye
-        ? payload.showBye
-        : !exampleStore.exampleVisibility;
+      payload !== undefined ? payload : !exampleStore.exampleVisibility;
 
     await window.electron.ipc.invoke<IpcChannels.setStoreValue>(
       IpcChannels.setStoreValue,
@@ -43,9 +41,10 @@ export const toggleWithNotificationExampleVisibility = appCreateAsyncThunk(
 
     return {
       success: true,
+      msg: 'Successfully Toggled',
+      description: `set to:`,
       payload: flipped,
-      msg: '',
-    } satisfies IpcReturn<IpcChannels.toggleExampleVisibility>;
+    };
   },
   // {
   //   prepare: (showBye?: boolean) => {
@@ -62,7 +61,7 @@ export const toggleWithNotificationExampleFAIL = appCreateAsyncThunk(
     return {
       success: false,
       msg: 'Failed to toggle',
-      payload: 'Failed to change electron store value and redux value',
+      description: 'Failed to change electron store value and redux value',
     };
   },
 );
@@ -75,13 +74,17 @@ export const exampleSlice = createSlice({
     // Use the PayloadAction type to declare the contents of `action.payload`
     setExampleVisibility: (
       state,
-      { payload }: PayloadAction<{ showBye: boolean }>,
+      action: PayloadAction<boolean | undefined>,
     ) => {
+      const { payload = undefined } = action;
+
+      const visibilityMode = payload !== undefined ? payload : true;
+
       window.electron.ipc.send(IpcChannels.setStoreValue, {
         key: ExampleStoreConstants.EXAMPLE_VISIBILITY,
-        state: payload.showBye,
+        state: visibilityMode,
       });
-      state.exampleVisibility = payload.showBye;
+      state.exampleVisibility = visibilityMode;
     },
     toggleExampleVisibility: (state) => {
       window.electron.ipc.send(

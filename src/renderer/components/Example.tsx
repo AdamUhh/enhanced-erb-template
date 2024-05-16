@@ -1,5 +1,4 @@
-import { useReplyListenIpc } from 'core/hooks/ipc/useReplyListenIpc';
-import { useAppDispatch, useAppSelector } from 'core/hooks/store';
+import useIpcListener from 'core/hooks/ipc/useIpcListener';
 import { useRegisterShortcut } from 'core/hooks/useShortcutRegisterEffect';
 import { ShortcutKeybindingsAliases } from 'core/keyboard/keybindingAliases';
 import {
@@ -19,6 +18,7 @@ import {
   toggleWithNotificationExampleFAIL,
   toggleWithNotificationExampleVisibility,
 } from 'store/exampleStore/slice';
+import { useAppDispatch, useAppSelector } from '../store';
 import ShortcutSettings from './ShortcutSettings';
 
 export function ExampleToggleButtons() {
@@ -32,17 +32,17 @@ export function ExampleToggleButtons() {
     {
       id: ShortcutKeybindingsAliases.toggleWithNotification,
       action: () =>
-        dispatchInvokeWithCallback(
+        dispatchInvokeWithCallback<IpcChannels.toggleExampleVisibility>(
           dispatch,
-          toggleWithNotificationExampleVisibility(null),
+          toggleWithNotificationExampleVisibility(),
         ),
     },
     {
       id: ShortcutKeybindingsAliases.toggleWithByeNotification,
       action: () =>
-        dispatchInvokeWithCallback(
+        dispatchInvokeWithCallback<IpcChannels.toggleExampleVisibility>(
           dispatch,
-          toggleWithNotificationExampleVisibility({ showBye: true }),
+          toggleWithNotificationExampleVisibility(true),
         ),
     },
   );
@@ -60,7 +60,7 @@ export function ExampleToggleButtons() {
       <Button
         variant="outline"
         onClick={() => {
-          dispatch(setExampleVisibility({ showBye: true }));
+          dispatch(setExampleVisibility(true));
         }}
       >
         Set to Bye (via payload)
@@ -70,7 +70,7 @@ export function ExampleToggleButtons() {
         onClick={() => {
           dispatchInvokeWithCallback(
             dispatch,
-            toggleWithNotificationExampleVisibility(null),
+            toggleWithNotificationExampleVisibility(),
           );
         }}
       >
@@ -81,7 +81,7 @@ export function ExampleToggleButtons() {
         onClick={() => {
           dispatchInvokeWithCallback(
             dispatch,
-            toggleWithNotificationExampleVisibility({ showBye: true }),
+            toggleWithNotificationExampleVisibility(true),
           );
         }}
       >
@@ -90,9 +90,11 @@ export function ExampleToggleButtons() {
       <Button
         variant="outline"
         onClick={() =>
-          displaySuccessToast(
-            'Successfully changed electron store value and redux value',
-          )
+          displaySuccessToast({
+            msg: 'Success!',
+            description:
+              'Successfully changed electron store value and redux value',
+          })
         }
       >
         Success Notification
@@ -100,7 +102,7 @@ export function ExampleToggleButtons() {
       <Button
         variant="outline"
         onClick={() =>
-          dispatchInvoke(dispatch, toggleWithNotificationExampleFAIL(null))
+          dispatchInvoke(dispatch, toggleWithNotificationExampleFAIL())
         }
       >
         Fail Notification
@@ -118,7 +120,7 @@ function ExampleContainer() {
 }
 
 export default function Example() {
-  useReplyListenIpc({
+  useIpcListener({
     channel: IpcChannels.toggleRendererErrorDialog,
     failCallback: displayErrorToast,
   });

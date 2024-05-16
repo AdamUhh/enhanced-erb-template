@@ -1,10 +1,9 @@
 import { Dispatch } from '@reduxjs/toolkit';
-
 import {
   IpcChannels,
-  IpcExpectedPayloadReturn,
-  IpcInvokeErrorReturn,
-  IpcReturn,
+  IpcErrorReturnFormat,
+  IpcInvokeReturn,
+  IpcPayloadOutput,
 } from 'shared/types/ipc';
 import { displayErrorToast, displaySuccessToast } from './displayToast';
 
@@ -22,23 +21,46 @@ export const dispatchInvokeWithCallback = <T extends IpcChannels>(
     successCallback = displaySuccessToast,
     failCallback = displayErrorToast,
   }: {
-    successCallback?: (
-      msg: string,
-      payload: IpcExpectedPayloadReturn<T>,
-    ) => void;
-    failCallback?: (error: string, payload?: string) => void;
+    successCallback?: ({
+      msg,
+      description,
+      payload,
+    }: {
+      msg?: string;
+      description?: string;
+      payload: IpcPayloadOutput<T>;
+    }) => void;
+    failCallback?: ({
+      msg,
+      description,
+      payload,
+    }: {
+      msg: string;
+      description?: string;
+      payload?: IpcPayloadOutput<T>;
+    }) => void;
   } = {},
 ) => {
   dispatch(dispatchAction)
-    .then((res: { payload: IpcReturn<T> }) => {
+    .then((res: { payload: IpcInvokeReturn<T> }) => {
       if (res.payload.success)
-        return successCallback(res.payload.msg, res.payload.payload);
-      return failCallback(
-        res.payload.msg,
-        (res.payload as IpcInvokeErrorReturn).payload,
-      );
+        return successCallback({
+          msg: res.payload.msg,
+          description: res.payload.description,
+          payload: res.payload.payload,
+        });
+
+      return failCallback({
+        msg: res.payload.msg!,
+        description: res.payload.description,
+        payload: res.payload.payload,
+      });
     })
-    .catch((error: string) => failCallback(error));
+    .catch((error: string) =>
+      failCallback({
+        msg: error,
+      }),
+    );
 };
 
 /**
@@ -47,25 +69,37 @@ export const dispatchInvokeWithCallback = <T extends IpcChannels>(
  * @param dispatchAction - The (dispatch) action to dispatch.
  * @param callbacks.failCallback - The callback function to invoke upon failed action dispatch.
  */
-export const dispatchInvoke = (
+export const dispatchInvoke = <T extends IpcChannels>(
   dispatch: Dispatch,
   dispatchAction: any,
   {
     failCallback = displayErrorToast,
   }: {
-    failCallback?: (error: string, payload?: unknown) => void;
+    failCallback?: ({
+      msg,
+      description,
+      payload,
+    }: {
+      msg: string;
+      description?: string;
+      payload?: IpcPayloadOutput<T>;
+    }) => void;
   } = {},
 ) => {
   dispatch(dispatchAction)
-    .then((res: { payload: IpcInvokeErrorReturn }) => {
+    .then((res: { payload: IpcErrorReturnFormat }) => {
+      // eslint-disable-next-line promise/always-return
       if (!res.payload.success) {
-        failCallback(
-          res.payload.msg,
-          (res.payload as IpcInvokeErrorReturn).payload,
-        );
+        failCallback({
+          msg: res.payload.msg!,
+          description: res.payload.description,
+          payload: res.payload.payload,
+        });
       }
     })
-    .catch((error: string) => {
-      failCallback(error);
-    });
+    .catch((error: string) =>
+      failCallback({
+        msg: error,
+      }),
+    );
 };

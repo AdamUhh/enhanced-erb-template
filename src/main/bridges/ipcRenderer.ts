@@ -8,7 +8,7 @@ import { ipcRenderer, IpcRendererEvent } from 'electron';
 import {
   I_IpcApi,
   IpcChannels,
-  IpcExpectedPayloadLookup,
+  IpcPayloadInputLookup,
   IpcExpectedPayloadReturn,
   IpcInputConditional,
   IpcInvokeReturn,
@@ -69,7 +69,7 @@ const send = <T extends IpcChannels>(
  * @param payload - The data to be sent with the message.
  */
 const invoke = <T extends IpcChannels>(
-  ...args: T extends keyof IpcExpectedPayloadLookup
+  ...args: T extends keyof IpcPayloadInputLookup
     ? [channel: T, payload?: IpcInputConditional<T>]
     : [channel: T]
 ): Promise<IpcReturn<T>> =>

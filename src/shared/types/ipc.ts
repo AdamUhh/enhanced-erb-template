@@ -29,14 +29,14 @@ export enum IpcChannels {
 }
 
 /** Typesafe: Expected payload INPUT for ipcChannels */
-export type IpcExpectedPayloadLookup = {
+export type IpcPayloadInputLookup = {
   [IpcChannels.setStoreValue]: SetStoreValuePayload;
   [IpcChannels.getStoreValue]: keyof CoreElectronStore;
-  [IpcChannels.toggleExampleVisibility]: { showBye: boolean } | null;
+  [IpcChannels.toggleExampleVisibility]: boolean | undefined;
 };
 
 /** Typesafe: Expected payload RETURN for ipcChannels */
-export type IpcExpectedReturnLookup = {
+export type IpcPayloadOutputLookup = {
   [IpcChannels.isAppMaximized]: boolean;
   [IpcChannels.getStoreValue]: CoreElectronStore[keyof CoreElectronStore];
   [IpcChannels.toggleExampleVisibility]: boolean;
@@ -46,80 +46,57 @@ export type IpcExpectedReturnLookup = {
  *
  * This overrides return from IpcExpectedReturnLookup
  */
-export type IpcExpectedMainHandleReturnLookup = {
+export type IpcMainPayloadOutputLookup = {
   [IpcChannels.setStoreValue]: CoreElectronStore[keyof CoreElectronStore];
 };
 
-/**
- * Represents the return type of an IPC (Inter-Process Communication) invoke operation.
- * @template P The type of the payload included in the response.
- */
-export type IpcInvokeReturn<P = any> = {
+export type IpcReturnFormat<P = any> = {
   success: boolean;
-  msg: string;
+  msg?: string;
+  description?: string;
   payload: P;
 };
 
-/**
- * Represents the error return type of an IPC invoke operation.
- */
-export type IpcInvokeErrorReturn = {
+export type IpcErrorReturnFormat<P = any> = {
   success: false;
   msg: string;
-  payload: string;
+  description?: string;
+  payload?: P;
 };
 
-/**
- * Represents the expected payload type for a specific IPC channel.
- * @template T The type of the IPC channel.
- * @template P The type of the payload.
- */
-export type IpcExpectedPayload<
+export type IpcSendPayloadOutput<
   T extends IpcChannels,
   P = undefined,
-> = T extends keyof IpcExpectedReturnLookup ? IpcExpectedReturnLookup[T] : P;
+> = T extends keyof IpcPayloadOutputLookup ? IpcPayloadOutputLookup[T] : P;
 
-/**
- * Represents the expected payload type specifically for a main process IPC handle.
- * @template T The type of the IPC channel.
- * @template P The type of the payload.
- */
-export type IpcExpectedMainHandlePayload<
+export type IpcMainPayloadOutput<
   T extends IpcChannels,
   P = undefined,
-> = T extends keyof IpcExpectedMainHandleReturnLookup
-  ? IpcExpectedMainHandleReturnLookup[T]
+> = T extends keyof IpcMainPayloadOutputLookup
+  ? IpcMainPayloadOutputLookup[T]
   : P;
 
-/**
- * Represents the expected payload return type for an IPC channel
- * with main process handle types having priority
- * @template T The type of the IPC channel.
- * @template P The type of the payload.
- */
-export type IpcExpectedPayloadReturn<
+export type IpcPayloadOutput<
   T extends IpcChannels,
   P = undefined,
-> = T extends keyof IpcExpectedMainHandleReturnLookup
-  ? IpcExpectedMainHandleReturnLookup[T]
-  : IpcExpectedPayload<T, P>;
+> = T extends keyof IpcMainPayloadOutputLookup
+  ? IpcMainPayloadOutputLookup[T]
+  : IpcSendPayloadOutput<T, P>;
 
-/**
- * Represents the return type for an IPC channel.
- * @template T The type of the IPC channel.
- */
-export type IpcReturn<T extends IpcChannels> =
-  | IpcInvokeReturn<IpcExpectedPayloadReturn<T>>
-  | IpcInvokeErrorReturn;
+export type IpcInvokeReturn<T extends IpcChannels> =
+  | IpcReturnFormat<IpcPayloadOutput<T>>
+  | IpcErrorReturnFormat;
 
-/**
- * Represents the conditional input type for an IPC channel.
- * @template T The type of the IPC channel.
- */
-export type IpcInputConditional<T extends IpcChannels> =
-  T extends keyof IpcExpectedPayloadLookup
-    ? IpcExpectedPayloadLookup[T]
-    : undefined;
+export type IpcReturn<T extends IpcChannels> = IpcReturnFormat<
+  IpcPayloadOutput<T>
+>;
+
+export type IpcSendReturn<T extends IpcChannels> = IpcReturnFormat<
+  IpcSendPayloadOutput<T>
+>;
+
+export type IpcExpectedInput<T extends IpcChannels> =
+  T extends keyof IpcPayloadInputLookup ? IpcPayloadInputLookup[T] : undefined;
 
 export interface I_IpcApi {
   /**
@@ -145,8 +122,8 @@ export interface I_IpcApi {
    * @param {any} payload - The data to be sent with the message.
    */
   send<T extends IpcChannels>(
-    ...args: T extends keyof IpcExpectedPayloadLookup
-      ? [channel: T, payload: IpcInputConditional<T>]
+    ...args: T extends keyof IpcPayloadInputLookup
+      ? [channel: T, payload: IpcExpectedInput<T>]
       : [channel: T]
   ): void;
   /**
@@ -155,8 +132,8 @@ export interface I_IpcApi {
    * @param {any} payload - The data to be sent with the message.
    */
   invoke<T extends IpcChannels>(
-    ...args: T extends keyof IpcExpectedPayloadLookup
-      ? [channel: T, payload: IpcInputConditional<T>]
+    ...args: T extends keyof IpcPayloadInputLookup
+      ? [channel: T, payload: IpcExpectedInput<T>]
       : [channel: T]
-  ): Promise<IpcReturn<T>>;
+  ): Promise<IpcInvokeReturn<T>>;
 }

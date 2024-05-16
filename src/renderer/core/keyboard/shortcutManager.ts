@@ -179,7 +179,8 @@ class ShortcutManager {
       });
 
       if (res.success) this.emitEvent();
-      else displayErrorToast('Error saving keybind(s) to electron store');
+      else
+        displayErrorToast({ msg: 'Error saving keybind(s) to electron store' });
     }
   }
 
