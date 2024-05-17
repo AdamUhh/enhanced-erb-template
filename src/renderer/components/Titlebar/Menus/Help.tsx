@@ -1,5 +1,7 @@
-import { getEffectiveKeyBindings, useRegisterShortcut } from 'core/keyboard3';
+import { ShortcutKeybindingsAliases } from 'core/keyboard2/defaults';
+import { useRegisterShortcut } from 'core/keyboard2/useRegisterShortcut';
 import { checkForupdates, clearStore, toggleDevTools } from 'core/utils/ipc';
+import { useState } from 'react';
 import {
   MenubarContent,
   MenubarItem,
@@ -9,21 +11,32 @@ import {
 } from 'shadcn/components/ui/custom/menubar';
 
 export default function HelpMenu() {
-  // useRegisterShortcut({
-  //   alias: 'Ctrl + B',
-  //   handler: toggleDevTools,
-  // });
+  const [toggle, setToggle] = useState(true);
+
+  function toggleSetToggle() {
+    setToggle(true);
+  }
+
+  function toggleToggle() {
+    toggleDevTools();
+    setToggle(false);
+  }
 
   useRegisterShortcut({
-    keys: getEffectiveKeyBindings().save,
-    callback: () => toggleDevTools(),
-    when: () => true, // This shortcut is always active
+    alias: ShortcutKeybindingsAliases.toggleDeveloperTools,
+    handler: toggleToggle,
+    when() {
+      return toggle;
+    },
   });
 
   return (
     <MenubarMenu>
       <MenubarTrigger className="font-medium">Help</MenubarTrigger>
       <MenubarContent>
+        <MenubarItem onClick={() => toggleSetToggle()}>
+          TOGGLE <MenubarShortcut>F12</MenubarShortcut>
+        </MenubarItem>
         <MenubarItem onClick={toggleDevTools}>
           Toggle Developer Tools <MenubarShortcut>F12</MenubarShortcut>
         </MenubarItem>

@@ -1,17 +1,23 @@
+import {
+  DefaultShortcutKeybindings,
+  ShortcutKeybindingsAliases,
+} from './defaults';
+
 type ShortcutHandler = () => void;
 
-interface ShortcutRegistration {
+export interface ShortcutRegistration {
   handler: ShortcutHandler;
   when?: () => boolean;
 }
 
 export class ShortcutRegistry {
   // Map to store registered shortcuts and their handlers
-  private registry: Map<string, ShortcutRegistration[]> = new Map();
+  private registry: Map<ShortcutKeybindingsAliases, ShortcutRegistration[]> =
+    new Map();
 
   // Register a new shortcut
   registerShortcut(
-    alias: string,
+    alias: ShortcutKeybindingsAliases,
     handler: ShortcutHandler,
     when?: () => boolean,
   ) {
@@ -21,12 +27,42 @@ export class ShortcutRegistry {
   }
 
   // Deregister a shortcut
-  deregisterShortcut(alias: string) {
+  deregisterShortcut(alias: ShortcutKeybindingsAliases) {
     this.registry.delete(alias);
   }
 
+  private getAliasFromChord(
+    normalizedAlias: string,
+  ): ShortcutKeybindingsAliases | null {
+    const entry = Object.entries(DefaultShortcutKeybindings).find(
+      ([, value]) => {
+        return value.keybind.toLowerCase() === normalizedAlias;
+      },
+    );
+
+    return entry ? (entry[0] as ShortcutKeybindingsAliases) : null;
+  }
+
+  runShortcut(alias: ShortcutKeybindingsAliases) {
+    const registrations = this.registry.get(alias) || [];
+    const matchingHandlers = registrations
+      .filter((reg) => !reg.when || reg.when())
+      .map((reg) => reg.handler);
+    matchingHandlers.forEach((handler) => handler());
+  }
+
+  getShortcuts(): Map<ShortcutKeybindingsAliases, ShortcutRegistration[]> {
+    return this.registry;
+  }
+
   // Get the handlers for a given shortcut alias
-  getHandlers(alias: string): ShortcutHandler[] {
+  getHandlers(chord: string[]): ShortcutHandler[] {
+    const normalizedChord = chord.join(', '); // ['ctrl + shift + a', 'ctrl + shift + s'] -> 'ctrl + shift + a, ctrl + shift + s'
+    console.log(normalizedChord);
+    const alias = this.getAliasFromChord(normalizedChord);
+
+    if (!alias) return [];
+
     const registrations = this.registry.get(alias) || [];
     return registrations
       .filter((reg) => !reg.when || reg.when())

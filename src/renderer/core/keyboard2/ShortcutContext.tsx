@@ -1,18 +1,22 @@
 import { createContext } from 'react';
+import { ShortcutRegistration } from './ShortcutRegistry';
+import { ShortcutKeybindingsAliases } from './defaults';
 
 interface ShortcutContextValue {
   registerShortcut: (
-    alias: string,
+    alias: ShortcutKeybindingsAliases,
     handler: () => void,
     when?: () => boolean,
   ) => void;
-  deregisterShortcut: (alias: string) => void;
-  activeShortcut: string | null;
+  deregisterShortcut: (alias: ShortcutKeybindingsAliases) => void;
+  runShortcut: (alias: ShortcutKeybindingsAliases) => void;
+  getShortcuts: () => Map<ShortcutKeybindingsAliases, ShortcutRegistration[]>;
 }
 
 // Create the ShortcutContext with a default value
 export const ShortcutContext = createContext<ShortcutContextValue>({
   registerShortcut: () => {},
   deregisterShortcut: () => {},
-  activeShortcut: null,
+  runShortcut: () => {},
+  getShortcuts: () => new Map(),
 });
