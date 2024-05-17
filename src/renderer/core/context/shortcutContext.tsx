@@ -1,9 +1,6 @@
-/* eslint-disable react/function-component-definition */
-// ShortcutContext.tsx
-
 import KeyboardRegister from 'components/ShortcutSettings/KeyboardRegister';
 import ShortcutManager from 'core/keyboard/shortcutManager';
-import React, { ReactNode, createContext, useContext, useMemo } from 'react';
+import { ReactNode, createContext, useContext, useMemo } from 'react';
 
 interface ShortcutContextType {
   shortcutManager: ShortcutManager;
@@ -23,9 +20,7 @@ export const useShortcutManager = () => {
   return context;
 };
 
-export const ShortcutProvider: React.FC<{ children: ReactNode }> = ({
-  children,
-}) => {
+export function ShortcutProvider({ children }: { children: ReactNode }) {
   const shortcutManager = useMemo(() => new ShortcutManager(), []);
 
   const shortcutContextValue = useMemo(
@@ -39,4 +34,4 @@ export const ShortcutProvider: React.FC<{ children: ReactNode }> = ({
       {children}
     </ShortcutContext.Provider>
   );
-};
+}

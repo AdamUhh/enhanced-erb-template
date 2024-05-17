@@ -1,33 +1,21 @@
 import { Dispatch, SetStateAction, useEffect, useRef } from 'react';
 import {
   IpcChannels,
-  IpcPayloadOutput,
   IpcReturnFormat,
   IpcSendPayloadOutput,
   IpcSendReturn,
 } from 'shared/types/ipc';
 import { getReplyChannel } from 'shared/utils/getReplyChannel';
+import { FailCallbackType, SuccessCallbackType } from './type';
 
 type IpcSenderProps<P extends IpcChannels> = {
   channel: P;
-  failCallback?: ({
-    msg,
-    description,
-    payload,
-  }: {
-    msg: string;
-    description?: string;
-    payload?: IpcPayloadOutput<P>;
-  }) => void;
+  failCallback?: ({ msg, description, payload }: FailCallbackType<P>) => void;
   successCallback?: ({
     msg,
     description,
     payload,
-  }: {
-    msg?: string;
-    description?: string;
-    payload: IpcPayloadOutput<P>;
-  }) => void;
+  }: SuccessCallbackType<P>) => void;
 };
 
 type IpcSenderStateProps<T, P extends IpcChannels> = Dispatch<
@@ -58,7 +46,7 @@ export default function useIpcListener<T, P extends IpcChannels>(
         callbackFunction({
           msg: data.msg || '',
           description: data.description || '',
-          payload: data.payload as IpcPayloadOutput<P>,
+          payload: data.payload,
         });
       if (setResponse) setResponse(data);
     };

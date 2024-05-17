@@ -21,7 +21,7 @@ import {
 import EditShortcut from './EditShortcut';
 
 export default function ShortcutSettings() {
-  const { shortcuts, shortcutManager } = useShortcutListener();
+  // const { shortcuts, shortcutManager } = useShortcutListener();
   const [selectedShortcut, setSelectedShortcut] = useState<Shortcut | null>(
     null,
   );
@@ -65,7 +65,7 @@ export default function ShortcutSettings() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {shortcuts.map((s: Shortcut) => (
+              {/* {shortcuts.map((s: Shortcut) => (
                 <TableRow
                   key={s.id}
                   onDoubleClick={() => handleRowDoubleClick(s)}
@@ -91,7 +91,7 @@ export default function ShortcutSettings() {
                     )}
                   </TableCell>
                 </TableRow>
-              ))}
+              ))} */}
             </TableBody>
           </Table>
         </DialogContent>

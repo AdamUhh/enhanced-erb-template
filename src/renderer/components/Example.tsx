@@ -1,6 +1,4 @@
 import useIpcListener from 'core/hooks/ipc/useIpcListener';
-import { useRegisterShortcut } from 'core/hooks/useShortcutRegisterEffect';
-import { ShortcutKeybindingsAliases } from 'core/keyboard/keybindingAliases';
 import {
   dispatchInvoke,
   dispatchInvokeWithCallback,
@@ -24,28 +22,28 @@ import ShortcutSettings from './ShortcutSettings';
 export function ExampleToggleButtons() {
   const dispatch = useAppDispatch();
 
-  useRegisterShortcut(
-    {
-      id: ShortcutKeybindingsAliases.toggleExample,
-      action: () => dispatch(toggleExampleVisibility()),
-    },
-    {
-      id: ShortcutKeybindingsAliases.toggleWithNotification,
-      action: () =>
-        dispatchInvokeWithCallback<IpcChannels.toggleExampleVisibility>(
-          dispatch,
-          toggleWithNotificationExampleVisibility(),
-        ),
-    },
-    {
-      id: ShortcutKeybindingsAliases.toggleWithByeNotification,
-      action: () =>
-        dispatchInvokeWithCallback<IpcChannels.toggleExampleVisibility>(
-          dispatch,
-          toggleWithNotificationExampleVisibility(true),
-        ),
-    },
-  );
+  // useRegisterShortcut(
+  //   {
+  //     id: ShortcutKeybindingsAliases.toggleExample,
+  //     action: () => dispatch(toggleExampleVisibility()),
+  //   },
+  //   {
+  //     id: ShortcutKeybindingsAliases.toggleWithNotification,
+  //     action: () =>
+  //       dispatchInvokeWithCallback<IpcChannels.toggleExampleVisibility>(
+  //         dispatch,
+  //         toggleWithNotificationExampleVisibility(),
+  //       ),
+  //   },
+  //   {
+  //     id: ShortcutKeybindingsAliases.toggleWithByeNotification,
+  //     action: () =>
+  //       dispatchInvokeWithCallback<IpcChannels.toggleExampleVisibility>(
+  //         dispatch,
+  //         toggleWithNotificationExampleVisibility(true),
+  //       ),
+  //   },
+  // );
 
   return (
     <div className="grid grid-cols-2 gap-2">

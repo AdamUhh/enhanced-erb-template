@@ -11,7 +11,7 @@ export default function WindowButtons() {
   // ? Send an Ipc request and listen to changes for whether window is maximized
   useIpcOnMountListener({
     channel: IpcChannels.isAppMaximized,
-    successCallback: (_, payload) => setIsMaximized(payload),
+    successCallback: ({ payload }) => setIsMaximized(payload),
   });
 
   return (

@@ -1,5 +1,4 @@
-import { useRegisterShortcut } from 'core/hooks/useShortcutRegisterEffect';
-import { ShortcutKeybindingsAliases } from 'core/keyboard/keybindingAliases';
+import { getEffectiveKeyBindings, useRegisterShortcut } from 'core/keyboard3';
 import { checkForupdates, clearStore, toggleDevTools } from 'core/utils/ipc';
 import {
   MenubarContent,
@@ -10,9 +9,15 @@ import {
 } from 'shadcn/components/ui/custom/menubar';
 
 export default function HelpMenu() {
+  // useRegisterShortcut({
+  //   alias: 'Ctrl + B',
+  //   handler: toggleDevTools,
+  // });
+
   useRegisterShortcut({
-    id: ShortcutKeybindingsAliases.toggleDeveloperTools,
-    action: toggleDevTools,
+    keys: getEffectiveKeyBindings().save,
+    callback: () => toggleDevTools(),
+    when: () => true, // This shortcut is always active
   });
 
   return (

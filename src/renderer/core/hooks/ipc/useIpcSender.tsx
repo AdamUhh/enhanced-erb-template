@@ -1,15 +1,16 @@
 import { useCallback } from 'react';
-import {
-  IpcChannels,
-  IpcExpectedInput,
-  IpcSendPayloadOutput,
-} from 'shared/types/ipc';
+import { IpcChannels, IpcExpectedInput } from 'shared/types/ipc';
+import { FailCallbackType, SuccessCallbackType } from './type';
 import useIpcListener from './useIpcListener';
 
 type IpcSenderProps<P extends IpcChannels> = {
   channel: P;
-  failCallback?: (msg: string, payload?: any) => void;
-  successCallback?: (msg: string, payload: IpcSendPayloadOutput<P>) => void;
+  failCallback?: ({ msg, description, payload }: FailCallbackType<P>) => void;
+  successCallback?: ({
+    msg,
+    description,
+    payload,
+  }: SuccessCallbackType<P>) => void;
 };
 
 /**
