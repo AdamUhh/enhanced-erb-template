@@ -1,5 +1,5 @@
 import { ShortcutKeybindingsAliases } from 'core/keyboard2/defaults';
-import { useRegisterShortcut } from 'core/keyboard2/useRegisterShortcut';
+import { useRegisterEventShortcut, useRegisterShortcut } from 'core/keyboard2/useRegisterShortcut';
 import { checkForupdates, clearStore, toggleDevTools } from 'core/utils/ipc';
 import { useState } from 'react';
 import {
@@ -22,7 +22,15 @@ export default function HelpMenu() {
     setToggle(false);
   }
 
-  useRegisterShortcut({
+  // useRegisterShortcut({
+  //   alias: ShortcutKeybindingsAliases.toggleDeveloperTools,
+  //   handler: toggleToggle,
+  //   when() {
+  //     return toggle;
+  //   },
+  // });
+
+  useRegisterEventShortcut({
     alias: ShortcutKeybindingsAliases.toggleDeveloperTools,
     handler: toggleToggle,
     when() {

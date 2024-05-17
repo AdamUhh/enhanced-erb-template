@@ -24,7 +24,15 @@ export default function ShortcutManager({ children }: ShortcutManagerProps) {
 
         // Get the handlers for the shortcut and execute them
         const matchingHandlers = registry.getHandlers(activeChordRef.current);
-        matchingHandlers.forEach((handler) => handler());
+
+        matchingHandlers.forEach((regs) => {
+          if (regs.isEventSubscriber) {
+            const customEvent = new CustomEvent(`${regs.alias}-event`);
+            document.dispatchEvent(customEvent);
+          } else {
+            regs.handler();
+          }
+        });
       }
     },
     [registry],
@@ -53,8 +61,9 @@ export default function ShortcutManager({ children }: ShortcutManagerProps) {
       alias: ShortcutKeybindingsAliases,
       handler: () => void,
       when?: () => boolean,
+      isEventSubscriber?: boolean,
     ) => {
-      registry.registerShortcut(alias, handler, when);
+      registry.registerShortcut(alias, handler, when, isEventSubscriber);
     },
     [registry],
   );
@@ -65,6 +74,20 @@ export default function ShortcutManager({ children }: ShortcutManagerProps) {
       registry.deregisterShortcut(alias);
     },
     [registry],
+  );
+
+  const subscribe = useCallback(
+    (alias: ShortcutKeybindingsAliases, handler: () => void) => {
+      document.addEventListener(`${alias}-event`, handler);
+    },
+    [],
+  );
+
+  const unsubscribe = useCallback(
+    (alias: ShortcutKeybindingsAliases, handler: () => void) => {
+      document.removeEventListener(`${alias}-event`, handler);
+    },
+    [],
   );
 
   const getShortcuts = useCallback(() => registry.getShortcuts(), [registry]);
@@ -83,8 +106,17 @@ export default function ShortcutManager({ children }: ShortcutManagerProps) {
       deregisterShortcut,
       runShortcut,
       getShortcuts,
+      subscribe,
+      unsubscribe,
     }),
-    [registerShortcut, deregisterShortcut, runShortcut, getShortcuts],
+    [
+      registerShortcut,
+      deregisterShortcut,
+      runShortcut,
+      getShortcuts,
+      subscribe,
+      unsubscribe,
+    ],
   );
 
   // Subscribe to shortcut events

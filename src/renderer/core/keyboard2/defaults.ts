@@ -10,15 +10,15 @@ export const DefaultShortcutKeybindings: Record<
   { keybind: string; title: string; description?: string }
 > = {
   [ShortcutKeybindingsAliases.toggleExample]: {
-    keybind: 'Ctrl+Shift+A',
+    keybind: 'Ctrl + Shift + A',
     title: 'Toggle Example',
   },
   [ShortcutKeybindingsAliases.toggleWithNotification]: {
-    keybind: 'Ctrl+Shift+S',
+    keybind: 'Ctrl + Shift + S',
     title: 'Toggle With Notification',
   },
   [ShortcutKeybindingsAliases.toggleWithByeNotification]: {
-    keybind: 'Ctrl+Shift+D',
+    keybind: 'Ctrl + Shift + D',
     title: 'Toggle With Bye Notification',
   },
   [ShortcutKeybindingsAliases.toggleDeveloperTools]: {

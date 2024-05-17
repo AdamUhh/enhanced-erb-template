@@ -22,3 +22,34 @@ export const useRegisterShortcut = ({
     };
   }, [registerShortcut, deregisterShortcut, alias, handler, when]);
 };
+
+export const useRegisterEventShortcut = ({
+  alias,
+  handler,
+  when,
+}: {
+  alias: ShortcutKeybindingsAliases;
+  handler: () => void;
+  when?: () => boolean;
+}) => {
+  const { registerShortcut, deregisterShortcut, subscribe, unsubscribe } =
+    useContext(ShortcutContext);
+
+  // Register the shortcut on mount and deregister on unmount
+  useEffect(() => {
+    subscribe(alias, handler);
+    registerShortcut(alias, handler, when, true);
+    return () => {
+      unsubscribe(alias, handler);
+      deregisterShortcut(alias);
+    };
+  }, [
+    registerShortcut,
+    deregisterShortcut,
+    alias,
+    handler,
+    when,
+    subscribe,
+    unsubscribe,
+  ]);
+};
