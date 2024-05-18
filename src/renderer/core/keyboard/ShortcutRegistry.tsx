@@ -5,7 +5,7 @@ import {
 
 type ShortcutHandler = () => void;
 
-type Registrations = {
+export type Registrations = {
   alias: ShortcutKeybindingsAliases;
   isEventSubscriber: boolean;
   handler: ShortcutHandler;
@@ -18,11 +18,11 @@ export interface ShortcutRegistration {
 }
 
 export class ShortcutRegistry {
-  // Map to store registered shortcuts and their handlers
+  /** Map to store registered shortcuts and their handlers */
   private registry: Map<ShortcutKeybindingsAliases, ShortcutRegistration[]> =
     new Map();
 
-  // Register a new shortcut
+  /** Register/save a new shortcut to registry */
   registerShortcut(
     alias: ShortcutKeybindingsAliases,
     handler: ShortcutHandler,
@@ -38,21 +38,9 @@ export class ShortcutRegistry {
     this.registry.set(alias, [...existing, registration]);
   }
 
-  // Deregister a shortcut
-  deregisterShortcut(alias: ShortcutKeybindingsAliases) {
+  /** Unregister shortcut from registry */
+  unregisterShortcut(alias: ShortcutKeybindingsAliases) {
     this.registry.delete(alias);
-  }
-
-  private getAliasFromChord(
-    normalizedAlias: string,
-  ): ShortcutKeybindingsAliases | null {
-    const entry = Object.entries(DefaultShortcutKeybindings).find(
-      ([, value]) => {
-        return value.keybind.toLowerCase() === normalizedAlias;
-      },
-    );
-
-    return entry ? (entry[0] as ShortcutKeybindingsAliases) : null;
   }
 
   runShortcut(alias: ShortcutKeybindingsAliases) {
@@ -67,10 +55,43 @@ export class ShortcutRegistry {
     return this.registry;
   }
 
-  // Get the handlers for a given shortcut alias
+  changeShortcut(alias: ShortcutKeybindingsAliases, newKeybind: string) {
+    // Update the keybind in DefaultShortcutKeybindings
+    DefaultShortcutKeybindings[alias].keybind = newKeybind;
+
+    // Get the existing registrations for the alias
+    const registrations = this.registry.get(alias) || [];
+
+    // Deregister the existing shortcut
+    this.unregisterShortcut(alias);
+
+    // Re-register the shortcut with the new keybind
+    registrations.forEach((registration) => {
+      this.registerShortcut(
+        alias,
+        registration.handler,
+        registration.when,
+        registration.isEventSubscriber,
+      );
+    });
+  }
+
+  private getAliasFromChord(
+    normalizedChord: string,
+  ): ShortcutKeybindingsAliases | null {
+    const entry = Object.entries(DefaultShortcutKeybindings).find(
+      ([, value]) => {
+        return value.keybind.toLowerCase() === normalizedChord;
+      },
+    );
+
+    return entry ? (entry[0] as ShortcutKeybindingsAliases) : null;
+  }
+
+  /** Get the handlers for a given shortcut alias */
   getHandlers(chord: string[]): Registrations[] {
     const normalizedChord = chord.join(', '); // ['ctrl + shift + a', 'ctrl + shift + s'] -> 'ctrl + shift + a, ctrl + shift + s'
-    console.log(normalizedChord);
+
     const alias = this.getAliasFromChord(normalizedChord);
 
     if (!alias) return [];

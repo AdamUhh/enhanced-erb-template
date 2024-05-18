@@ -58,10 +58,12 @@ export const toggleWithNotificationExampleFAIL = appCreateAsyncThunk(
   STORE_NAME,
   IpcChannels.toggleExampleVisibility,
   async () => {
+    // ? ...
+    // ? some failed function call condition
     return {
       success: false,
-      msg: 'Failed to toggle',
-      description: 'Failed to change electron store value and redux value',
+      msg: 'Failed',
+      description: 'Failed to do something',
     };
   },
 );

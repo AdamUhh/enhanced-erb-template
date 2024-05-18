@@ -9,19 +9,26 @@ interface ShortcutContextValue {
     when?: () => boolean,
     isEventSubscriber?: boolean,
   ) => void;
-  deregisterShortcut: (alias: ShortcutKeybindingsAliases) => void;
+  unregisterShortcut: (alias: ShortcutKeybindingsAliases) => void;
   subscribe: (alias: ShortcutKeybindingsAliases, handler: () => void) => void;
   unsubscribe: (alias: ShortcutKeybindingsAliases, handler: () => void) => void;
   runShortcut: (alias: ShortcutKeybindingsAliases) => void;
+  changeShortcut: (
+    alias: ShortcutKeybindingsAliases,
+    newKeybind: string,
+  ) => void;
+  isModifyingShortcut: (isModifying: boolean) => void;
   getShortcuts: () => Map<ShortcutKeybindingsAliases, ShortcutRegistration[]>;
 }
 
 // Create the ShortcutContext with a default value
 export const ShortcutContext = createContext<ShortcutContextValue>({
   registerShortcut: () => {},
-  deregisterShortcut: () => {},
+  unregisterShortcut: () => {},
   subscribe: () => {},
   unsubscribe: () => {},
   runShortcut: () => {},
+  changeShortcut: () => {},
+  isModifyingShortcut: () => {},
   getShortcuts: () => new Map(),
 });

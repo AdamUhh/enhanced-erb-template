@@ -1,6 +1,10 @@
 import useIpcListener from 'core/hooks/ipc/useIpcListener';
-import { ShortcutKeybindingsAliases } from 'core/keyboard2/defaults';
-import { useRegisterShortcut } from 'core/keyboard2/useRegisterShortcut';
+import {
+  DefaultShortcutKeybindings,
+  ShortcutKeybindingsAliases,
+} from 'core/keyboard/defaults';
+import { useRegisterShortcut } from 'core/keyboard/useRegisterShortcut';
+import { useShortcutContext } from 'core/keyboard/useShortcutContext';
 import {
   dispatchInvoke,
   dispatchInvokeWithCallback,
@@ -42,68 +46,62 @@ export function ExampleToggleButtons() {
       dispatchInvokeWithCallback<IpcChannels.toggleExampleVisibility>(
         dispatch,
         toggleWithNotificationExampleVisibility(true),
+        {
+          successCallback({ msg, description, payload }) {
+            displaySuccessToast({ msg, description, payload });
+            console.log('Successfully toggled');
+          },
+        },
       ),
   });
 
   return (
-    <div className="grid grid-cols-2 gap-2">
+    <div className="grid w-full grid-cols-2 gap-4">
       <Button
-        variant="outline"
         onClick={() => {
           dispatch(toggleExampleVisibility());
         }}
+        className="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600"
       >
-        Toggle
+        Toggle Greeting
       </Button>
       <Button
-        variant="outline"
         onClick={() => {
           dispatch(setExampleVisibility(true));
         }}
+        className="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600"
       >
-        Set to Bye (via payload)
+        Set greeting to `Bye` (via dispatch payload)
       </Button>
       <Button
-        variant="outline"
         onClick={() => {
           dispatchInvokeWithCallback(
             dispatch,
             toggleWithNotificationExampleVisibility(),
           );
         }}
+        className="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600"
       >
-        Toggle with Notification
+        Toggle greeting with Notification
       </Button>
       <Button
-        variant="outline"
         onClick={() => {
           dispatchInvokeWithCallback(
             dispatch,
             toggleWithNotificationExampleVisibility(true),
           );
         }}
+        className="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600"
       >
-        Set to Bye (via payload) with Notification
+        Set greeting to `Bye` with Notification & console log
       </Button>
       <Button
-        variant="outline"
-        onClick={() =>
-          displaySuccessToast({
-            msg: 'Success!',
-            description:
-              'Successfully changed electron store value and redux value',
-          })
-        }
-      >
-        Success Notification
-      </Button>
-      <Button
-        variant="outline"
+        className="col-span-2 rounded bg-red-600 px-4 py-2 font-bold text-white hover:bg-red-700"
         onClick={() =>
           dispatchInvoke(dispatch, toggleWithNotificationExampleFAIL())
         }
       >
-        Fail Notification
+        Notification Fail (via dispatch)
       </Button>
     </div>
   );
@@ -113,7 +111,38 @@ function ExampleContainer() {
   const exampleVisibility = useAppSelector(selectExampleVisibility);
 
   return (
-    <h3 className="text-xl">{exampleVisibility ? 'Bye :(' : 'Hiya :D'}</h3>
+    <h3 className="mb-8 text-4xl font-bold">
+      {exampleVisibility ? 'Bye :(' : 'Hiya :D'}
+    </h3>
+  );
+}
+
+function ShortcutPreview() {
+  const { shortcuts } = useShortcutContext();
+  return (
+    <div className="mt-12 w-full">
+      <div className="mb-4 flex justify-between">
+        <h2 className="text-2xl font-semibold text-gray-500">
+          Shortcut Preview
+        </h2>
+        <ShortcutSettings />
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        {shortcuts.map(([alias]) => (
+          <div
+            key={alias}
+            className="flex items-center justify-between rounded-lg bg-gray-200 p-4"
+          >
+            <span className="font-semibold text-gray-600">
+              {DefaultShortcutKeybindings[alias].title}
+            </span>
+            <Button className="cursor-default rounded bg-blue-500 px-3 py-1 font-bold text-white hover:bg-blue-500">
+              {DefaultShortcutKeybindings[alias].keybind}
+            </Button>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 
@@ -124,10 +153,10 @@ export default function Example() {
   });
 
   return (
-    <div className="mx-auto flex h-screen w-screen max-w-lg flex-col items-center justify-center gap-2">
+    <div className="mx-auto flex h-screen w-screen max-w-4xl flex-col items-center justify-center">
       <ExampleContainer />
       <ExampleToggleButtons />
-      <ShortcutSettings />
+      <ShortcutPreview />
     </div>
   );
 }

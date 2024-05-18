@@ -1,6 +1,6 @@
 import Example from 'components/Example';
 import Titlebar from 'components/Titlebar';
-import ShortcutManager from 'core/keyboard2/ShortcutManager';
+import ShortcutManager from 'core/keyboard/ShortcutManager';
 import { Provider } from 'react-redux';
 import { Route, MemoryRouter as Router, Routes } from 'react-router-dom';
 import { Toaster } from 'sonner';

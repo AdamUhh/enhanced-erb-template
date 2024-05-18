@@ -1,10 +1,5 @@
-import { ShortcutContext } from 'core/keyboard2/ShortcutContext';
-import { ShortcutRegistration } from 'core/keyboard2/ShortcutRegistry';
-import {
-  DefaultShortcutKeybindings,
-  ShortcutKeybindingsAliases,
-} from 'core/keyboard2/defaults';
-import { useContext, useEffect, useState } from 'react';
+import { DefaultShortcutKeybindings } from 'core/keyboard/defaults';
+import { useShortcutContext } from 'core/keyboard/useShortcutContext';
 import {
   MenubarContent,
   MenubarItem,
@@ -14,21 +9,13 @@ import {
 } from 'shadcn/components/ui/custom/menubar';
 
 export default function ShortcutsMenu() {
-  const { getShortcuts, runShortcut } = useContext(ShortcutContext);
-  const [shortcuts, setShortcuts] = useState<
-    Map<ShortcutKeybindingsAliases, ShortcutRegistration[]>
-  >(new Map());
-
-  useEffect(() => {
-    const s = getShortcuts();
-    setShortcuts(s);
-  }, [getShortcuts]);
+  const { shortcuts, runShortcut } = useShortcutContext();
 
   return (
     <MenubarMenu>
       <MenubarTrigger className="font-medium">Shortcuts</MenubarTrigger>
       <MenubarContent>
-        {Array.from(shortcuts.entries()).map(([alias]) => (
+        {shortcuts.map(([alias]) => (
           <MenubarItem key={alias} onClick={() => runShortcut(alias)}>
             {DefaultShortcutKeybindings[alias].title}
             <MenubarShortcut>

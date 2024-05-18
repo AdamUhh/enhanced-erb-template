@@ -1,9 +1,12 @@
 import { Dispatch } from '@reduxjs/toolkit';
 import {
+  FailCallbackInvokeType,
+  SuccessCallbackInvokeType,
+} from 'core/hooks/ipc/type';
+import {
   IpcChannels,
   IpcErrorReturnFormat,
   IpcInvokeReturn,
-  IpcPayloadOutput,
 } from 'shared/types/ipc';
 import { displayErrorToast, displaySuccessToast } from './displayToast';
 
@@ -25,20 +28,12 @@ export const dispatchInvokeWithCallback = <T extends IpcChannels>(
       msg,
       description,
       payload,
-    }: {
-      msg?: string;
-      description?: string;
-      payload: IpcPayloadOutput<T>;
-    }) => void;
+    }: SuccessCallbackInvokeType<T>) => void;
     failCallback?: ({
       msg,
       description,
       payload,
-    }: {
-      msg: string;
-      description?: string;
-      payload?: IpcPayloadOutput<T>;
-    }) => void;
+    }: FailCallbackInvokeType<T>) => void;
   } = {},
 ) => {
   dispatch(dispatchAction)
@@ -79,11 +74,7 @@ export const dispatchInvoke = <T extends IpcChannels>(
       msg,
       description,
       payload,
-    }: {
-      msg: string;
-      description?: string;
-      payload?: IpcPayloadOutput<T>;
-    }) => void;
+    }: FailCallbackInvokeType<T>) => void;
   } = {},
 ) => {
   dispatch(dispatchAction)

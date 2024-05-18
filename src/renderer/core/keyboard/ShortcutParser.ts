@@ -4,7 +4,7 @@ const modifierKeys = ['Ctrl', 'Alt', 'Shift', 'Meta'];
 function normalizeKey(key: string): string {
   const lowerKey = key.toLowerCase();
 
-  // If the key is a modifier key, return an empty string
+  // If the key is a modifier key, return an empty string, as it has already been taken care of
   switch (lowerKey) {
     case 'control':
     case 'shift':

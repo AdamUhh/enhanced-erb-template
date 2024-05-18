@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { ShortcutContext } from './ShortcutContext';
 import { parseShortcut } from './ShortcutParser';
 import { ShortcutRegistry } from './ShortcutRegistry';
@@ -12,10 +18,13 @@ export default function ShortcutManager({ children }: ShortcutManagerProps) {
   // Create instances of ShortcutRegistry and ShortcutParser
   const registry = useRef(new ShortcutRegistry()).current;
   const activeChordRef = useRef<string[]>([]);
+  const [isModifyingKeybinds, setIsModifyingKeybinds] = useState(false);
+  const [shortcutUpdater, setShortcutUpdater] = useState(0);
 
   // Handle keydown event
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
+      if (isModifyingKeybinds) return;
       // Parse the shortcut from the keyboard event
       const shortcut = parseShortcut(event);
       if (shortcut) {
@@ -35,7 +44,7 @@ export default function ShortcutManager({ children }: ShortcutManagerProps) {
         });
       }
     },
-    [registry],
+    [isModifyingKeybinds, registry],
   );
   // Handle keyup event
   const handleKeyUp = useCallback(() => {
@@ -69,9 +78,9 @@ export default function ShortcutManager({ children }: ShortcutManagerProps) {
   );
 
   // Deregister a shortcut
-  const deregisterShortcut = useCallback(
+  const unregisterShortcut = useCallback(
     (alias: ShortcutKeybindingsAliases) => {
-      registry.deregisterShortcut(alias);
+      registry.unregisterShortcut(alias);
     },
     [registry],
   );
@@ -90,7 +99,11 @@ export default function ShortcutManager({ children }: ShortcutManagerProps) {
     [],
   );
 
-  const getShortcuts = useCallback(() => registry.getShortcuts(), [registry]);
+  const getShortcuts = useCallback(
+    () => registry.getShortcuts(),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [registry, shortcutUpdater],
+  );
 
   const runShortcut = useCallback(
     (alias: ShortcutKeybindingsAliases) => {
@@ -99,28 +112,44 @@ export default function ShortcutManager({ children }: ShortcutManagerProps) {
     [registry],
   );
 
+  const isModifyingShortcut = useCallback(
+    (isModifying: boolean) => setIsModifyingKeybinds(isModifying),
+    [],
+  );
+
+  const changeShortcut = useCallback(
+    (alias: ShortcutKeybindingsAliases, newKeybind: string) => {
+      registry.changeShortcut(alias, newKeybind);
+      // ? forcibly update useCallback of getShortcuts
+      // ? to update all components using it (for latest shortcut keybinds)
+      setShortcutUpdater((prevValue) => prevValue + 1);
+    },
+    [registry],
+  );
+
   // Create the ShortcutContext value
   const shortcutContextValue = useMemo(
     () => ({
       registerShortcut,
-      deregisterShortcut,
+      unregisterShortcut,
       runShortcut,
       getShortcuts,
       subscribe,
       unsubscribe,
+      changeShortcut,
+      isModifyingShortcut,
     }),
     [
       registerShortcut,
-      deregisterShortcut,
+      unregisterShortcut,
       runShortcut,
       getShortcuts,
       subscribe,
       unsubscribe,
+      changeShortcut,
+      isModifyingShortcut,
     ],
   );
-
-  // Subscribe to shortcut events
-  // const shortcutSubscription = useShortcutSubscription();
 
   return (
     <ShortcutContext.Provider value={shortcutContextValue}>

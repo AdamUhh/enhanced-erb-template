@@ -1,5 +1,8 @@
-import { useShortcutListener } from 'core/hooks/useShortcutListener';
-import { Shortcut } from 'core/keyboard/types';
+import {
+  DefaultShortcutKeybindings,
+  ShortcutKeybindingsAliases,
+} from 'core/keyboard/defaults';
+import { useShortcutContext } from 'core/keyboard/useShortcutContext';
 import { useState } from 'react';
 import { Button } from 'shadcn/components/ui/button';
 import {
@@ -21,12 +24,13 @@ import {
 import EditShortcut from './EditShortcut';
 
 export default function ShortcutSettings() {
-  // const { shortcuts, shortcutManager } = useShortcutListener();
-  const [selectedShortcut, setSelectedShortcut] = useState<Shortcut | null>(
-    null,
-  );
+  const { shortcuts, changeShortcut, isModifyingShortcut } =
+    useShortcutContext();
 
-  const handleShortcutEdit = (shortcut: Shortcut) => {
+  const [selectedShortcut, setSelectedShortcut] =
+    useState<ShortcutKeybindingsAliases | null>(null);
+
+  const handleShortcutEdit = (shortcut: ShortcutKeybindingsAliases) => {
     setSelectedShortcut(shortcut);
   };
 
@@ -34,15 +38,18 @@ export default function ShortcutSettings() {
     setSelectedShortcut(null);
   };
 
-  const handleRowDoubleClick = (shortcut: Shortcut) => {
+  const handleRowDoubleClick = (shortcut: ShortcutKeybindingsAliases) => {
     handleShortcutEdit(shortcut);
   };
 
   return (
-    <div className="mt-5 w-full">
+    <div className="w-fit">
       <Dialog>
         <DialogTrigger asChild>
-          <Button variant="outline" className="w-full" onClick={() => {}}>
+          <Button
+            className="w-full bg-blue-500 hover:bg-blue-600"
+            onClick={() => {}}
+          >
             View/Change Shortcut Settings
           </Button>
         </DialogTrigger>
@@ -65,33 +72,43 @@ export default function ShortcutSettings() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {/* {shortcuts.map((s: Shortcut) => (
-                <TableRow
-                  key={s.id}
-                  onDoubleClick={() => handleRowDoubleClick(s)}
-                  className="relative"
-                >
-                  <TableCell
-                    title={s.description}
-                    className="whitespace-pre-wrap"
+              {shortcuts
+                .slice() // Create a shallow copy of the array to avoid mutating the original
+                .sort(([aliasA], [aliasB]) =>
+                  DefaultShortcutKeybindings[aliasA].title.localeCompare(
+                    DefaultShortcutKeybindings[aliasB].title,
+                  ),
+                )
+                .map(([alias]) => (
+                  <TableRow
+                    key={alias}
+                    onDoubleClick={() => handleRowDoubleClick(alias)}
+                    className="relative"
                   >
-                    {s.title}
-                    <br />
-                  </TableCell>
-                  <TableCell>
-                    {selectedShortcut === s ? (
-                      <EditShortcut
-                        allShortcuts={shortcuts}
-                        shortcut={s}
-                        shortcutManager={shortcutManager}
-                        handleShortcutEditFinished={handleShortcutEditFinished}
-                      />
-                    ) : (
-                      s.keybind
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))} */}
+                    <TableCell
+                      title={DefaultShortcutKeybindings[alias].description}
+                      className="whitespace-pre-wrap pt-3 align-top"
+                    >
+                      {DefaultShortcutKeybindings[alias].title}
+                      <br />
+                    </TableCell>
+                    <TableCell>
+                      {selectedShortcut === alias ? (
+                        <EditShortcut
+                          allShortcuts={shortcuts}
+                          shortcutAlias={alias}
+                          changeShortcut={changeShortcut}
+                          handleShortcutEditFinished={
+                            handleShortcutEditFinished
+                          }
+                          isModifyingShortcut={isModifyingShortcut}
+                        />
+                      ) : (
+                        DefaultShortcutKeybindings[alias].keybind
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
             </TableBody>
           </Table>
         </DialogContent>

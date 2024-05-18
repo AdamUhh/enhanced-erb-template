@@ -41,6 +41,9 @@
       "shared/*": [
         "./src/shared/*"
       ],
+      "assets/*": [
+        "./assets/*"
+      ]
     },
   },
   "exclude": [
