@@ -118,7 +118,7 @@ function ExampleContainer() {
 }
 
 function ShortcutPreview() {
-  const { shortcuts } = useShortcutContext();
+  const { shortcuts, waitingForChord } = useShortcutContext();
   return (
     <div className="mt-12 w-full">
       <div className="mb-4 flex justify-between">
@@ -141,6 +141,13 @@ function ShortcutPreview() {
             </Button>
           </div>
         ))}
+      </div>
+      <div className="flex h-8 items-center">
+        {waitingForChord.chord
+          ? waitingForChord.success
+            ? `(${waitingForChord.chord}) was pressed. Waiting for second key of chord`
+            : `The key combination (${waitingForChord.chord}) is not a command`
+          : null}
       </div>
     </div>
   );

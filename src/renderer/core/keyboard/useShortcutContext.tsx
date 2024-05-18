@@ -4,8 +4,14 @@ import { ShortcutRegistration } from './ShortcutRegistry';
 import { ShortcutKeybindingsAliases } from './defaults';
 
 export const useShortcutContext = () => {
-  const { getShortcuts, runShortcut, changeShortcut, isModifyingShortcut } =
-    useContext(ShortcutContext);
+  const {
+    getShortcuts,
+    runShortcut,
+    changeShortcut,
+    isModifyingShortcut,
+    waitingForChord,
+    resetShortcuts,
+  } = useContext(ShortcutContext);
   const [shortcuts, setShortcuts] = useState<
     Map<ShortcutKeybindingsAliases, ShortcutRegistration[]>
   >(new Map());
@@ -20,5 +26,7 @@ export const useShortcutContext = () => {
     runShortcut,
     changeShortcut,
     isModifyingShortcut,
+    waitingForChord,
+    resetShortcuts,
   };
 };

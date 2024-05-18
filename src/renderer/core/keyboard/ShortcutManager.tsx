@@ -20,7 +20,10 @@ export default function ShortcutManager({ children }: ShortcutManagerProps) {
   const activeChordRef = useRef<string[]>([]);
   const [isModifyingKeybinds, setIsModifyingKeybinds] = useState(false);
   const [shortcutUpdater, setShortcutUpdater] = useState(0);
-
+  const [awaitingChord, setAwaitingChord] = useState<{
+    success: boolean;
+    chord: string | null;
+  }>({ success: true, chord: null });
   // Handle keydown event
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
@@ -31,38 +34,84 @@ export default function ShortcutManager({ children }: ShortcutManagerProps) {
         // Update the ref value
         activeChordRef.current = [...activeChordRef.current, shortcut];
 
-        // Get the handlers for the shortcut and execute them
-        const matchingHandlers = registry.getHandlers(activeChordRef.current);
+        // ? check if activeChord has multiple aliases for first keybind chord.
+        // ? if there are many possible keybinds, prevent setTimeout execution,
+        // ? and wait for user to finish second chord
+        if (activeChordRef.current.length === 1) {
+          const duplicateChords = registry.getDuplicateFirstChords(
+            activeChordRef.current,
+          );
 
-        matchingHandlers.forEach((regs) => {
-          if (regs.isEventSubscriber) {
-            const customEvent = new CustomEvent(`${regs.alias}-event`);
-            document.dispatchEvent(customEvent);
+          if (duplicateChords.length > 1) {
+            // ? show alert for waiting for chord
+            setAwaitingChord({
+              success: true,
+              chord: activeChordRef.current[0],
+            });
           } else {
-            regs.handler();
+            setAwaitingChord({
+              success: false,
+              chord: null,
+            });
+
+            const matchingHandlers = registry.getHandlers(
+              activeChordRef.current,
+            );
+
+            matchingHandlers.forEach((regs) => {
+              if (regs.isEventSubscriber) {
+                const customEvent = new CustomEvent(`${regs.alias}-event`);
+                document.dispatchEvent(customEvent);
+              } else {
+                regs.handler();
+              }
+            });
+
+            activeChordRef.current = [];
           }
-        });
+        } else {
+          // Get the handlers for the shortcut and execute them
+          const matchingHandlers = registry.getHandlers(activeChordRef.current);
+
+          if (
+            awaitingChord.chord &&
+            activeChordRef.current.length === 2 &&
+            matchingHandlers.length === 0
+          )
+            setAwaitingChord({
+              success: false,
+              chord: activeChordRef.current.join(', '),
+            });
+          else {
+            setAwaitingChord({
+              success: false,
+              chord: null,
+            });
+
+            matchingHandlers.forEach((regs) => {
+              if (regs.isEventSubscriber) {
+                const customEvent = new CustomEvent(`${regs.alias}-event`);
+                document.dispatchEvent(customEvent);
+              } else {
+                regs.handler();
+              }
+            });
+          }
+
+          activeChordRef.current = [];
+        }
       }
     },
-    [isModifyingKeybinds, registry],
+    [awaitingChord.chord, isModifyingKeybinds, registry],
   );
-  // Handle keyup event
-  const handleKeyUp = useCallback(() => {
-    // Reset the active shortcut
-    setTimeout(() => {
-      activeChordRef.current = [];
-    }, 300);
-  }, []);
 
   // Add and remove event listeners on mount and unmount
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('keyup', handleKeyUp);
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('keyup', handleKeyUp);
     };
-  }, [handleKeyDown, handleKeyUp]);
+  }, [handleKeyDown]);
 
   // Register a new shortcut
   const registerShortcut = useCallback(
@@ -98,6 +147,13 @@ export default function ShortcutManager({ children }: ShortcutManagerProps) {
     },
     [],
   );
+
+  const resetShortcuts = useCallback(() => {
+    registry.resetShortcuts();
+    setShortcutUpdater((prevValue) => prevValue + 1);
+  }, [registry]);
+
+  const waitingForChord = useMemo(() => awaitingChord, [awaitingChord]);
 
   const getShortcuts = useCallback(
     () => registry.getShortcuts(),
@@ -138,6 +194,8 @@ export default function ShortcutManager({ children }: ShortcutManagerProps) {
       unsubscribe,
       changeShortcut,
       isModifyingShortcut,
+      waitingForChord,
+      resetShortcuts,
     }),
     [
       registerShortcut,
@@ -148,6 +206,8 @@ export default function ShortcutManager({ children }: ShortcutManagerProps) {
       unsubscribe,
       changeShortcut,
       isModifyingShortcut,
+      waitingForChord,
+      resetShortcuts,
     ],
   );
 

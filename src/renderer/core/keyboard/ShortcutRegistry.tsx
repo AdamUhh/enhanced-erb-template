@@ -1,5 +1,6 @@
 import {
   DefaultShortcutKeybindings,
+  DefaultShortcutKeybindingsOG,
   ShortcutKeybindingsAliases,
 } from './defaults';
 
@@ -51,6 +52,15 @@ export class ShortcutRegistry {
     matchingHandlers.forEach((handler) => handler());
   }
 
+  resetShortcuts() {
+    Object.entries(DefaultShortcutKeybindings).forEach(([alias, shortcut]) => {
+      shortcut.keybind =
+        DefaultShortcutKeybindingsOG[
+          alias as ShortcutKeybindingsAliases
+        ].keybind;
+    });
+  }
+
   getShortcuts(): Map<ShortcutKeybindingsAliases, ShortcutRegistration[]> {
     return this.registry;
   }
@@ -59,6 +69,7 @@ export class ShortcutRegistry {
     // Update the keybind in DefaultShortcutKeybindings
     DefaultShortcutKeybindings[alias].keybind = newKeybind;
 
+    // ? TODO: perhaps the below is not necessary? forgot to comment why I wrote it
     // Get the existing registrations for the alias
     const registrations = this.registry.get(alias) || [];
 
@@ -86,6 +97,14 @@ export class ShortcutRegistry {
     );
 
     return entry ? (entry[0] as ShortcutKeybindingsAliases) : null;
+  }
+
+  getDuplicateFirstChords(chord: string[]) {
+    const normalizedChord = chord.join(', '); // ['ctrl + shift + a', 'ctrl + shift + s'] -> 'ctrl + shift + a, ctrl + shift + s'
+
+    return Object.entries(DefaultShortcutKeybindings).filter(
+      (d) => d[1].keybind.split(',')[0].toLowerCase() === normalizedChord,
+    );
   }
 
   /** Get the handlers for a given shortcut alias */

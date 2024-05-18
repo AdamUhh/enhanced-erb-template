@@ -18,7 +18,12 @@ interface ShortcutContextValue {
     newKeybind: string,
   ) => void;
   isModifyingShortcut: (isModifying: boolean) => void;
+  resetShortcuts: () => void;
   getShortcuts: () => Map<ShortcutKeybindingsAliases, ShortcutRegistration[]>;
+  waitingForChord: {
+    success: boolean;
+    chord: string | null;
+  };
 }
 
 // Create the ShortcutContext with a default value
@@ -30,5 +35,10 @@ export const ShortcutContext = createContext<ShortcutContextValue>({
   runShortcut: () => {},
   changeShortcut: () => {},
   isModifyingShortcut: () => {},
+  resetShortcuts: () => {},
   getShortcuts: () => new Map(),
+  waitingForChord: {
+    success: false,
+    chord: null,
+  },
 });

@@ -5,7 +5,7 @@ export enum ShortcutKeybindingsAliases {
   toggleDeveloperTools = 'toggleDeveloperTools',
 }
 
-export const DefaultShortcutKeybindings: Record<
+export const DefaultShortcutKeybindingsOG: Record<
   ShortcutKeybindingsAliases,
   { keybind: string; title: string; description?: string }
 > = {
@@ -14,11 +14,11 @@ export const DefaultShortcutKeybindings: Record<
     title: 'Toggle Example',
   },
   [ShortcutKeybindingsAliases.toggleWithNotification]: {
-    keybind: 'Ctrl + Shift + S',
+    keybind: 'Ctrl + Shift + S, S',
     title: 'Toggle With Notification',
   },
   [ShortcutKeybindingsAliases.toggleWithByeNotification]: {
-    keybind: 'Ctrl + Shift + D',
+    keybind: 'Ctrl + Shift + S, D',
     title: 'Toggle With Bye Notification',
   },
   [ShortcutKeybindingsAliases.toggleDeveloperTools]: {
@@ -28,3 +28,7 @@ export const DefaultShortcutKeybindings: Record<
       'Shortcut will not work if window is not active/developer tools is active instead',
   },
 };
+
+export const DefaultShortcutKeybindings = structuredClone(
+  DefaultShortcutKeybindingsOG,
+);

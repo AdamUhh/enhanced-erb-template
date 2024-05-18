@@ -1,7 +1,2 @@
-☐ When running shortcuts, if a shortcut is found to be part of multiple alises, it means it is part of a chord
-    ☐ need to prevent timeout from resetting chord ref and wait for next keyboard press
-☐ add reset all shortcuts
-    ☐ need another DefaultShortcutKeybindings variable
-
 ☐ Find a way to make builds for web and desktop
     ☐ https://github.com/electron-react-boilerplate/electron-react-boilerplate/issues/80
