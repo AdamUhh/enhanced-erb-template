@@ -4,6 +4,7 @@ import {
   DefaultShortcutKeybindings,
   ShortcutKeybindingsAliases,
 } from 'core/keyboard/defaults';
+import { capitalizeWordsInString } from 'core/utils/capitalizeWords';
 import { CheckCircle2Icon, XCircleIcon } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Button } from 'shadcn/components/ui/button';
@@ -186,10 +187,9 @@ function EditShortcut({
 
         setKeyExists(doesKeybindExist);
 
-        const capitalizeFirstLetterRegex = /(\b[a-z](?!\s))/g;
-        const formattedChord = activeChordRef.current
-          .join(', ')
-          .replace(capitalizeFirstLetterRegex, (x) => x.toUpperCase());
+        const formattedChord = capitalizeWordsInString(
+          activeChordRef.current.join(', '),
+        );
 
         setNewKey(formattedChord);
       }

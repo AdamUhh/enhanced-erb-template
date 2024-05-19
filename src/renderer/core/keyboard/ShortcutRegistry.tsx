@@ -7,14 +7,24 @@ import {
 type ShortcutHandler = () => void;
 
 export type Registrations = {
+  /** Shortcut alias to reference */
   alias: ShortcutKeybindingsAliases;
-  isEventSubscriber: boolean;
+  /** Handler to callback */
   handler: ShortcutHandler;
+  /** Indicates whether handler should be called within react component itself (via Events) */
+  isEventSubscriber: boolean;
 };
 
 export interface ShortcutRegistration {
+  /** Handler to callback */
   handler: ShortcutHandler;
+  /**
+   * Optional condition for determining if the callback can be executed.
+   *
+   * Useful in context-sensitive scenarios, such as allowing execution only when certain elements are focused.
+   */
   when?: () => boolean;
+  /** Indicates whether handler should be called within react component itself (via Events) */
   isEventSubscriber: boolean;
 }
 
@@ -69,22 +79,22 @@ export class ShortcutRegistry {
     // Update the keybind in DefaultShortcutKeybindings
     DefaultShortcutKeybindings[alias].keybind = newKeybind;
 
-    // ? TODO: perhaps the below is not necessary? forgot to comment why I wrote it
-    // Get the existing registrations for the alias
-    const registrations = this.registry.get(alias) || [];
+    // // ? TODO: perhaps the below is not necessary? forgot to comment why I wrote it
+    // // Get the existing registrations for the alias
+    // const registrations = this.registry.get(alias) || [];
 
-    // Deregister the existing shortcut
-    this.unregisterShortcut(alias);
+    // // Deregister the existing shortcut
+    // this.unregisterShortcut(alias);
 
-    // Re-register the shortcut with the new keybind
-    registrations.forEach((registration) => {
-      this.registerShortcut(
-        alias,
-        registration.handler,
-        registration.when,
-        registration.isEventSubscriber,
-      );
-    });
+    // // Re-register the shortcut with the new keybind
+    // registrations.forEach((registration) => {
+    //   this.registerShortcut(
+    //     alias,
+    //     registration.handler,
+    //     registration.when,
+    //     registration.isEventSubscriber,
+    //   );
+    // });
   }
 
   private getAliasFromChord(
@@ -107,8 +117,8 @@ export class ShortcutRegistry {
     );
   }
 
-  /** Get the handlers for a given shortcut alias */
-  getHandlers(chord: string[]): Registrations[] {
+  /** Get the registered obj for a given shortcut alias */
+  getRegistrations(chord: string[]): Registrations[] {
     const normalizedChord = chord.join(', '); // ['ctrl + shift + a', 'ctrl + shift + s'] -> 'ctrl + shift + a, ctrl + shift + s'
 
     const alias = this.getAliasFromChord(normalizedChord);

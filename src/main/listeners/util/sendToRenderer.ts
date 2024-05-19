@@ -10,9 +10,9 @@
  *
  */
 
-import { IpcChannels, IpcInvokeErrorReturn } from '../../../shared/types/ipc';
+import { IpcChannels, IpcErrorReturnFormat } from '../../../shared/types/ipc';
 import MainWindow from '../../mainWindow';
-import { stringifyError } from '../../utils/stringifyError';
+import { stringifyObj } from '../../../shared/utils/stringifyObj';
 
 /** Sends a failure object to the renderer.
  *
@@ -31,7 +31,7 @@ export function SendErrorToRendererDialog(
   title: string = '',
   message: string = '',
 ) {
-  const payloadMsg = stringifyError(message);
+  const payloadMsg = stringifyObj(message);
 
   console.log(
     `Oops, there was an error: \n-> ${title} ${
@@ -43,5 +43,5 @@ export function SendErrorToRendererDialog(
     success: false,
     msg: title,
     payload: payloadMsg,
-  } as IpcInvokeErrorReturn);
+  } as IpcErrorReturnFormat);
 }

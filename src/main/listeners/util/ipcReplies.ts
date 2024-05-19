@@ -5,7 +5,7 @@ import {
   IpcInvokeReturn,
 } from '../../../shared/types/ipc';
 import { getReplyChannel } from '../../../shared/utils/getReplyChannel';
-import { stringifyError } from '../../utils/stringifyError';
+import { stringifyObj } from '../../../shared/utils/stringifyObj';
 
 /** Sends a success object to the same renderer frame that sent the original request
  *
@@ -69,7 +69,7 @@ export const returnIpcInvokeError = (
   error: any,
   msg: string = 'Error',
 ): IpcInvokeErrorReturn => {
-  const errorStr = stringifyError(error);
+  const errorStr = stringifyObj(error);
   return {
     success: false,
     msg,

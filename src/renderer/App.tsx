@@ -1,3 +1,4 @@
+import AppUpdaterListener from 'components/AppUpdaterListener';
 import Example from 'components/Example';
 import Titlebar from 'components/Titlebar';
 import ShortcutManager from 'core/keyboard/ShortcutManager';
@@ -11,14 +12,13 @@ export default function App() {
     <Provider store={store}>
       <ShortcutManager>
         <Titlebar />
-        <div>
-          <Toaster richColors closeButton />
-          <Router>
-            <Routes>
-              <Route path="/" element={<Example />} />
-            </Routes>
-          </Router>
-        </div>
+        <Toaster richColors closeButton />
+        <AppUpdaterListener />
+        <Router>
+          <Routes>
+            <Route path="/" element={<Example />} />
+          </Routes>
+        </Router>
       </ShortcutManager>
     </Provider>
   );

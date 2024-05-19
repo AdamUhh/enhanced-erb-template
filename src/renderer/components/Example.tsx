@@ -112,7 +112,7 @@ function ExampleContainer() {
 
   return (
     <h3 className="mb-8 text-4xl font-bold">
-      {exampleVisibility ? 'Bye :(' : 'Hiya :D'}
+      {exampleVisibility ? 'Byeeee ✌️' : 'Hiyaaa 👋'}
     </h3>
   );
 }
@@ -131,18 +131,18 @@ function ShortcutPreview() {
         {shortcuts.map(([alias]) => (
           <div
             key={alias}
-            className="flex items-center justify-between rounded-lg bg-gray-200 p-4"
+            className="flex items-center justify-between rounded-lg bg-black p-4"
           >
-            <span className="font-semibold text-gray-600">
+            <span className="font-semibold text-white/90">
               {DefaultShortcutKeybindings[alias].title}
             </span>
-            <Button className="cursor-default rounded bg-blue-500 px-3 py-1 font-bold text-white hover:bg-blue-500">
+            <Button className="cursor-default rounded bg-white/20 px-3 py-1 font-bold text-white hover:bg-white/20">
               {DefaultShortcutKeybindings[alias].keybind}
             </Button>
           </div>
         ))}
       </div>
-      <div className="flex h-8 items-center">
+      <div className="flex h-8 w-full items-center text-center">
         {waitingForChord.chord
           ? waitingForChord.success
             ? `(${waitingForChord.chord}) was pressed. Waiting for second key of chord`

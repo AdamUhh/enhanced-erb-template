@@ -5,11 +5,13 @@
  *
  * i.e. await new Promise<void>((resolve, reject) => {})
  *
- * @param {T[]} arr - The array of elements.
- * @param {(data: T) => void} callback - The callback function to execute for each element.
- * @returns {Promise<void>} A Promise that resolves when all operations are complete.
+ * @param arr - The array of elements.
+ * @param callback - The callback function to execute for each element.
  */
-export function promiseSync<T>(arr: T[], callback: (data: T) => void) {
+export function promiseSync<T>(
+  arr: T[],
+  callback: (data: T) => void,
+): Promise<void> {
   return arr.reduce(
     async (promise, data) => promise.then(async () => callback(data)),
     Promise.resolve(),

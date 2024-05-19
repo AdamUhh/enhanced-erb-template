@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { stringifyObj } from 'shared/utils/stringifyObj';
 import { toast } from 'sonner';
 
 enum ToastType {
@@ -14,22 +15,10 @@ const displayToast = (
   toast[type](msg, { description });
 };
 
-const getPayloadString = (payload: any): string => {
-  if (typeof payload === 'string') {
-    return payload;
-  }
-  if (payload?.response?.data) {
-    return JSON.stringify(payload.response.data);
-  }
-  if (payload?.message) {
-    return payload.message;
-  }
-  return JSON.stringify(payload);
-};
-
 export const displaySuccessToast = ({
   msg = '',
   description = '',
+  // action
   payload,
 }: {
   msg?: string;
@@ -37,7 +26,7 @@ export const displaySuccessToast = ({
   payload?: any;
 }) => {
   const payloadStr =
-    payload !== undefined && payload !== null ? getPayloadString(payload) : '';
+    payload !== undefined && payload !== null ? stringifyObj(payload) : '';
   const _description =
     description && payloadStr
       ? `<div>
@@ -60,7 +49,7 @@ export const displayErrorToast = ({
   payload?: any;
 }) => {
   const payloadStr =
-    payload !== undefined && payload !== null ? getPayloadString(payload) : '';
+    payload !== undefined && payload !== null ? stringifyObj(payload) : '';
 
   const _description =
     description && payloadStr

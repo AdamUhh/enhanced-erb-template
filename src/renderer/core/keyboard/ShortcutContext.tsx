@@ -26,6 +26,10 @@ interface ShortcutContextValue {
   };
 }
 
+export interface ShortcutContextTypes extends ShortcutContextValue {
+  shortcuts: [ShortcutKeybindingsAliases, ShortcutRegistration[]][];
+}
+
 // Create the ShortcutContext with a default value
 export const ShortcutContext = createContext<ShortcutContextValue>({
   registerShortcut: () => {},

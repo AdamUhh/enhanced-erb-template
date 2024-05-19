@@ -1,3 +1,4 @@
+import { capitalizeWordsInString } from 'core/utils/capitalizeWords';
 import React, {
   useCallback,
   useEffect,
@@ -24,82 +25,86 @@ export default function ShortcutManager({ children }: ShortcutManagerProps) {
     success: boolean;
     chord: string | null;
   }>({ success: true, chord: null });
-  // Handle keydown event
+
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
+      // If the user is modifying a keybind, do nothing
       if (isModifyingKeybinds) return;
-      // Parse the shortcut from the keyboard event
+
+      // Parse the keyboard event into a shortcut string
       const shortcut = parseShortcut(event);
-      if (shortcut) {
-        // Update the ref value
-        activeChordRef.current = [...activeChordRef.current, shortcut];
+      if (!shortcut) return;
 
-        // ? check if activeChord has multiple aliases for first keybind chord.
-        // ? if there are many possible keybinds, prevent setTimeout execution,
-        // ? and wait for user to finish second chord
-        if (activeChordRef.current.length === 1) {
-          const duplicateChords = registry.getDuplicateFirstChords(
-            activeChordRef.current,
-          );
+      // Add the parsed shortcut to the active chord reference
+      activeChordRef.current.push(shortcut);
 
-          if (duplicateChords.length > 1) {
-            // ? show alert for waiting for chord
-            setAwaitingChord({
-              success: true,
-              chord: activeChordRef.current[0],
-            });
+      // Create a string representation of the current chord sequence
+      const currentChord = activeChordRef.current.join(', ');
+
+      const handleMatchingHandlers = () => {
+        const registrations = registry.getRegistrations(activeChordRef.current);
+
+        // Check if the registration was registered as an event subscriber
+        registrations.forEach((regs) => {
+          if (regs.isEventSubscriber) {
+            // Dispatch a custom event if the handler is an event subscriber
+            const customEvent = new CustomEvent(`${regs.alias}-event`);
+            document.dispatchEvent(customEvent);
           } else {
-            setAwaitingChord({
-              success: false,
-              chord: null,
-            });
+            // Otherwise, call the handler function directly
+            regs.handler();
+          }
 
-            const matchingHandlers = registry.getHandlers(
-              activeChordRef.current,
-            );
-
-            matchingHandlers.forEach((regs) => {
-              if (regs.isEventSubscriber) {
-                const customEvent = new CustomEvent(`${regs.alias}-event`);
-                document.dispatchEvent(customEvent);
-              } else {
-                regs.handler();
-              }
-            });
-
+          if (registrations.length > 0)
+            // Clear the active chord reference after handling
             activeChordRef.current = [];
-          }
-        } else {
-          // Get the handlers for the shortcut and execute them
-          const matchingHandlers = registry.getHandlers(activeChordRef.current);
+        });
+      };
+      // ? check if activeChord has multiple aliases for first keybind chord.
+      // ? if there are many possible keybinds, wait for user to finish second chord
+      if (activeChordRef.current.length === 1) {
+        // Check for duplicate chords starting with the current key
+        const duplicateChords = registry.getDuplicateFirstChords(
+          activeChordRef.current,
+        );
 
-          if (
-            awaitingChord.chord &&
-            activeChordRef.current.length === 2 &&
-            matchingHandlers.length === 0
-          )
-            setAwaitingChord({
-              success: false,
-              chord: activeChordRef.current.join(', '),
-            });
-          else {
-            setAwaitingChord({
-              success: false,
-              chord: null,
-            });
-
-            matchingHandlers.forEach((regs) => {
-              if (regs.isEventSubscriber) {
-                const customEvent = new CustomEvent(`${regs.alias}-event`);
-                document.dispatchEvent(customEvent);
-              } else {
-                regs.handler();
-              }
-            });
-          }
-
-          activeChordRef.current = [];
+        if (duplicateChords.length > 1) {
+          // If there are multiple chords starting with this key, wait for the next key
+          setAwaitingChord({
+            success: true,
+            chord: capitalizeWordsInString(activeChordRef.current[0]),
+          });
+          return;
         }
+
+        // If no duplicates, handle the current chord immediately
+        setAwaitingChord({ success: false, chord: null });
+        handleMatchingHandlers();
+      } else {
+        // If more than one key is pressed in the current chord
+        const matchingHandlers = registry.getRegistrations(
+          activeChordRef.current,
+        );
+
+        // If we were awaiting a second chord, was given it, but no handlers match,
+        // update awaiting chord state to show unknown command/chord sequence
+        if (
+          awaitingChord.chord &&
+          matchingHandlers.length === 0 &&
+          activeChordRef.current.length === 2
+        ) {
+          setAwaitingChord({
+            success: false,
+            chord: capitalizeWordsInString(currentChord),
+          });
+          return;
+        }
+
+        // Otherwise, clear the awaiting chord state and handle the matching handlers
+        setAwaitingChord({ success: false, chord: null });
+        handleMatchingHandlers();
+
+        if (activeChordRef.current.length === 2) activeChordRef.current = [];
       }
     },
     [awaitingChord.chord, isModifyingKeybinds, registry],
@@ -113,7 +118,6 @@ export default function ShortcutManager({ children }: ShortcutManagerProps) {
     };
   }, [handleKeyDown]);
 
-  // Register a new shortcut
   const registerShortcut = useCallback(
     (
       alias: ShortcutKeybindingsAliases,

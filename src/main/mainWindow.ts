@@ -76,7 +76,8 @@ class MainWindow {
 
     if (isDevelopment) MainWindow.getWebContents()?.openDevTools();
 
-    if (!isDevelopment) ApplicationUpdater.initializeAppUpdater();
+    // if (!isDevelopment)
+    ApplicationUpdater.initializeAppUpdater(MainWindow.sendToRenderer);
   }
 
   /**
@@ -167,9 +168,9 @@ class MainWindow {
    * Sends an ipc message to the renderer
    * @param channel - Channel to send message to. This is automatically converted into a `*-reply` channel
    */
-  public static sendToRenderer(
-    channel: IpcChannels,
-    returnPayload: IpcInvokeReturn,
+  public static sendToRenderer<T extends IpcChannels>(
+    channel: T,
+    returnPayload: IpcInvokeReturn<T>,
   ) {
     return MainWindow.instance?.webContents.send(
       getReplyChannel(channel),

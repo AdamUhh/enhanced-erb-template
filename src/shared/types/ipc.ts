@@ -15,6 +15,7 @@ export enum IpcChannels {
   clearStore = 'clear-store',
   checkForUpdates = 'check-for-updates',
   toggleDevTools = 'toggle-dev-tools',
+  appUpdateInfo = 'app-update-info',
 
   toggleRendererErrorDialog = 'toggle-renderer-error-dialog',
 

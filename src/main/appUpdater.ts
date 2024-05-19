@@ -1,12 +1,18 @@
 import { dialog } from 'electron';
 import log from 'electron-log';
 import { autoUpdater } from 'electron-updater';
-// ? TODO: Remove need for jsdom, directly send to renderer
+import { IpcChannels, IpcInvokeReturn } from '../shared/types/ipc';
+
+type SendToRendererType = <T extends IpcChannels>(
+  channel: T,
+  returnPayload: IpcInvokeReturn<T>,
+) => void | undefined;
 
 class ApplicationUpdater {
-  private static didUserCheckForUpdate: boolean = false;
+  public static sendToRenderer: SendToRendererType;
 
-  public static initializeAppUpdater(): void {
+  public static initializeAppUpdater(sendToRenderer: SendToRendererType): void {
+    this.sendToRenderer = sendToRenderer;
     autoUpdater.logger = log;
     log.transports.file.level = 'info';
 
@@ -16,31 +22,19 @@ class ApplicationUpdater {
     autoUpdater.on('update-available', () => log.info('update-available'));
 
     autoUpdater.on('error', (err) => {
-      dialog.showErrorBox(
-        'Error in auto-updater',
-        err == null ? 'unknown' : (err.stack || err).toString(),
-      );
+      sendToRenderer(IpcChannels.appUpdateInfo, {
+        success: false,
+        msg: 'Error in autoUpdater',
+        description: err == null ? 'unknown' : (err.stack || err).toString(),
+      });
+      // dialog.showErrorBox(
+      //   'Error in auto-updater',
+      //   err == null ? 'unknown' : (err.stack || err).toString(),
+      // );
     });
 
     autoUpdater.on('update-downloaded', async ({ releaseName }) => {
       const formattedReleaseNotes = '';
-
-      // if (Array.isArray(releaseNotes)) {
-      //   // If releaseNotes is an array, iterate over each item and extract text content
-      //   formattedReleaseNotes = releaseNotes
-      //     .map((r) => {
-      //       if (r.note) {
-      //         const dom = new JSDOM(r.note);
-      //         return dom.window.document.body.textContent || "";
-      //       }
-      //       return "";
-      //     })
-      //     .join("\n");
-      // } else if (typeof releaseNotes === "string") {
-      //   // If releaseNotes is a string, extract text content
-      //   const dom = new JSDOM(releaseNotes);
-      //   formattedReleaseNotes = dom.window.document.body.textContent || "";
-      // }
 
       // Show the message box with formatted release notes
       dialog
@@ -67,24 +61,24 @@ class ApplicationUpdater {
   /**
    * User manually checks for an update
    */
-  public static checkForUpdates(): void {
-    this.generateNoUpdateAvailable();
-    autoUpdater.checkForUpdates();
-  }
-
-  private static generateNoUpdateAvailable(): void {
-    // ? generate only one listener
-    if (!ApplicationUpdater.didUserCheckForUpdate) {
-      autoUpdater.on('update-not-available', () =>
-        dialog.showMessageBox({
-          title: 'Update',
-          type: 'info',
-          message: 'No updates found',
-          buttons: ['Okay'],
-          cancelId: 0,
-        }),
-      );
-      ApplicationUpdater.didUserCheckForUpdate = true;
+  public static async checkForUpdates(): Promise<void> {
+    try {
+      const updateResult = await autoUpdater.checkForUpdates();
+      if (!updateResult)
+        // dialog.showMessageBox({
+        //   title: 'Update',
+        //   type: 'info',
+        //   message: 'No updates found',
+        //   buttons: ['Okay'],
+        //   cancelId: 0,
+        // });
+        this.sendToRenderer(IpcChannels.appUpdateInfo, {
+          success: false,
+          msg: 'Update',
+          description: 'No updates found',
+        });
+    } catch (error) {
+      console.log('Error checking for updates:', error);
     }
   }
 }
