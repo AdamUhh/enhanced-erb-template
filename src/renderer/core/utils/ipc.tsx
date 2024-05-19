@@ -27,3 +27,7 @@ export const clearStore = () => {
 export const checkForupdates = () => {
   window.electron.ipc.send(IpcChannels.checkForUpdates);
 };
+
+export const quitAndInstall = () => {
+  window.electron.ipc.send(IpcChannels.quitAndInstallUpdates);
+};

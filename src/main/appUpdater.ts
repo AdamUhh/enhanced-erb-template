@@ -1,4 +1,3 @@
-import { dialog } from 'electron';
 import log from 'electron-log';
 import { autoUpdater } from 'electron-updater';
 import { IpcChannels, IpcInvokeReturn } from '../shared/types/ipc';
@@ -17,14 +16,14 @@ class ApplicationUpdater {
     log.transports.file.level = 'info';
 
     autoUpdater.autoInstallOnAppQuit = false;
-    autoUpdater.fullChangelog = true;
 
-    autoUpdater.on('update-available', () => log.info('update-available'));
+    // ? not really required since updates are downloaded automatically
+    // autoUpdater.on('update-available', () => log.info('update-available'));
 
     autoUpdater.on('error', (err) => {
       sendToRenderer(IpcChannels.appUpdateInfo, {
         success: false,
-        msg: 'Error in autoUpdater',
+        msg: 'Error in app updater',
         description: err == null ? 'unknown' : (err.stack || err).toString(),
       });
       // dialog.showErrorBox(
@@ -33,34 +32,39 @@ class ApplicationUpdater {
       // );
     });
 
-    autoUpdater.on('update-downloaded', async ({ releaseName }) => {
-      const formattedReleaseNotes = '';
-
-      // Show the message box with formatted release notes
-      dialog
-        .showMessageBox({
-          title: 'Update Available',
-          type: 'question',
-          detail: `${releaseName || ''}\n${formattedReleaseNotes || ''}`,
-          message: 'Update available. Install now and restart?',
-          buttons: ['Install and Relaunch', 'Later'],
-          defaultId: 0,
-          cancelId: 1,
-        })
-        .then((result) => {
-          if (result.response === 0) autoUpdater.quitAndInstall();
-        })
-        .catch((error) => {
-          log.info(error);
+    autoUpdater.on(
+      'update-downloaded',
+      async ({ releaseName, releaseNotes }) => {
+        sendToRenderer(IpcChannels.appUpdateInfo, {
+          success: true,
+          msg: releaseName || '',
+          description: (releaseNotes as string) || '',
         });
-    });
+
+        // Show the message box with formatted release notes
+        // dialog
+        //   .showMessageBox({
+        //     title: 'Update Available',
+        //     type: 'question',
+        //     detail: `${releaseName || ''}\n${releaseNotes || ''}`,
+        //     message: 'Update available. Install now and restart?',
+        //     buttons: ['Install and Relaunch', 'Later'],
+        //     defaultId: 0,
+        //     cancelId: 1,
+        //   })
+        //   .then((result) => {
+        //     if (result.response === 0) autoUpdater.quitAndInstall();
+        //   })
+        //   .catch((error) => {
+        //     log.info(error);
+        //   });
+      },
+    );
 
     autoUpdater.checkForUpdates();
   }
 
-  /**
-   * User manually checks for an update
-   */
+  /** User manually checks for an update */
   public static async checkForUpdates(): Promise<void> {
     try {
       const updateResult = await autoUpdater.checkForUpdates();
@@ -79,6 +83,14 @@ class ApplicationUpdater {
         });
     } catch (error) {
       console.log('Error checking for updates:', error);
+    }
+  }
+
+  public static async quitAndInstall() {
+    try {
+      autoUpdater.quitAndInstall();
+    } catch (error) {
+      console.log('Error installing update:', error);
     }
   }
 }

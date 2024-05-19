@@ -10,20 +10,34 @@ enum ToastType {
 const displayToast = (
   msg: string,
   description: ReactNode | null,
+  action: (() => void) | undefined,
+  label: string | undefined,
   type: ToastType = ToastType.default,
 ): void => {
-  toast[type](msg, { description });
+  if (!action) toast[type](msg, { description });
+  else
+    toast[type](msg, {
+      actionButtonStyle: { backgroundColor: '#008A2E' },
+      description,
+      action: {
+        onClick: action,
+        label: label!,
+      },
+    });
 };
 
 export const displaySuccessToast = ({
   msg = '',
   description = '',
-  // action
   payload,
+  action,
+  label,
 }: {
   msg?: string;
   description?: string;
   payload?: any;
+  action?: () => void;
+  label?: string;
 }) => {
   const payloadStr =
     payload !== undefined && payload !== null ? stringifyObj(payload) : '';
@@ -36,17 +50,21 @@ export const displaySuccessToast = ({
       </div>`
       : payloadStr || description;
 
-  displayToast(msg, _description || null);
+  displayToast(msg, _description || null, action, label);
 };
 
 export const displayErrorToast = ({
   msg,
   description = '',
   payload,
+  action,
+  label,
 }: {
   msg: string;
   description?: string;
   payload?: any;
+  action?: () => void;
+  label?: string;
 }) => {
   const payloadStr =
     payload !== undefined && payload !== null ? stringifyObj(payload) : '';
@@ -60,5 +78,5 @@ export const displayErrorToast = ({
       </div>`
       : payloadStr || description;
 
-  displayToast(msg, _description || null, ToastType.error);
+  displayToast(msg, _description || null, action, label, ToastType.error);
 };

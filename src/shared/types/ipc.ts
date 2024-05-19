@@ -13,8 +13,9 @@ export enum IpcChannels {
   isAppMaximized = 'is-app-maximized',
   restartApp = 'restart-app',
   clearStore = 'clear-store',
-  checkForUpdates = 'check-for-updates',
   toggleDevTools = 'toggle-dev-tools',
+  checkForUpdates = 'check-for-updates',
+  quitAndInstallUpdates = 'quit-and-install-updates',
   appUpdateInfo = 'app-update-info',
 
   toggleRendererErrorDialog = 'toggle-renderer-error-dialog',
@@ -55,7 +56,7 @@ export type IpcReturnFormat<P = any> = {
   success: boolean;
   msg?: string;
   description?: string;
-  payload: P;
+  payload?: P;
 };
 
 export type IpcErrorReturnFormat<P = any> = {
