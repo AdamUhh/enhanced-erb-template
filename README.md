@@ -68,6 +68,17 @@ npm run package
 
 To package apps for your `local platform` & release it to github:
 
+- Ensure you have a `Github token` named `GH_TOKEN` saved in your `.env` or for `manual pushes`
+- We will use `0.0.10` as an example of your version number.
+
+### Quick and easy
+
+```bash
+npm run publish-github -- 0.0.10
+```
+
+### Manually
+
 1. Go to `./release/app/package.json` and update your version number (ex: `0.0.10`)
 
 2. Commit that change: `git commit -am v0.0.10`
@@ -86,16 +97,6 @@ To package apps for your `local platform` & release it to github:
 >   npm run package-publish:linux
 >   npm run package-publish:all <- won't work if not on macOS
 > ```
-
-## References
-
-- Installing Tailwind
-  - First, [Docs](https://electron-react-boilerplate.js.org/docs/styling)
-  - Then, this [Issue](https://github.com/electron-react-boilerplate/electron-react-boilerplate/issues/3084)
-
-- Installing [shadcn/ui](https://ui.shadcn.com/docs/installation/manual)
-
-- View [Logs](https://www.npmjs.com/package/electron-log)
 
 ## Notes
 
