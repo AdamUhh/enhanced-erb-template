@@ -267,6 +267,5 @@
       "src/main/**"
     ],
     "logLevel": "quiet"
-  },
-  "version": "0.3.02"
+  }
 }
