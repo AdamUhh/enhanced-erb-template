@@ -35,6 +35,9 @@ export default function ShortcutManager({ children }: ShortcutManagerProps) {
       const shortcut = parseShortcut(event);
       if (!shortcut) return;
 
+      // ? if the user already has a full keybind sequence
+      if (activeChordRef.current.length >= 2) activeChordRef.current = [];
+
       // Add the parsed shortcut to the active chord reference
       activeChordRef.current.push(shortcut);
 
@@ -68,8 +71,11 @@ export default function ShortcutManager({ children }: ShortcutManagerProps) {
           activeChordRef.current,
         );
 
+        // ? if the first chord does not exist at all, reset
+        if (duplicateChords.length === 0) activeChordRef.current = [];
+
+        // If there are multiple chords starting with this key, wait for the next key
         if (duplicateChords.length > 1) {
-          // If there are multiple chords starting with this key, wait for the next key
           setAwaitingChord({
             success: true,
             chord: capitalizeWordsInString(activeChordRef.current[0]),
@@ -103,8 +109,6 @@ export default function ShortcutManager({ children }: ShortcutManagerProps) {
         // Otherwise, clear the awaiting chord state and handle the matching handlers
         setAwaitingChord({ success: false, chord: null });
         handleMatchingHandlers();
-
-        if (activeChordRef.current.length === 2) activeChordRef.current = [];
       }
     },
     [awaitingChord.chord, isModifyingKeybinds, registry],

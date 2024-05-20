@@ -32,7 +32,7 @@ npm start
 There are two `package.json` files due to the [two package.json structure](https://www.electron.build/tutorials/two-package-structure.html) by electron-builder
 > This structure is beneficial for many reasons, such as smaller builds, performance, etc.
 
-Ensure that these `package.json` files are updated appropriately with own details, specifically:
+Ensure that these `package.json` files are updated appropriately with your own details, specifically:
 
 `./package.json` :
 
@@ -68,19 +68,15 @@ npm run package
 
 To package apps for your `local platform` & release it to github:
 
-1. Go to `./release/app/package.json` and update your version number (to ex: 0.0.10)
+1. Go to `./release/app/package.json` and update your version number (ex: `0.0.10`)
 
 2. Commit that change: `git commit -am v0.0.10`
 
-3. Tag your commit: `git tag v0.0.10` ~~Go to github and create a new release/a new tag (ex: 0.0.10) and publish~~
+3. Tag your commit: `git tag v0.0.10`
 
 4. Push your files to github: `git push && git push --tags`
 
-5. Type the below into your terminal
-
-```bash
-GH_TOKEN=YOUR-GITHUB-TOKEN-HERE npm run package-publish
-```
+5. Publish to github: `GH_TOKEN=YOUR-GITHUB-TOKEN-HERE npm run package-publish`
 
 > You can also (try to) publish packaged apps for different platforms, using the below:
 >
