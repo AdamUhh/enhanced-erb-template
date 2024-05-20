@@ -18,10 +18,7 @@ import { IpcChannels } from 'shared/types/ipc';
 export default function AppUpdaterListener() {
   const [showDialog, setShowDialog] = useState(false);
 
-  const [updateInfo, setUpdateInfo] = useState<{
-    msg?: string;
-    description?: string;
-  }>({ msg: '', description: '' });
+  const [updateInfo, setUpdateInfo] = useState({ msg: '', description: '' });
 
   const handleDialogVisibility = () => {
     setShowDialog(true);
@@ -31,8 +28,8 @@ export default function AppUpdaterListener() {
     channel: IpcChannels.appUpdateInfo,
     successCallback({ msg, description, payload }) {
       setUpdateInfo({
-        msg,
-        description,
+        msg: msg || 'No release title',
+        description: description || 'No release information',
       });
       displaySuccessToast({
         msg: 'Update Available',

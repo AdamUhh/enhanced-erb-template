@@ -46,7 +46,7 @@ class ApplicationUpdater {
       }
     });
 
-    /** Download Completion Message */
+    /** Download Completion Message, automatically called on app launch/manually */
     autoUpdater.on(
       'update-downloaded',
       async ({ releaseName, releaseNotes }) => {
