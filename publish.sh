@@ -31,6 +31,11 @@ fi
 # Update the version number in ./package.json
 jq --arg version "$NEW_VERSION" '.version = $version' release/app/package.json > tmp.$$.json && mv tmp.$$.json release/app/package.json
 
+# Ensure the temporary file is removed if it still exists (just in case)
+if [ -f tmp.$$.json ]; then
+  rm tmp.$$.json
+fi
+
 # Commit the change
 git commit -am "v$NEW_VERSION"
 
