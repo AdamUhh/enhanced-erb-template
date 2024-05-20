@@ -1,17 +1,18 @@
 # Enhanced ERB Template
 
-This template was created to make it easier and faster to create applications with essential features like an automatic app updater or shortcuts that can actually be used by the application, for both user macros and menubar shortcuts (I'm looking at you, accelerator -.-).
+This template was created to speedup the development of Electron applications with essential features like automatic app updates and useful customizable shortcuts, making it versatile for creating complex applications. It also follows a simplified app architecture that allows for multiple apps within a single Electron application, although this might require some adaptation.
 
-It also follows an app architecture that allows for multiple apps within one Electron application, though it may take some time to get used to.
+## Preview
 
-## The Template
+![Buttons Preview](<https://i.imgur.com/O7iTUec.gif> "Buttons Preview")
+![Shortcuts Preview](<https://i.imgur.com/aCGeyhJ.gif> "Shortcuts Preview")
+![Auto Updater Preview](<https://i.imgur.com/2WmtNXi.gif> "Auto Updater Preview")
 
-![The Template](<https://i.imgur.com/hF5N0e1.gif>
- "The Template")
+## Getting Started
 
-## Install
+### Installation
 
-Clone the repo and install dependencies:
+Clone the repository and install dependencies:
 
 ```bash
 git clone https://github.com/AdamUhh/enhanced-erb-template.git your-project-name
@@ -19,92 +20,122 @@ cd your-project-name
 npm install
 ```
 
-## Starting Development
+### Development
 
-Start the app in the `dev` environment:
+Starting the app (development):
 
 ```bash
 npm start
 ```
 
-## Packaging
+## App Configuration
 
-There are two `package.json` files due to the [two package.json structure](https://www.electron.build/tutorials/two-package-structure.html) by electron-builder
-> This structure is beneficial for many reasons, such as smaller builds, performance, etc.
+This project follows the [two package.json structure](https://www.electron.build/tutorials/two-package-structure.html) recommended by electron-builder. This structure is beneficial for smaller builds, better performance, and more efficient development workflows.
 
-Ensure that these `package.json` files are updated appropriately with your own details, specifically:
+Before packaging your application, ensure that the following files are updated with your specific project details:
 
-`./package.json` :
+### Main Package.json (`./package.json`)
 
-- author
-- description
-- homepage
-- repository.url
-- bugs.url
-- build.productName (Name of app that will appear on windows)
-- build.appId (ex: name.NameOfApp)
-- build.publish.owner (githubname)
-- build.publish.repo (github-repo-name)
-- build.publish.releaseType (draft/prerelease/release)
+Update the following fields with your own details:
 
-`./release/app/package.json`:
+- `author`
+- `description`
+- `homepage`
+- `repository.url`
+- `bugs.url`
+- `build.productName` (Name of the app that appears on Windows)
+- `build.appId` (e.g., com.example.app)
+- `build.publish.owner` (GitHub username)
+- `build.publish.repo` (GitHub repository name)
+- `build.publish.releaseType` (draft/prerelease/release)
 
-This package.json is in charge of your `setup.exe`
+### Release Package.json (`./release/app/package.json`)
 
-- name (name-of-app)
-- author (same as other package.json)
-- description (same as other package.json)
-- version (Very important for github release versioning)
+This file is used for the setup executable:
 
-## Packaging for Production
+- `name` (Name of the app)
+- `author` (Same as main package.json)
+- `description` (Same as main package.json)
+- `version` (Important for GitHub release versioning)
 
-To package apps for the `local platform`:
+## Building for Production
+
+### Packaging Locally
+
+To package the application for your local platform:
 
 ```bash
 npm run package
 ```
 
-## Packaging for Production (Github Releases)
+### Packaging (Locally) for GitHub Releases
 
-To package apps for your `local platform` & release it to github:
+To package the application and create a release on GitHub, follow these steps:
 
-- Ensure you have a `Github token` named `GH_TOKEN` saved in your `.env` or for `manual pushes`
-- We will use `0.0.10` as an example of your version number. Make sure your versioning number follows `semver versioning rules`
+1. **Ensure GitHub Token**: Ensure you have a GitHub token named `GH_TOKEN` saved in your `.env` file, or manually set it before running the packaging command.
 
-### Quick and easy
+2. **Versioning**: Ensure your versioning number follows the [Semantic Versioning](https://semver.org/) rules, (e.g. `0.0.10`).
+
+#### Quick and Easy
+
+**Windows:**
+
+```bash
+bash publish.sh 0.0.10
+```
+
+> Note: Ensure you are in a Bash terminal, and `jq` is installed via `choco install jq`.
+
+**Linux:**
 
 ```bash
 npm run publish-github -- 0.0.10
 ```
 
-### Manually
+#### Manual Steps
 
-1. Go to `./release/app/package.json` and update your version number (ex: `0.0.10`)
+1. Update the version number in `./release/app/package.json`. Ensure it is just numbers (e.g. `0.0.10`).
+2. Commit the changes:
 
-2. Commit that change: `git commit -am v0.0.10`
+   ```bash
+   git commit -am "v0.0.10"
+   ```
 
-3. Tag your commit: `git tag v0.0.10`
+3. Tag the commit:
 
-4. Push your files to github: `git push && git push --tags`
+   ```bash
+   git tag v0.0.10
+   ```
 
-5. Publish to github: `GH_TOKEN=YOUR-GITHUB-TOKEN-HERE npm run package-publish`
+4. Push changes to GitHub:
 
-> You can also (try to) publish packaged apps for different platforms, using the below:
->
-> ```bash
->   npm run package-publish:mac <- only supported on macOS
->   npm run package-publish:win
->   npm run package-publish:linux
->   npm run package-publish:all <- won't work if not on macOS
-> ```
+   ```bash
+   git push && git push --tags
+   ```
 
-## Notes
+5. Publish the release:
 
-- Webpack plugins, such as `monaco-editor-webpack-plugin` must be in `devDependencies`, or else you will not be able to package the app
+   ```bash
+   GH_TOKEN=YOUR_GITHUB_TOKEN_HERE npm run package-publish
+   ```
 
-## Contributions
+### Cross-Platform Packaging
 
-Inspired by:
+Electron-builder recommends using [Docker](https://www.electron.build/multi-platform-build.html#docker).
+
+### Notes
+
+- Webpack plugins, such as `monaco-editor-webpack-plugin`, must be listed in `devDependencies` to avoid packaging issues.
+
+### Contributing
+
+Contributions are welcome! Please follow the standard GitHub workflow for submitting pull requests and issues.
+
+### Inspiration
 
 - Base electron code by [electron-react-boilerplate](https://github.com/HyperSprite/electron-react-boilerplate/tree/single-package-setup)
 - App architecture by [thenewboston - tnbOS](https://github.com/thenewboston-developers/tnbOS)
+
+### License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
