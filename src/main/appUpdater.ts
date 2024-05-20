@@ -10,10 +10,14 @@ type SendToRendererType = <T extends IpcChannels>(
 class ApplicationUpdater {
   public static sendToRenderer: SendToRendererType;
 
+  public static isManualCheck: boolean = false;
+
   public static initializeAppUpdater(sendToRenderer: SendToRendererType): void {
     this.sendToRenderer = sendToRenderer;
     autoUpdater.logger = log;
     log.transports.file.level = 'info';
+    // log.transports.file.resolvePath = () =>
+    //   join(app.getPath('downloads'), 'enhanced-erb-logs/main.log');
 
     autoUpdater.autoInstallOnAppQuit = false;
 
@@ -30,11 +34,16 @@ class ApplicationUpdater {
 
     /** No updates available */
     autoUpdater.on('update-not-available', () => {
-      sendToRenderer(IpcChannels.appUpdateInfo, {
-        success: false,
-        msg: 'Update',
-        description: 'No updates found',
-      });
+      // ? only alert user if they manually checked for updates
+      if (this.isManualCheck) {
+        this.isManualCheck = false;
+
+        sendToRenderer(IpcChannels.appUpdateInfo, {
+          success: false,
+          msg: 'Update',
+          description: 'No updates found',
+        });
+      }
     });
 
     /** Download Completion Message */
@@ -54,6 +63,7 @@ class ApplicationUpdater {
 
   /** User manually checks for an update */
   public static async checkForUpdates() {
+    this.isManualCheck = true;
     autoUpdater.checkForUpdates();
   }
 

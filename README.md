@@ -69,7 +69,7 @@ npm run package
 To package apps for your `local platform` & release it to github:
 
 - Ensure you have a `Github token` named `GH_TOKEN` saved in your `.env` or for `manual pushes`
-- We will use `0.0.10` as an example of your version number.
+- We will use `0.0.10` as an example of your version number. Make sure your versioning number follows `semver versioning rules`
 
 ### Quick and easy
 
