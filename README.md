@@ -68,13 +68,15 @@ npm run package
 
 To package apps for your `local platform` & release it to github:
 
-1. Go to github and create a new release/a new tag (ex: 0.0.10) and publish
+1. Go to `./release/app/package.json` and update your version number (to ex: 0.0.10)
 
-2. Go to `./release/app/package.json` and match the version number (to ex: 0.0.10)
+2. Commit that change: `git commit -am v0.0.10`
 
-3. Push your files to github
+3. Tag your commit: `git tag v0.0.10` ~~Go to github and create a new release/a new tag (ex: 0.0.10) and publish~~
 
-4. Type the below into your terminal
+4. Push your files to github: `git push && git push --tags`
+
+5. Type the below into your terminal
 
 ```bash
 GH_TOKEN=YOUR-GITHUB-TOKEN-HERE npm run package-publish
