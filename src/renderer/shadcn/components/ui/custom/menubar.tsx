@@ -38,7 +38,7 @@ const MenubarTrigger = React.forwardRef<
   <MenubarPrimitive.Trigger
     ref={ref}
     className={cn(
-      'flex cursor-default select-none items-center rounded-sm px-1.5 py-0.5 text-xs font-medium outline-none focus:bg-background-hover focus:text-foreground data-[state=open]:bg-background-hover data-[state=open]:text-foreground hover:bg-background-hover',
+      'flex cursor-default select-none items-center rounded-sm px-1.5 py-0.5 text-xs font-medium outline-none hover:bg-background-hover focus:bg-background-hover focus:text-foreground data-[state=open]:bg-background-hover data-[state=open]:text-foreground',
       className,
     )}
     {...props}
@@ -116,7 +116,7 @@ const MenubarItem = React.forwardRef<
   <MenubarPrimitive.Item
     ref={ref}
     className={cn(
-      'relative flex gap-6 cursor-default select-none items-center rounded-sm px-2 py-1.5 text-xs outline-none focus:bg-background-hover focus:text-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
+      'relative flex cursor-default select-none items-center gap-6 rounded-sm px-2 py-1.5 text-xs outline-none focus:bg-background-hover focus:text-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
       inset && 'pl-8',
       className,
     )}

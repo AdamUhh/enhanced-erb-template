@@ -1,4 +1,8 @@
-import { IpcChannels, IpcPayloadOutput, IpcSendPayloadOutput } from 'shared/types/ipc';
+import {
+  IpcChannels,
+  IpcPayloadOutput,
+  IpcSendPayloadOutput,
+} from 'shared/types/ipc';
 
 export type FailCallbackType<P extends IpcChannels> = {
   msg: string;

@@ -1,8 +1,8 @@
 import { IpcMainEvent } from 'electron';
 import {
   IpcChannels,
-  IpcInvokeErrorReturn,
-  IpcInvokeReturn,
+  IpcErrorReturnFormat,
+  IpcReturnFormat,
 } from '../../../shared/types/ipc';
 import { getReplyChannel } from '../../../shared/utils/getReplyChannel';
 import { stringifyObj } from '../../../shared/utils/stringifyObj';
@@ -26,7 +26,7 @@ export const replySuccess = (
     success: true,
     msg: payload?.msg ?? '',
     payload: payload?.payload ?? undefined,
-  } as IpcInvokeReturn);
+  } as IpcReturnFormat);
 };
 
 /** Sends a failure object to the same renderer frame that sent the original request
@@ -54,7 +54,7 @@ export const replyFailure = (
     success: false,
     msg: payload?.msg ?? '',
     payload: payload?.payload ?? undefined,
-  } as IpcInvokeErrorReturn);
+  } as IpcErrorReturnFormat);
 };
 
 /** Returns a failure object to the ipc that called the invoke
@@ -68,7 +68,7 @@ export const replyFailure = (
 export const returnIpcInvokeError = (
   error: any,
   msg: string = 'Error',
-): IpcInvokeErrorReturn => {
+): IpcErrorReturnFormat => {
   const errorStr = stringifyObj(error);
   return {
     success: false,

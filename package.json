@@ -30,7 +30,9 @@
     "start:preload": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.preload.dev.ts",
     "start:renderer": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack serve --config ./.erb/configs/webpack.config.renderer.dev.ts",
     "test": "jest",
-    "publish-github": "./publish.sh"
+    "publish-github": "./publish.sh",
+    "eslint:files": "npx eslint **/src/**/*.{ts,tsx} | grep -e '^/.*tsx$' -e '^/.*ts$'",
+    "eslint:files:open": "code $(npm run --silent eslint:files)"
   },
   "browserslist": [],
   "prettier": {
