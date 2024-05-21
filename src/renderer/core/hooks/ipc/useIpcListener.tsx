@@ -47,7 +47,7 @@ export default function useIpcListener<T, P extends IpcChannels>(
           msg: data.msg || '',
           description: data.description || '',
           payload: data.payload,
-        });
+        } as any);
       if (setResponse) setResponse(data);
     };
 

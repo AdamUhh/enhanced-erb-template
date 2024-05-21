@@ -51,7 +51,10 @@ export type IpcPayloadOutputLookup = {
 export type IpcMainPayloadOutputLookup = {
   [IpcChannels.setStoreValue]: CoreElectronStore[keyof CoreElectronStore];
 };
-
+/**
+ * Generic format for IPC return payloads.
+ * @template P - The type of the payload.
+ */
 export type IpcReturnFormat<P = any> = {
   success: boolean;
   msg?: string;
@@ -59,6 +62,10 @@ export type IpcReturnFormat<P = any> = {
   payload?: P;
 };
 
+/**
+ * Generic format for IPC error return payloads.
+ * @template P - The type of the payload.
+ */
 export type IpcErrorReturnFormat<P = any> = {
   success: false;
   msg: string;
@@ -66,11 +73,21 @@ export type IpcErrorReturnFormat<P = any> = {
   payload?: P;
 };
 
+/**
+ * Type for the expected output payload when using ipcRenderer.send.
+ * @template T - The IPC channel.
+ * @template P - The expected payload type if not defined in the IpcPayloadOutputLookup.
+ */
 export type IpcSendPayloadOutput<
   T extends IpcChannels,
   P = undefined,
 > = T extends keyof IpcPayloadOutputLookup ? IpcPayloadOutputLookup[T] : P;
 
+/**
+ * Type for the expected output payload when using ipcMain.handle.
+ * @template T - The IPC channel.
+ * @template P - The expected payload type if not defined in the IpcMainPayloadOutputLookup.
+ */
 export type IpcMainPayloadOutput<
   T extends IpcChannels,
   P = undefined,
@@ -78,6 +95,11 @@ export type IpcMainPayloadOutput<
   ? IpcMainPayloadOutputLookup[T]
   : P;
 
+/**
+ * Type for the expected output payload when using IPC communication.
+ * @template T - The IPC channel.
+ * @template P - The expected payload type if not defined in the IpcPayloadOutputLookup or IpcMainPayloadOutputLookup.
+ */
 export type IpcPayloadOutput<
   T extends IpcChannels,
   P = undefined,
@@ -85,18 +107,34 @@ export type IpcPayloadOutput<
   ? IpcMainPayloadOutputLookup[T]
   : IpcSendPayloadOutput<T, P>;
 
+/**
+ * Type for the expected return value when using ipcRenderer.invoke.
+ * @template T - The IPC channel.
+ */
 export type IpcInvokeReturn<T extends IpcChannels> =
   | IpcReturnFormat<IpcPayloadOutput<T>>
   | IpcErrorReturnFormat;
 
+/**
+ * Type for the expected return value when using ipcMain.handle.
+ * @template T - The IPC channel.
+ */
 export type IpcReturn<T extends IpcChannels> = IpcReturnFormat<
   IpcPayloadOutput<T>
 >;
 
+/**
+ * Type for the expected return value when using ipcRenderer.send.
+ * @template T - The IPC channel.
+ */
 export type IpcSendReturn<T extends IpcChannels> = IpcReturnFormat<
   IpcSendPayloadOutput<T>
 >;
 
+/**
+ * Type for the expected input payload when using IPC communication.
+ * @template T - The IPC channel.
+ */
 export type IpcExpectedInput<T extends IpcChannels> =
   T extends keyof IpcPayloadInputLookup ? IpcPayloadInputLookup[T] : undefined;
 

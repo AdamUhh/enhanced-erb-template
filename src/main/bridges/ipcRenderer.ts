@@ -8,10 +8,9 @@ import { ipcRenderer, IpcRendererEvent } from 'electron';
 import {
   I_IpcApi,
   IpcChannels,
-  IpcPayloadInputLookup,
-  IpcExpectedPayloadReturn,
-  IpcInputConditional,
+  IpcExpectedInput,
   IpcInvokeReturn,
+  IpcPayloadInputLookup,
   IpcReturn,
 } from '../../shared/types/ipc';
 import { validChannels } from '../../shared/utils/channels';
@@ -58,7 +57,7 @@ const removeAllListeners = (channel: IpcChannels): void => {
  */
 const send = <T extends IpcChannels>(
   channel: T,
-  payload?: IpcInputConditional<T>,
+  payload?: IpcExpectedInput<T>,
 ): void => {
   if (validChannels.includes(channel)) ipcRenderer.send(channel, payload);
 };
@@ -70,7 +69,7 @@ const send = <T extends IpcChannels>(
  */
 const invoke = <T extends IpcChannels>(
   ...args: T extends keyof IpcPayloadInputLookup
-    ? [channel: T, payload?: IpcInputConditional<T>]
+    ? [channel: T, payload?: IpcExpectedInput<T>]
     : [channel: T]
 ): Promise<IpcReturn<T>> =>
   new Promise((resolve, reject) => {
@@ -78,9 +77,7 @@ const invoke = <T extends IpcChannels>(
     if (validChannels.includes(channel)) {
       ipcRenderer
         .invoke(channel, payload)
-        .then((result: IpcInvokeReturn<IpcExpectedPayloadReturn<T>>) =>
-          resolve(result),
-        )
+        .then((result: IpcInvokeReturn<T>) => resolve(result))
         .catch((error: unknown) =>
           reject(returnIpcInvokeError(error, 'Error in invoke')),
         );
